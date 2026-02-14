@@ -1,0 +1,200 @@
+"use client"
+
+import { X, RotateCw, Trash2 } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button"
+import { Slider } from "@/components/ui/slider"
+import { Separator } from "@/components/ui/separator"
+import { useEditorStore } from "@/stores/editor-store"
+
+export function PropertiesPanel() {
+  const selectedId = useEditorStore((s) => s.selectedId)
+  const furnitureItems = useEditorStore((s) => s.furnitureItems)
+  const updateFurniture = useEditorStore((s) => s.updateFurniture)
+  const removeFurniture = useEditorStore((s) => s.removeFurniture)
+  const setSelectedId = useEditorStore((s) => s.setSelectedId)
+
+  const item = furnitureItems.find((f) => f.instanceId === selectedId)
+
+  if (!item) return null
+
+  function handlePositionChange(
+    axis: "pos_x" | "pos_y" | "pos_z",
+    value: string
+  ) {
+    const num = parseFloat(value)
+    if (!isNaN(num) && item) {
+      updateFurniture(item.instanceId, { [axis]: num })
+    }
+  }
+
+  function handleRotationChange(value: number[]) {
+    if (item) {
+      updateFurniture(item.instanceId, { rotation: value[0] })
+    }
+  }
+
+  function handleDelete() {
+    if (item) {
+      removeFurniture(item.instanceId)
+    }
+  }
+
+  return (
+    <div className="fixed right-0 top-12 bottom-0 z-20 flex w-80 flex-col border-l bg-background">
+      {/* Header */}
+      <div className="flex items-center justify-between border-b px-4 py-2">
+        <h2 className="text-sm font-semibold">{item.name}</h2>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7"
+          onClick={() => setSelectedId(null)}
+        >
+          <X className="h-4 w-4" />
+        </Button>
+      </div>
+
+      <div className="flex-1 space-y-5 overflow-y-auto p-4">
+        {/* Position */}
+        <div>
+          <h3 className="mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            Position
+          </h3>
+          <div className="grid grid-cols-3 gap-2">
+            <div className="space-y-1">
+              <Label className="text-xs">X</Label>
+              <Input
+                type="number"
+                step={0.1}
+                value={item.pos_x}
+                onChange={(e) => handlePositionChange("pos_x", e.target.value)}
+                className="h-8 text-sm"
+              />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Y</Label>
+              <Input
+                type="number"
+                step={0.1}
+                value={item.pos_y}
+                onChange={(e) => handlePositionChange("pos_y", e.target.value)}
+                className="h-8 text-sm"
+              />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Z</Label>
+              <Input
+                type="number"
+                step={0.1}
+                value={item.pos_z}
+                onChange={(e) => handlePositionChange("pos_z", e.target.value)}
+                className="h-8 text-sm"
+              />
+            </div>
+          </div>
+        </div>
+
+        <Separator />
+
+        {/* Rotation */}
+        <div>
+          <h3 className="mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            Rotation
+          </h3>
+          <div className="flex items-center gap-3">
+            <RotateCw className="h-4 w-4 shrink-0 text-muted-foreground" />
+            <Slider
+              value={[item.rotation]}
+              onValueChange={handleRotationChange}
+              min={0}
+              max={359}
+              step={15}
+              className="flex-1"
+            />
+            <span className="w-10 text-right text-sm text-muted-foreground">
+              {item.rotation}°
+            </span>
+          </div>
+        </div>
+
+        <Separator />
+
+        {/* Dimensions (read-only) */}
+        <div>
+          <h3 className="mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            Dimensions
+          </h3>
+          <div className="grid grid-cols-3 gap-2">
+            <div className="space-y-1">
+              <Label className="text-xs text-muted-foreground">Width</Label>
+              <p className="text-sm">{item.dimensions.width}m</p>
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs text-muted-foreground">Depth</Label>
+              <p className="text-sm">{item.dimensions.depth}m</p>
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs text-muted-foreground">Height</Label>
+              <p className="text-sm">{item.dimensions.height}m</p>
+            </div>
+          </div>
+        </div>
+
+        <Separator />
+
+        {/* Info */}
+        <div>
+          <h3 className="mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            Info
+          </h3>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Category</span>
+              <span className="capitalize">
+                {item.category.replace("_", " ")}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Essential</span>
+              <span>{item.is_essential ? "Yes" : "No"}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Feng Shui Notes */}
+        {item.feng_shui_notes.length > 0 && (
+          <>
+            <Separator />
+            <div>
+              <h3 className="mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                Feng Shui Notes
+              </h3>
+              <ul className="space-y-1">
+                {item.feng_shui_notes.map((note, i) => (
+                  <li key={i} className="text-xs text-muted-foreground">
+                    • {note}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Delete button */}
+      <div className="border-t p-3">
+        <Button
+          variant="destructive"
+          size="sm"
+          className="w-full"
+          onClick={handleDelete}
+        >
+          <Trash2 className="mr-2 h-4 w-4" />
+          Delete
+        </Button>
+      </div>
+    </div>
+  )
+}

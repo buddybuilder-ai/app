@@ -3,6 +3,8 @@
 import { Suspense } from "react"
 import { EditorToolbar } from "./toolbar/editor-toolbar"
 import { SceneCanvas } from "./canvas/scene-canvas"
+import { FurniturePanel } from "./panels/furniture-panel"
+import { PropertiesPanel } from "./panels/properties-panel"
 import { LoadingSpinner } from "@/components/shared/loading-spinner"
 
 interface EditorWorkspaceProps {
@@ -32,8 +34,10 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
         </Suspense>
       </div>
 
-      {/* FurniturePanel will be added in Phase 6 */}
-      {/* PropertiesPanel will be added in Phase 6 */}
+      {/* Side panels */}
+      <FurniturePanel />
+      <PropertiesPanel />
+
       {/* ChatWidget will be added in Phase 7 */}
       {/* FengShuiPanel will be added in Phase 9 */}
     </div>
