@@ -5,12 +5,14 @@ import { Send } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { useChatStore } from "@/stores/chat-store"
+import { useChat } from "@/hooks/use-chat"
 
 export function ChatInput() {
   const [text, setText] = useState("")
   const addMessage = useChatStore((s) => s.addMessage)
   const mode = useChatStore((s) => s.mode)
   const isLoading = useChatStore((s) => s.isLoading)
+  const { send } = useChat()
 
   function handleSend() {
     const trimmed = text.trim()
@@ -25,7 +27,7 @@ export function ChatInput() {
     })
 
     setText("")
-    // API call will be connected in Phase 8
+    send(trimmed)
   }
 
   function handleKeyDown(e: React.KeyboardEvent) {
