@@ -5,6 +5,7 @@ import { EditorToolbar } from "./toolbar/editor-toolbar"
 import { SceneCanvas } from "./canvas/scene-canvas"
 import { FurniturePanel } from "./panels/furniture-panel"
 import { PropertiesPanel } from "./panels/properties-panel"
+import { FengShuiPanel } from "./panels/feng-shui-panel"
 import { ChatWidget } from "@/components/features/chat/chat-widget"
 import { LoadingSpinner } from "@/components/shared/loading-spinner"
 
@@ -39,10 +40,11 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
       <FurniturePanel />
       <PropertiesPanel />
 
+      {/* Feng Shui */}
+      <FengShuiPanel />
+
       {/* Chat */}
       <ChatWidget />
-
-      {/* FengShuiPanel will be added in Phase 9 */}
     </div>
   )
 }
