@@ -1,0 +1,138 @@
+{
+  "common": {
+    "save": "บันทึก",
+    "cancel": "ยกเลิก",
+    "delete": "ลบ",
+    "edit": "แก้ไข",
+    "close": "ปิด",
+    "loading": "กำลังโหลด...",
+    "error": "เกิดข้อผิดพลาด",
+    "search": "ค้นหา"
+  },
+  "nav": {
+    "home": "หน้าแรก",
+    "projects": "โปรเจค",
+    "settings": "ตั้งค่า",
+    "login": "เข้าสู่ระบบ",
+    "register": "สมัครสมาชิก",
+    "logout": "ออกจากระบบ",
+    "getStarted": "เริ่มต้นใช้งาน"
+  },
+  "landing": {
+    "heroTitle": "ออกแบบห้องของคุณด้วย AI และฮวงจุ้ย",
+    "heroDescription": "เปลี่ยนผังห้องของคุณด้วยคำแนะนำจาก AI อัจฉริยะ ที่อิงหลักฮวงจุ้ย ลาก วาง และดูภาพ 3 มิติสุดสมจริง",
+    "startDesigning": "เริ่มออกแบบ",
+    "learnMore": "เรียนรู้เพิ่มเติม",
+    "featuresTitle": "ทุกสิ่งที่คุณต้องการสำหรับการออกแบบ",
+    "howItWorksTitle": "ขั้นตอนการใช้งาน",
+    "step1Title": "สร้างห้องของคุณ",
+    "step1Desc": "กำหนดขนาดห้องและเพิ่มประตูหน้าต่าง",
+    "step2Title": "ออกแบบด้วย AI",
+    "step2Desc": "ให้ AI แนะนำการจัดวางเฟอร์นิเจอร์ตามหลักฮวงจุ้ย",
+    "step3Title": "ปรับแต่งใน 3 มิติ",
+    "step3Desc": "ปรับแต่งผังห้องในเครื่องมือแก้ไข 3 มิติแบบอินเทอร์แอคทีฟ",
+    "ctaTitle": "พร้อมเปลี่ยนพื้นที่ของคุณหรือยัง?",
+    "ctaDescription": "เริ่มออกแบบผังห้องในฝันของคุณวันนี้"
+  },
+  "editor": {
+    "toolbar": {
+      "select": "เลือก",
+      "move": "ย้าย",
+      "rotate": "หมุน",
+      "delete": "ลบ",
+      "undo": "เลิกทำ",
+      "redo": "ทำซ้ำ",
+      "view2d": "2 มิติ",
+      "view3d": "3 มิติ",
+      "save": "บันทึก"
+    },
+    "furniturePanel": {
+      "title": "เฟอร์นิเจอร์",
+      "search": "ค้นหาเฟอร์นิเจอร์...",
+      "noResults": "ไม่พบเฟอร์นิเจอร์",
+      "bedroom": "ห้องนอน",
+      "livingRoom": "ห้องนั่งเล่น",
+      "office": "ห้องทำงาน",
+      "diningRoom": "ห้องอาหาร",
+      "general": "ทั่วไป"
+    },
+    "propertiesPanel": {
+      "position": "ตำแหน่ง",
+      "rotation": "การหมุน",
+      "dimensions": "ขนาด",
+      "info": "ข้อมูล",
+      "category": "หมวดหมู่",
+      "essential": "จำเป็น",
+      "yes": "ใช่",
+      "no": "ไม่",
+      "fengShuiNotes": "บันทึกฮวงจุ้ย",
+      "width": "กว้าง",
+      "depth": "ลึก",
+      "height": "สูง"
+    },
+    "loading": "กำลังโหลดเครื่องมือแก้ไข 3 มิติ..."
+  },
+  "chat": {
+    "title": "ผู้ช่วย AI",
+    "placeholder": "พิมพ์ข้อความของคุณ...",
+    "emptyState": "ถามเกี่ยวกับการออกแบบภายใน ฮวงจุ้ย หรือการจัดวางเฟอร์นิเจอร์!",
+    "applyToCanvas": "นำไปใช้",
+    "sources": "แหล่งอ้างอิง",
+    "sourcesPlural": "แหล่งอ้างอิง",
+    "modes": {
+      "mentor": "ที่ปรึกษา",
+      "buddy": "เพื่อน",
+      "fun": "สนุก"
+    }
+  },
+  "fengShui": {
+    "title": "คะแนนฮวงจุ้ย",
+    "commandPosition": "ตำแหน่งบัญชาการ",
+    "fiveElements": "ธาตุทั้ง 5",
+    "chiFlow": "การไหลของชี่",
+    "shaChiAvoidance": "การหลีกเลี่ยงซาชี่",
+    "excellent": "ดีเยี่ยม",
+    "good": "ดี",
+    "needsWork": "ต้องปรับปรุง",
+    "poor": "ไม่ดี",
+    "tips": "เคล็ดลับ",
+    "emptyState": "สร้างผังห้องเพื่อดูการวิเคราะห์ฮวงจุ้ย"
+  },
+  "projects": {
+    "title": "โปรเจคของฉัน",
+    "subtitle": "จัดการโปรเจคออกแบบห้องของคุณ",
+    "newProject": "โปรเจคใหม่",
+    "createProject": "สร้างโปรเจค",
+    "projectName": "ชื่อโปรเจค",
+    "roomType": "ประเภทห้อง",
+    "width": "กว้าง (ม.)",
+    "depth": "ลึก (ม.)",
+    "noProjects": "ยังไม่มีโปรเจค",
+    "rename": "เปลี่ยนชื่อ",
+    "duplicate": "ทำสำเนา"
+  },
+  "auth": {
+    "loginTitle": "ยินดีต้อนรับกลับ",
+    "loginDescription": "เข้าสู่ระบบบัญชีของคุณ",
+    "registerTitle": "สร้างบัญชี",
+    "registerDescription": "เริ่มต้นใช้งาน BuddyBuilder",
+    "email": "อีเมล",
+    "password": "รหัสผ่าน",
+    "confirmPassword": "ยืนยันรหัสผ่าน",
+    "displayName": "ชื่อที่แสดง",
+    "noAccount": "ยังไม่มีบัญชี?",
+    "hasAccount": "มีบัญชีอยู่แล้ว?",
+    "signUp": "สมัครสมาชิก"
+  },
+  "settings": {
+    "title": "ตั้งค่า",
+    "subtitle": "จัดการการตั้งค่าบัญชีของคุณ",
+    "profile": "โปรไฟล์",
+    "displayName": "ชื่อที่แสดง",
+    "email": "อีเมล",
+    "saveChanges": "บันทึกการเปลี่ยนแปลง",
+    "preferences": "การตั้งค่า",
+    "language": "ภาษา",
+    "theme": "ธีม"
+  }
+}

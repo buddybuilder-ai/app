@@ -1,0 +1,138 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "search": "Search"
+  },
+  "nav": {
+    "home": "Home",
+    "projects": "Projects",
+    "settings": "Settings",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Sign Out",
+    "getStarted": "Get Started"
+  },
+  "landing": {
+    "heroTitle": "Design Your Space with AI & Feng Shui",
+    "heroDescription": "Transform your room layout with intelligent AI suggestions, backed by Feng Shui principles. Drag, drop, and visualize in stunning 3D.",
+    "startDesigning": "Start Designing",
+    "learnMore": "Learn More",
+    "featuresTitle": "Everything You Need to Design",
+    "howItWorksTitle": "How It Works",
+    "step1Title": "Create Your Room",
+    "step1Desc": "Set room dimensions and add doors and windows",
+    "step2Title": "Design with AI",
+    "step2Desc": "Let AI suggest optimal furniture placement using Feng Shui",
+    "step3Title": "Customize in 3D",
+    "step3Desc": "Fine-tune your layout in an interactive 3D editor",
+    "ctaTitle": "Ready to Transform Your Space?",
+    "ctaDescription": "Start designing your perfect room layout today."
+  },
+  "editor": {
+    "toolbar": {
+      "select": "Select",
+      "move": "Move",
+      "rotate": "Rotate",
+      "delete": "Delete",
+      "undo": "Undo",
+      "redo": "Redo",
+      "view2d": "2D",
+      "view3d": "3D",
+      "save": "Save"
+    },
+    "furniturePanel": {
+      "title": "Furniture",
+      "search": "Search furniture...",
+      "noResults": "No furniture found",
+      "bedroom": "Bedroom",
+      "livingRoom": "Living Room",
+      "office": "Office",
+      "diningRoom": "Dining Room",
+      "general": "General"
+    },
+    "propertiesPanel": {
+      "position": "Position",
+      "rotation": "Rotation",
+      "dimensions": "Dimensions",
+      "info": "Info",
+      "category": "Category",
+      "essential": "Essential",
+      "yes": "Yes",
+      "no": "No",
+      "fengShuiNotes": "Feng Shui Notes",
+      "width": "Width",
+      "depth": "Depth",
+      "height": "Height"
+    },
+    "loading": "Loading 3D Editor..."
+  },
+  "chat": {
+    "title": "AI Assistant",
+    "placeholder": "Type your message...",
+    "emptyState": "Ask me about interior design, Feng Shui, or furniture layout!",
+    "applyToCanvas": "Apply to Canvas",
+    "sources": "source",
+    "sourcesPlural": "sources",
+    "modes": {
+      "mentor": "Mentor",
+      "buddy": "Buddy",
+      "fun": "Fun"
+    }
+  },
+  "fengShui": {
+    "title": "Feng Shui Score",
+    "commandPosition": "Command Position",
+    "fiveElements": "Five Elements",
+    "chiFlow": "Chi Flow",
+    "shaChiAvoidance": "Sha Chi Avoidance",
+    "excellent": "Excellent",
+    "good": "Good",
+    "needsWork": "Needs Work",
+    "poor": "Poor",
+    "tips": "Tips",
+    "emptyState": "Generate a layout to see Feng Shui analysis"
+  },
+  "projects": {
+    "title": "My Projects",
+    "subtitle": "Manage your room design projects",
+    "newProject": "New Project",
+    "createProject": "Create Project",
+    "projectName": "Project Name",
+    "roomType": "Room Type",
+    "width": "Width (m)",
+    "depth": "Depth (m)",
+    "noProjects": "No projects yet",
+    "rename": "Rename",
+    "duplicate": "Duplicate"
+  },
+  "auth": {
+    "loginTitle": "Welcome back",
+    "loginDescription": "Sign in to your account",
+    "registerTitle": "Create an account",
+    "registerDescription": "Get started with BuddyBuilder",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "displayName": "Display Name",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "signUp": "Sign Up"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your account settings",
+    "profile": "Profile",
+    "displayName": "Display Name",
+    "email": "Email",
+    "saveChanges": "Save Changes",
+    "preferences": "Preferences",
+    "language": "Language",
+    "theme": "Theme"
+  }
+}
