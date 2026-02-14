@@ -1,5 +1,6 @@
 "use client"
 
+import { Badge } from "@/components/ui/badge"
 import type { FurnitureCatalogItem } from "@/types/furniture"
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -19,6 +20,17 @@ const CATEGORY_COLORS: Record<string, string> = {
   plant: "#6B8E23",
   lamp: "#FFD700",
   rug: "#BC8F8F",
+  // Studio-specific categories
+  sofa_bed: "#7B9EA8",
+  compact_wardrobe: "#A0522D",
+  room_divider: "#CD853F",
+  folding_desk: "#D2B48C",
+  compact_dining: "#DEB887",
+  kitchen_counter: "#708090",
+  mini_fridge: "#778899",
+  microwave_stand: "#708090",
+  shoe_cabinet: "#A0522D",
+  coat_rack: "#778899",
 }
 
 interface FurnitureCardProps {
@@ -52,7 +64,14 @@ export function FurnitureCard({ item, onAdd }: FurnitureCardProps) {
 
       {/* Info */}
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium">{item.name}</p>
+        <div className="flex items-center gap-2">
+          <p className="truncate text-sm font-medium">{item.name}</p>
+          {item.is_essential && (
+            <Badge variant="secondary" className="h-4 px-1 text-[10px]">
+              Essential
+            </Badge>
+          )}
+        </div>
         <p className="text-xs text-muted-foreground">
           {item.dimensions.width}×{item.dimensions.depth}×
           {item.dimensions.height}m

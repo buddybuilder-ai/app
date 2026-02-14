@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { WallSideSchema, RoomTypeSchema } from "./common"
+import { WallSideSchema, RoomTypeSchema, StudioZoneSchema } from "./common"
 
 export const RoomDimensionsSchema = z.object({
   width: z.number().positive(),
@@ -21,6 +21,15 @@ export const WindowPositionSchema = z.object({
   sill_height: z.number().nonnegative().default(0.9),
 })
 
+export const ZoneDefinitionSchema = z.object({
+  id: z.string(),
+  type: StudioZoneSchema,
+  x: z.number(),
+  z: z.number(),
+  width: z.number().positive(),
+  depth: z.number().positive(),
+})
+
 export const RoomConfigSchema = z.object({
   width: z.number().positive(),
   depth: z.number().positive(),
@@ -29,4 +38,5 @@ export const RoomConfigSchema = z.object({
   doors: z.array(DoorPositionSchema).default([]),
   windows: z.array(WindowPositionSchema).default([]),
   direction: WallSideSchema.default("north"),
+  zones: z.array(ZoneDefinitionSchema).default([]),
 })

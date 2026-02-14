@@ -11,26 +11,58 @@ import {
   Save,
   Eye,
   Box,
+  Settings2,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Toggle } from "@/components/ui/toggle"
 import { Separator } from "@/components/ui/separator"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { useEditorStore } from "@/stores/editor-store"
+import { useUIStore } from "@/stores/ui-store"
+import { useProject } from "@/hooks/use-project"
+import { useUndoRedo } from "@/hooks/use-undo-redo"
+import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts"
 import type { ActiveTool } from "@/types/editor"
+import { toast } from "sonner"
 
-const tools: { id: ActiveTool; icon: typeof MousePointer2; label: string }[] = [
+const tools: {
+  id: ActiveTool
+  icon: typeof MousePointer2
+  label: string
+}[] = [
   { id: "select", icon: MousePointer2, label: "Select" },
   { id: "move", icon: Move, label: "Move" },
   { id: "rotate", icon: RotateCcw, label: "Rotate" },
   { id: "delete", icon: Trash2, label: "Delete" },
 ]
 
-export function EditorToolbar() {
+interface EditorToolbarProps {
+  projectId: string
+}
+
+export function EditorToolbar({ projectId }: EditorToolbarProps) {
   const activeTool = useEditorStore((s) => s.activeTool)
   const setActiveTool = useEditorStore((s) => s.setActiveTool)
   const viewMode = useEditorStore((s) => s.viewMode)
   const setViewMode = useEditorStore((s) => s.setViewMode)
+  const toggleRoomSettings = useUIStore((s) => s.toggleRoomSettingsPanel)
+
+  const { save } = useProject(projectId)
+  const { undo, redo, canUndo, canRedo } = useUndoRedo()
+  useKeyboardShortcuts({ onUndo: undo, onRedo: redo })
+
+  function handleSave() {
+    const ok = save()
+    if (ok) {
+      toast.success("บันทึกแล้ว")
+    } else {
+      toast.error("บันทึกไม่สำเร็จ")
+    }
+  }
 
   return (
     <div className="fixed left-0 right-0 top-0 z-30 flex h-12 items-center gap-2 border-b bg-background px-4">
@@ -47,7 +79,13 @@ export function EditorToolbar() {
 
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-8 w-8">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={undo}
+            disabled={!canUndo}
+          >
             <Undo2 className="h-4 w-4" />
           </Button>
         </TooltipTrigger>
@@ -56,7 +94,13 @@ export function EditorToolbar() {
 
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-8 w-8">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={redo}
+            disabled={!canRedo}
+          >
             <Redo2 className="h-4 w-4" />
           </Button>
         </TooltipTrigger>
@@ -104,11 +148,30 @@ export function EditorToolbar() {
         <TooltipContent>Toggle View Mode</TooltipContent>
       </Tooltip>
 
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={toggleRoomSettings}
+          >
+            <Settings2 className="h-4 w-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>ตั้งค่าห้อง</TooltipContent>
+      </Tooltip>
+
       <div className="flex-1" />
 
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="ghost" size="sm" className="h-8 gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 gap-1"
+            onClick={handleSave}
+          >
             <Save className="h-4 w-4" />
             <span className="text-xs">Save</span>
           </Button>

@@ -1,23 +1,31 @@
 "use client"
 
-import { Suspense } from "react"
+import { Suspense, useEffect } from "react"
 import { EditorToolbar } from "./toolbar/editor-toolbar"
 import { SceneCanvas } from "./canvas/scene-canvas"
 import { FurniturePanel } from "./panels/furniture-panel"
 import { PropertiesPanel } from "./panels/properties-panel"
 import { FengShuiPanel } from "./panels/feng-shui-panel"
+import { RoomSettingsPanel } from "./panels/room-settings-panel"
 import { ChatWidget } from "@/components/features/chat/chat-widget"
 import { ErrorBoundary } from "@/components/shared/error-boundary"
 import { LoadingSpinner } from "@/components/shared/loading-spinner"
+import { useProject } from "@/hooks/use-project"
 
 interface EditorWorkspaceProps {
   projectId: string
 }
 
 export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
+  const { load } = useProject(projectId)
+
+  useEffect(() => {
+    load()
+  }, [load])
+
   return (
     <div className="relative h-full w-full">
-      <EditorToolbar />
+      <EditorToolbar projectId={projectId} />
 
       {/* Canvas area - fills space below toolbar */}
       <div className="absolute inset-0 top-12">
@@ -43,8 +51,9 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
       <FurniturePanel />
       <PropertiesPanel />
 
-      {/* Feng Shui */}
+      {/* Right panels */}
       <FengShuiPanel />
+      <RoomSettingsPanel />
 
       {/* Chat */}
       <ChatWidget />

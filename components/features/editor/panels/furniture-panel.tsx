@@ -1,12 +1,13 @@
 "use client"
 
-import { useState } from "react"
-import { ChevronLeft, Search, Sofa } from "lucide-react"
+import { useState, useMemo } from "react"
+import { ChevronLeft, Search, Sofa, Lightbulb } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { getCategorizedFurniture, getFurnitureById } from "@/lib/furniture-catalog"
+import { getCategorizedFurniture, getFurnitureById, getZoneRecommendations } from "@/lib/furniture-catalog"
 import { useEditorStore } from "@/stores/editor-store"
 import { useUIStore } from "@/stores/ui-store"
 import { FurnitureCard } from "./furniture-card"
@@ -14,14 +15,45 @@ import type { FurnitureCatalogItem } from "@/types/furniture"
 
 export function FurniturePanel() {
   const [search, setSearch] = useState("")
+  const [selectedZone, setSelectedZone] = useState<string | null>(null)
   const isOpen = useUIStore((s) => s.furniturePanelOpen)
   const toggle = useUIStore((s) => s.toggleFurniturePanel)
   const addFurniture = useEditorStore((s) => s.addFurniture)
+  const room = useEditorStore((s) => s.room)
 
-  const categorized = getCategorizedFurniture()
+  // Get categorized furniture based on room type
+  const categorized = useMemo(() => {
+    return getCategorizedFurniture(room.room_type)
+  }, [room.room_type])
+
+  // Get zone recommendations for studio apartment
+  const zoneRecommendations = useMemo(() => {
+    if (room.room_type === "studio_apartment") {
+      return getZoneRecommendations()
+    }
+    return null
+  }, [room.room_type])
+
+  // Filter by zone if selected (studio apartment only)
+  const zoneFiltered = useMemo(() => {
+    if (!selectedZone || room.room_type !== "studio_apartment") {
+      return categorized
+    }
+    const zoneKey = selectedZone.toLowerCase().replace(" ", "_")
+    const zoneData = zoneRecommendations?.[zoneKey as keyof typeof zoneRecommendations]
+    if (!zoneData) return categorized
+    
+    const zoneFurnitureIds = [...zoneData.essentialFurniture, ...zoneData.optionalFurniture]
+    return categorized
+      .map((group) => ({
+        ...group,
+        items: group.items.filter((item) => zoneFurnitureIds.includes(item.id)),
+      }))
+      .filter((group) => group.items.length > 0)
+  }, [categorized, selectedZone, room.room_type, zoneRecommendations])
 
   const filtered = search.trim()
-    ? categorized
+    ? zoneFiltered
         .map((group) => ({
           ...group,
           items: group.items.filter((item) =>
@@ -29,7 +61,7 @@ export function FurniturePanel() {
           ),
         }))
         .filter((group) => group.items.length > 0)
-    : categorized
+    : zoneFiltered
 
   function handleAdd(item: FurnitureCatalogItem) {
     addFurniture({
@@ -106,6 +138,61 @@ export function FurniturePanel() {
           />
         </div>
       </div>
+
+      {/* Zone filter for studio apartment */}
+      {room.room_type === "studio_apartment" && zoneRecommendations && (
+        <div className="border-b px-3 py-2">
+          <div className="mb-2 flex items-center gap-1.5">
+            <Lightbulb className="h-3.5 w-3.5 text-amber-500" />
+            <span className="text-xs font-medium text-muted-foreground">
+              Filter by zone
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            <Button
+              variant={selectedZone === null ? "default" : "outline"}
+              size="sm"
+              className="h-6 px-2 text-xs"
+              onClick={() => setSelectedZone(null)}
+            >
+              All
+            </Button>
+            {Object.entries(zoneRecommendations).map(([key, zone]) => (
+              <Button
+                key={key}
+                variant={selectedZone === key ? "default" : "outline"}
+                size="sm"
+                className="h-6 px-2 text-xs"
+                onClick={() => setSelectedZone(key)}
+              >
+                {zone.name.split(" ")[0]}
+              </Button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Zone recommendations tips */}
+      {room.room_type === "studio_apartment" && selectedZone && zoneRecommendations && (
+        <div className="border-b bg-amber-50 px-3 py-2 dark:bg-amber-950/20">
+          <div className="mb-1 flex items-center gap-1.5">
+            <Lightbulb className="h-3.5 w-3.5 text-amber-500" />
+            <span className="text-xs font-medium text-amber-700 dark:text-amber-400">
+              {zoneRecommendations[selectedZone as keyof typeof zoneRecommendations]?.name}
+            </span>
+          </div>
+          <p className="mb-2 text-xs text-amber-600 dark:text-amber-500">
+            {zoneRecommendations[selectedZone as keyof typeof zoneRecommendations]?.description}
+          </p>
+          <div className="space-y-1">
+            {zoneRecommendations[selectedZone as keyof typeof zoneRecommendations]?.fengShuiTips.map((tip, i) => (
+              <p key={i} className="text-xs text-amber-600/80 dark:text-amber-500/80">
+                • {tip}
+              </p>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Furniture list */}
       <ScrollArea className="flex-1">

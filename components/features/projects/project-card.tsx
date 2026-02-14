@@ -21,9 +21,31 @@ interface ProjectCardProps {
   name: string
   roomType: string
   updatedAt: string
+  onDelete: (id: string) => void
+  onRename: (id: string, newName: string) => void
 }
 
-export function ProjectCard({ id, name, roomType, updatedAt }: ProjectCardProps) {
+export function ProjectCard({
+  id,
+  name,
+  roomType,
+  updatedAt,
+  onDelete,
+  onRename,
+}: ProjectCardProps) {
+  function handleRename() {
+    const newName = window.prompt("ชื่อโปรเจกต์ใหม่:", name)
+    if (newName && newName !== name) {
+      onRename(id, newName)
+    }
+  }
+
+  function handleDelete() {
+    if (window.confirm(`ลบโปรเจกต์ "${name}" ?`)) {
+      onDelete(id)
+    }
+  }
+
   return (
     <Card className="group transition-shadow hover:shadow-md">
       <CardHeader className="p-0">
@@ -50,20 +72,23 @@ export function ProjectCard({ id, name, roomType, updatedAt }: ProjectCardProps)
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={handleRename}>
                 <Pencil className="mr-2 h-4 w-4" />
-                Rename
+                เปลี่ยนชื่อ
               </DropdownMenuItem>
-              <DropdownMenuItem className="text-destructive">
+              <DropdownMenuItem
+                className="text-destructive"
+                onClick={handleDelete}
+              >
                 <Trash2 className="mr-2 h-4 w-4" />
-                Delete
+                ลบ
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       </CardContent>
       <CardFooter className="border-t px-4 py-2">
-        <p className="text-xs text-muted-foreground">Updated {updatedAt}</p>
+        <p className="text-xs text-muted-foreground">{updatedAt}</p>
       </CardFooter>
     </Card>
   )

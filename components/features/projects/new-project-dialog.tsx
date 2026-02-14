@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -21,10 +22,75 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { ROOM_TYPES } from "@/lib/constants"
+import { STUDIO_PRESETS, WALL_SIDES } from "@/lib/constants"
+import { useProjectManager } from "@/hooks/use-project-manager"
+import type { RoomConfig } from "@/types/editor"
+
+type PresetKey = "small" | "medium" | "large" | "custom"
+type WallSide = "north" | "south" | "east" | "west"
 
 export function NewProjectDialog() {
   const [open, setOpen] = useState(false)
+  const router = useRouter()
+  const { createProject } = useProjectManager()
+
+  const [name, setName] = useState("")
+  const [preset, setPreset] = useState<PresetKey>("small")
+  const [width, setWidth] = useState(6)
+  const [depth, setDepth] = useState(4)
+  const [doorWall, setDoorWall] = useState<WallSide>("south")
+  const [doorOffset, setDoorOffset] = useState(1.0)
+  const [windowWall, setWindowWall] = useState<WallSide>("north")
+  const [windowOffset, setWindowOffset] = useState(2.0)
+  const [windowWidth, setWindowWidth] = useState(1.5)
+  const [direction, setDirection] = useState<WallSide>("north")
+
+  function handlePresetChange(value: PresetKey) {
+    setPreset(value)
+    if (value !== "custom") {
+      const p = STUDIO_PRESETS[value]
+      setWidth(p.width)
+      setDepth(p.depth)
+      setDoorWall(p.doors[0].wall)
+      setDoorOffset(p.doors[0].offset)
+      setWindowWall(p.windows[0].wall)
+      setWindowOffset(p.windows[0].offset)
+      setWindowWidth(p.windows[0].width)
+    }
+  }
+
+  function handleCreate() {
+    const roomConfig: RoomConfig = {
+      width,
+      depth,
+      height: 2.8,
+      room_type: "studio_apartment",
+      doors: [
+        {
+          wall: doorWall,
+          offset: doorOffset,
+          width: 0.9,
+          swing_inward: true,
+        },
+      ],
+      windows: [
+        {
+          wall: windowWall,
+          offset: windowOffset,
+          width: windowWidth,
+          height: 1.2,
+          sill_height: 0.9,
+        },
+      ],
+      direction,
+      zones: [],
+    }
+    const id = createProject(name || "Studio Design", roomConfig)
+    setOpen(false)
+    router.push(`/editor/${id}`)
+  }
+
+  const isCustom = preset === "custom"
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -34,53 +100,183 @@ export function NewProjectDialog() {
           New Project
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Create New Project</DialogTitle>
+          <DialogTitle>สร้างโปรเจกต์ใหม่</DialogTitle>
           <DialogDescription>
-            Set up your room to start designing.
+            ตั้งค่าห้องสตูดิโอของคุณเพื่อเริ่มออกแบบ
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
+          {/* Project Name */}
           <div className="space-y-2">
-            <Label htmlFor="projectName">Project Name</Label>
-            <Input id="projectName" placeholder="My Room Design" />
+            <Label htmlFor="projectName">ชื่อโปรเจกต์</Label>
+            <Input
+              id="projectName"
+              placeholder="Studio Design"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
           </div>
 
+          {/* Studio Preset */}
           <div className="space-y-2">
-            <Label>Room Type</Label>
-            <Select defaultValue="bedroom">
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {Object.entries(ROOM_TYPES).map(([key, value]) => (
-                  <SelectItem key={key} value={key}>
-                    {value.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Label>ขนาดห้อง</Label>
+            <div className="grid grid-cols-4 gap-2">
+              {(
+                [
+                  { key: "small", label: "เล็ก", sub: "24 ตร.ม." },
+                  { key: "medium", label: "กลาง", sub: "28 ตร.ม." },
+                  { key: "large", label: "ใหญ่", sub: "35 ตร.ม." },
+                  { key: "custom", label: "กำหนดเอง", sub: "" },
+                ] as const
+              ).map((p) => (
+                <button
+                  key={p.key}
+                  type="button"
+                  onClick={() => handlePresetChange(p.key)}
+                  className={`rounded-lg border p-2 text-center text-sm transition-colors ${
+                    preset === p.key
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-border hover:bg-muted"
+                  }`}
+                >
+                  <div className="font-medium">{p.label}</div>
+                  {p.sub && (
+                    <div className="text-xs text-muted-foreground">{p.sub}</div>
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
 
+          {/* Dimensions (always visible, editable when custom) */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="width">Width (m)</Label>
-              <Input id="width" type="number" defaultValue="5" min="1" step="0.5" />
+              <Label htmlFor="width">กว้าง (ม.)</Label>
+              <Input
+                id="width"
+                type="number"
+                value={width}
+                onChange={(e) => setWidth(Number(e.target.value))}
+                min={3}
+                max={15}
+                step={0.5}
+                disabled={!isCustom}
+              />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="depth">Depth (m)</Label>
-              <Input id="depth" type="number" defaultValue="4" min="1" step="0.5" />
+              <Label htmlFor="depth">ลึก (ม.)</Label>
+              <Input
+                id="depth"
+                type="number"
+                value={depth}
+                onChange={(e) => setDepth(Number(e.target.value))}
+                min={3}
+                max={15}
+                step={0.5}
+                disabled={!isCustom}
+              />
+            </div>
+          </div>
+
+          {/* Door Position */}
+          <div className="space-y-2">
+            <Label>ตำแหน่งประตู</Label>
+            <div className="grid grid-cols-2 gap-4">
+              <Select
+                value={doorWall}
+                onValueChange={(v) => setDoorWall(v as WallSide)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(WALL_SIDES).map(([key, value]) => (
+                    <SelectItem key={key} value={key}>
+                      {value.labelTh}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Input
+                type="number"
+                value={doorOffset}
+                onChange={(e) => setDoorOffset(Number(e.target.value))}
+                min={0}
+                step={0.5}
+                placeholder="ระยะจากขอบ (ม.)"
+              />
+            </div>
+          </div>
+
+          {/* Window Position */}
+          <div className="space-y-2">
+            <Label>ตำแหน่งหน้าต่าง</Label>
+            <div className="grid grid-cols-3 gap-3">
+              <Select
+                value={windowWall}
+                onValueChange={(v) => setWindowWall(v as WallSide)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(WALL_SIDES).map(([key, value]) => (
+                    <SelectItem key={key} value={key}>
+                      {value.labelTh}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Input
+                type="number"
+                value={windowOffset}
+                onChange={(e) => setWindowOffset(Number(e.target.value))}
+                min={0}
+                step={0.5}
+                placeholder="ระยะ (ม.)"
+              />
+              <Input
+                type="number"
+                value={windowWidth}
+                onChange={(e) => setWindowWidth(Number(e.target.value))}
+                min={0.5}
+                max={3}
+                step={0.5}
+                placeholder="กว้าง (ม.)"
+              />
+            </div>
+          </div>
+
+          {/* Facing Direction */}
+          <div className="space-y-2">
+            <Label>ทิศหน้าห้อง</Label>
+            <div className="grid grid-cols-4 gap-2">
+              {Object.entries(WALL_SIDES).map(([key, value]) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => setDirection(key as WallSide)}
+                  className={`rounded-lg border p-2 text-center text-sm transition-colors ${
+                    direction === key
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-border hover:bg-muted"
+                  }`}
+                >
+                  {value.labelTh}
+                </button>
+              ))}
             </div>
           </div>
         </div>
 
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)}>
-            Cancel
+            ยกเลิก
           </Button>
-          <Button onClick={() => setOpen(false)}>Create Project</Button>
+          <Button onClick={handleCreate}>สร้างโปรเจกต์</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

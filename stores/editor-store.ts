@@ -35,13 +35,22 @@ interface EditorState {
 
 export const useEditorStore = create<EditorState>((set) => ({
   room: {
-    width: 5,
+    width: 6,
     depth: 4,
     height: 2.8,
-    room_type: "bedroom",
-    doors: [],
-    windows: [],
+    room_type: "studio_apartment",
+    doors: [{ wall: "south", offset: 1.0, width: 0.9, swing_inward: true }],
+    windows: [
+      {
+        wall: "north",
+        offset: 2.0,
+        width: 1.5,
+        height: 1.2,
+        sill_height: 0.9,
+      },
+    ],
     direction: "north",
+    zones: [],
   },
   setRoom: (room) => set({ room }),
 

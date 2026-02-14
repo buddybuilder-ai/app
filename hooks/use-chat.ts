@@ -2,19 +2,24 @@
 
 import { useCallback } from "react"
 import { useChatStore } from "@/stores/chat-store"
-import { sendChatMessage } from "@/lib/api-client"
+import { useEditorStore } from "@/stores/editor-store"
+import { getMockChatResponse } from "@/lib/mock-chat"
 
 export function useChat() {
   const addMessage = useChatStore((s) => s.addMessage)
   const setLoading = useChatStore((s) => s.setLoading)
   const mode = useChatStore((s) => s.mode)
+  const setFengShuiScore = useEditorStore((s) => s.setFengShuiScore)
 
   const send = useCallback(
     async (text: string) => {
       setLoading(true)
 
       try {
-        const response = await sendChatMessage({ text, mode })
+        const response = await getMockChatResponse(text, mode)
+
+        // Store feng shui score for the panel
+        setFengShuiScore(response.fengShuiScore)
 
         addMessage({
           id: `assistant-${Date.now()}`,
@@ -22,7 +27,10 @@ export function useChat() {
           content: response.answer,
           mode,
           timestamp: new Date(),
-          sources: response.source_documents,
+          layoutAction: {
+            type: "apply_layout",
+            payload: response.items,
+          },
         })
       } catch (error) {
         addMessage({
@@ -39,7 +47,7 @@ export function useChat() {
         setLoading(false)
       }
     },
-    [addMessage, setLoading, mode]
+    [addMessage, setLoading, setFengShuiScore, mode]
   )
 
   return { send }

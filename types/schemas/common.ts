@@ -9,6 +9,7 @@ export const RoomTypeSchema = z.enum([
   "dining_room",
   "kitchen",
   "bathroom",
+  "studio_apartment",
 ])
 
 export const WallSideSchema = z.enum(["north", "south", "east", "west"])
@@ -46,6 +47,16 @@ export const FurnitureCategorySchema = z.enum([
   "plant",
   "lamp",
   "rug",
+  "sofa_bed",
+  "room_divider",
+  "compact_wardrobe",
+  "kitchen_counter",
+  "mini_fridge",
+  "shoe_cabinet",
+  "coat_rack",
+  "microwave_stand",
+  "folding_desk",
+  "compact_dining",
 ])
 
 export const PlacementStatusSchema = z.enum([
@@ -76,3 +87,13 @@ export const ZoneQualitySchema = z.enum([
 ])
 
 export const BudgetLevelSchema = z.enum(["low", "medium", "high"])
+
+export const StudioZoneSchema = z.enum([
+  "sleep",
+  "living",
+  "work",
+  "dining",
+  "kitchen",
+  "storage",
+  "entrance",
+])
