@@ -7,6 +7,7 @@ import { FurniturePanel } from "./panels/furniture-panel"
 import { PropertiesPanel } from "./panels/properties-panel"
 import { FengShuiPanel } from "./panels/feng-shui-panel"
 import { ChatWidget } from "@/components/features/chat/chat-widget"
+import { ErrorBoundary } from "@/components/shared/error-boundary"
 import { LoadingSpinner } from "@/components/shared/loading-spinner"
 
 interface EditorWorkspaceProps {
@@ -20,20 +21,22 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
 
       {/* Canvas area - fills space below toolbar */}
       <div className="absolute inset-0 top-12">
-        <Suspense
-          fallback={
-            <div className="flex h-full items-center justify-center bg-muted">
-              <div className="text-center">
-                <LoadingSpinner size="lg" className="mx-auto" />
-                <p className="mt-4 text-sm text-muted-foreground">
-                  Loading 3D Editor...
-                </p>
+        <ErrorBoundary>
+          <Suspense
+            fallback={
+              <div className="flex h-full items-center justify-center bg-muted">
+                <div className="text-center">
+                  <LoadingSpinner size="lg" className="mx-auto" />
+                  <p className="mt-4 text-sm text-muted-foreground">
+                    Loading 3D Editor...
+                  </p>
+                </div>
               </div>
-            </div>
-          }
-        >
-          <SceneCanvas />
-        </Suspense>
+            }
+          >
+            <SceneCanvas />
+          </Suspense>
+        </ErrorBoundary>
       </div>
 
       {/* Side panels */}
