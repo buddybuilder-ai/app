@@ -76,6 +76,7 @@ export function FurniturePanel() {
       dimensions: { ...item.dimensions },
       is_essential: item.is_essential,
       feng_shui_notes: [],
+      model_url: item.model_url ?? undefined,
     })
   }
 

@@ -38,6 +38,7 @@ export function useFurnitureDrag() {
         dimensions: { ...catalogItem.dimensions },
         is_essential: catalogItem.is_essential,
         feng_shui_notes: [],
+        model_url: catalogItem.model_url ?? undefined,
       })
     },
     [addFurniture, room.width, room.depth]
