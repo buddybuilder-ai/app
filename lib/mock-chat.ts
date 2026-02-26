@@ -1,5 +1,5 @@
 import type { PlacedFurnitureItem } from "@/types/editor"
-import type { ChatMode } from "@/types/chat"
+import type { ChatMode, ReasoningStep } from "@/types/chat"
 
 interface MockResponse {
   answer: string
@@ -10,6 +10,8 @@ interface MockResponse {
     chi_flow: number
     sha_chi_avoidance: number
   }
+  reasoning?: string
+  reasoningSteps?: ReasoningStep[]
 }
 
 // Studio apartment layout - optimized for 6x4m room
@@ -286,6 +288,35 @@ Mini Fridge เก็บขนมไว้กินยามค่ำคืน
 กดปุ่มข้างล่างเอาไปใส่ Canvas เลยยย~ 🔥`,
 }
 
+const STUDIO_REASONING = `วิเคราะห์ข้อมูลห้องขนาด 6x4 เมตร ประเภท Studio Apartment...
+พิจารณาหลักฮวงจุ้ย Command Position สำหรับเตียงและโต๊ะทำงาน...
+คำนวณ Chi Flow โดยให้ทางเดินกว้างอย่างน้อย 80 ซม....
+ตรวจสอบ Sha Chi จากตำแหน่งประตูและหน้าต่าง...
+จัดสมดุลธาตุทั้ง 5 ด้วยวัสดุและสีของเฟอร์นิเจอร์...`
+
+const STUDIO_REASONING_STEPS: ReasoningStep[] = [
+  {
+    label: "วิเคราะห์ขนาดห้อง",
+    content:
+      "ห้อง 6x4 เมตร (24 ตร.ม.) — จัดเป็น Studio Apartment ขนาดเล็ก ต้องแบ่งโซนอย่างชาญฉลาด ใช้ multi-functional furniture",
+  },
+  {
+    label: "ตรวจสอบหลักฮวงจุ้ย",
+    content:
+      "Command Position: เตียงและโต๊ะทำงานต้องหันหน้าเข้าหาประตู แต่ไม่ตรงกับประตู\nSha Chi: หลีกเลี่ยงลมตรงจากประตูถึงหน้าต่าง\nChi Flow: เว้นทางเดินอย่างน้อย 80 ซม.",
+  },
+  {
+    label: "วางผังโซน 5 โซน",
+    content:
+      "1) Sleeping Zone — มุมซ้ายบน ห่างจากประตู\n2) Living Zone — กลางห้อง\n3) Work Zone — ใกล้หน้าต่างรับแสง\n4) Kitchen Zone — ใกล้ประตูเข้า\n5) Storage Zone — ชิดผนังด้านข้าง",
+  },
+  {
+    label: "คำนวณคะแนนฮวงจุ้ย",
+    content:
+      "Command Position: 24/30 — เตียงและโต๊ะมีตำแหน่งดี\nFive Elements: 18/20 — มีต้นไม้ (Wood) และโคมไฟ (Fire)\nChi Flow: 22/25 — ทางเดินสะดวกดี\nSha Chi Avoidance: 23/25 — ไม่มีลมตรงสู่เตียง\nรวม: 87/100",
+  },
+]
+
 export async function getMockChatResponse(
   text: string,
   mode: ChatMode
@@ -297,5 +328,7 @@ export async function getMockChatResponse(
     answer: STUDIO_MODE_ANSWERS[mode],
     items: STUDIO_MOCK_LAYOUT,
     fengShuiScore: STUDIO_MOCK_SCORE,
+    reasoning: STUDIO_REASONING,
+    reasoningSteps: STUDIO_REASONING_STEPS,
   }
 }

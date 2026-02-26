@@ -12,6 +12,11 @@ export type ChatRequest = z.infer<typeof ChatRequestSchema>
 export type ChatResponse = z.infer<typeof ChatResponseSchema>
 export type SourceDocument = z.infer<typeof SourceDocumentSchema>
 
+export interface ReasoningStep {
+  label: string
+  content: string
+}
+
 export interface ChatMessage {
   id: string
   role: "user" | "assistant"
@@ -20,6 +25,9 @@ export interface ChatMessage {
   timestamp: Date
   sources?: SourceDocument[]
   layoutAction?: LayoutActionData
+  reasoning?: string
+  reasoningSteps?: ReasoningStep[]
+  isThinking?: boolean
 }
 
 export interface LayoutActionData {

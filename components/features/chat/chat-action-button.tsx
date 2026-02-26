@@ -30,7 +30,7 @@ export function ChatActionButton({ action }: ChatActionButtonProps) {
       onClick={handleApply}
     >
       <Wand2 className="h-3 w-3" />
-      Apply to Canvas
+      นำไปใช้บน Canvas
     </Button>
   )
 }
