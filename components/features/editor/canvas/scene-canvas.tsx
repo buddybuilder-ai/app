@@ -5,7 +5,7 @@ import { LightingRig } from "./lighting-rig"
 import { CameraControls } from "./camera-controls"
 import { GridHelper } from "./grid-helper"
 import { RoomMesh } from "./room-mesh"
-import { FurnitureMesh } from "./furniture-mesh"
+import { FurnitureMeshWithGizmo } from "./furniture-mesh"
 import { useEditorStore } from "@/stores/editor-store"
 import { useFurnitureDrag } from "@/hooks/use-furniture-drag"
 
@@ -16,7 +16,7 @@ function FurnitureLayer() {
   return (
     <group onPointerMissed={() => setSelectedId(null)}>
       {furnitureItems.map((item) => (
-        <FurnitureMesh key={item.instanceId} item={item} />
+        <FurnitureMeshWithGizmo key={item.instanceId} item={item} />
       ))}
     </group>
   )
@@ -24,12 +24,28 @@ function FurnitureLayer() {
 
 export function SceneCanvas() {
   const { handleCanvasDrop, handleCanvasDragOver } = useFurnitureDrag()
+  const activeTool = useEditorStore((s) => s.activeTool)
+
+  // Get cursor style based on active tool
+  const getCursorStyle = () => {
+    switch (activeTool) {
+      case "move":
+        return "move"
+      case "rotate":
+        return "grab"
+      case "delete":
+        return "not-allowed"
+      default:
+        return "default"
+    }
+  }
 
   return (
     <div
       className="absolute inset-0"
       onDrop={handleCanvasDrop}
       onDragOver={handleCanvasDragOver}
+      style={{ cursor: getCursorStyle() }}
     >
       <Canvas
         shadows

@@ -1,26 +1,25 @@
 "use client"
 
-import { useEffect, useRef } from "react"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { Bot } from "lucide-react"
+import {
+  ChatContainerRoot,
+  ChatContainerContent,
+  ChatContainerScrollAnchor,
+} from "@/components/ui/chat-container"
 import { useChatStore } from "@/stores/chat-store"
 import { ChatMessage } from "./chat-message"
 
 export function ChatMessageList() {
   const messages = useChatStore((s) => s.messages)
   const isLoading = useChatStore((s) => s.isLoading)
-  const bottomRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [messages.length, isLoading])
 
   return (
-    <ScrollArea className="flex-1">
-      <div className="space-y-3 p-3">
+    <ChatContainerRoot className="flex-1">
+      <ChatContainerContent className="space-y-6 overflow-y-auto px-4 py-6">
         {messages.length === 0 && (
           <div className="py-8 text-center">
             <p className="text-sm text-muted-foreground">
-              Ask me about interior design, Feng Shui, or furniture layout!
+              ถามเรื่องการออกแบบภายใน ฮวงจุ้ย หรือการจัดวางเฟอร์นิเจอร์ได้เลย!
             </p>
           </div>
         )}
@@ -30,11 +29,13 @@ export function ChatMessageList() {
         ))}
 
         {isLoading && (
-          <div className="flex gap-2">
-            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted">
-              <span className="text-xs text-muted-foreground">...</span>
+          <div className="mx-auto flex w-full max-w-3xl items-start gap-2 px-0 md:px-6">
+            <div className="flex items-center gap-2 px-2">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-muted">
+                <Bot className="h-3.5 w-3.5 text-muted-foreground" />
+              </div>
             </div>
-            <div className="rounded-lg bg-muted px-3 py-2">
+            <div className="rounded-lg bg-transparent px-2 py-2">
               <div className="flex gap-1">
                 <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground [animation-delay:0ms]" />
                 <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground [animation-delay:150ms]" />
@@ -44,8 +45,8 @@ export function ChatMessageList() {
           </div>
         )}
 
-        <div ref={bottomRef} />
-      </div>
-    </ScrollArea>
+        <ChatContainerScrollAnchor />
+      </ChatContainerContent>
+    </ChatContainerRoot>
   )
 }

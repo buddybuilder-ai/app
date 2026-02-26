@@ -18,14 +18,13 @@ export function ChatModeSelector() {
     <Tabs
       value={mode}
       onValueChange={(v) => setMode(v as ChatMode)}
-      className="w-full"
     >
-      <TabsList className="h-8 w-full">
+      <TabsList className="h-7">
         {MODES.map((m) => (
           <TabsTrigger
             key={m.value}
             value={m.value}
-            className="flex-1 text-xs"
+            className="px-2.5 text-xs"
           >
             {m.label}
           </TabsTrigger>
