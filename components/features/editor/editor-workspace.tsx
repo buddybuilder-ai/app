@@ -8,6 +8,7 @@ import { PropertiesPanel } from "./panels/properties-panel"
 import { FengShuiPanel } from "./panels/feng-shui-panel"
 import { RoomSettingsPanel } from "./panels/room-settings-panel"
 import { ChatWidget } from "@/components/features/chat/chat-widget"
+import { PipelinePanel } from "./panels/pipeline-panel"
 import { ErrorBoundary } from "@/components/shared/error-boundary"
 import { LoadingSpinner } from "@/components/shared/loading-spinner"
 import { useProject } from "@/hooks/use-project"
@@ -54,6 +55,9 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
       {/* Right panels */}
       <FengShuiPanel />
       <RoomSettingsPanel />
+
+      {/* Pipeline progress */}
+      <PipelinePanel />
 
       {/* Chat */}
       <ChatWidget />
