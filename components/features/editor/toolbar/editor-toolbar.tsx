@@ -69,7 +69,7 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
   }
 
   return (
-    <div className="fixed left-0 right-0 top-0 z-30 flex h-12 items-center gap-2 border-b bg-background px-4">
+    <div className="fixed left-0 right-0 top-0 z-30 flex h-10 items-center gap-1 border-b bg-background px-2 lg:h-12 lg:gap-2 lg:px-4">
       <Link
         href="/projects"
         className="flex items-center gap-2 text-sm font-bold"
@@ -146,7 +146,7 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
             ) : (
               <Eye className="h-4 w-4" />
             )}
-            <span className="text-xs">{viewMode.toUpperCase()}</span>
+            <span className="hidden text-xs lg:inline">{viewMode.toUpperCase()}</span>
           </Toggle>
         </TooltipTrigger>
         <TooltipContent>Toggle View Mode</TooltipContent>
@@ -186,12 +186,12 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
             {isRunning ? (
               <>
                 <Square className="h-3.5 w-3.5" />
-                <span className="text-xs">หยุด</span>
+                <span className="hidden text-xs lg:inline">หยุด</span>
               </>
             ) : (
               <>
                 <Sparkles className="h-3.5 w-3.5" />
-                <span className="text-xs">สร้าง Layout</span>
+                <span className="hidden text-xs lg:inline">สร้าง Layout</span>
               </>
             )}
           </Button>
@@ -212,7 +212,7 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
             onClick={handleSave}
           >
             <Save className="h-4 w-4" />
-            <span className="text-xs">Save</span>
+            <span className="hidden text-xs lg:inline">Save</span>
           </Button>
         </TooltipTrigger>
         <TooltipContent>Save Project</TooltipContent>

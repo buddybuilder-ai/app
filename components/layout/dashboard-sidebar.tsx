@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { FolderOpen, Settings, PanelLeftClose, PanelLeft } from "lucide-react"
+import { FolderOpen, Settings, PanelLeftClose, PanelLeft, X } from "lucide-react"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -14,7 +14,11 @@ const navItems = [
   { href: "/settings", label: "Settings", icon: Settings },
 ]
 
-export function DashboardSidebar() {
+interface DashboardSidebarProps {
+  onClose?: () => void
+}
+
+export function DashboardSidebar({ onClose }: DashboardSidebarProps) {
   const pathname = usePathname()
   const [collapsed, setCollapsed] = useState(false)
 
@@ -27,18 +31,32 @@ export function DashboardSidebar() {
     >
       <div className="flex h-16 items-center justify-between px-4">
         {!collapsed && <Logo />}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setCollapsed(!collapsed)}
-          className={cn(collapsed && "mx-auto")}
-        >
-          {collapsed ? (
-            <PanelLeft className="h-4 w-4" />
-          ) : (
-            <PanelLeftClose className="h-4 w-4" />
+        <div className="flex items-center gap-1">
+          {/* Close button — mobile drawer only */}
+          {onClose && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onClose}
+              className="lg:hidden"
+            >
+              <X className="h-4 w-4" />
+            </Button>
           )}
-        </Button>
+          {/* Collapse toggle — desktop only */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setCollapsed(!collapsed)}
+            className={cn("hidden lg:flex", collapsed && "mx-auto")}
+          >
+            {collapsed ? (
+              <PanelLeft className="h-4 w-4" />
+            ) : (
+              <PanelLeftClose className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
       </div>
 
       <Separator />

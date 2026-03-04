@@ -24,6 +24,14 @@ export type SSEEventType =
   | "layout_updated"
   | "pipeline_completed"
   | "pipeline_failed"
+  // Chat stream events
+  | "router_classified"
+  | "modifier_started"
+  | "modifier_updated"
+  | "modifier_completed"
+  | "mode_changed"
+  | "answer"
+  | "clarification_needed"
 
 export interface PipelineSSEEvent {
   type: SSEEventType
@@ -67,6 +75,7 @@ export interface LayoutItem {
   }
   is_essential: boolean
   feng_shui_notes: string[]
+  model_url?: string
 }
 
 export interface StepProgressData {
@@ -99,6 +108,34 @@ export interface PipelineCompletedData {
   explanation: string
   total_duration_ms: number
   error: string | null
+}
+
+export interface RouterClassifiedData {
+  intent: "new_layout" | "modify" | "explain" | "question" | "set_mode"
+  confidence: number
+  extracted_params: Record<string, unknown>
+}
+
+export interface ModifierCompletedData {
+  success: boolean
+  layout_items: LayoutItem[]
+  explanation: string
+}
+
+export interface ClarificationQuestion {
+  id: string
+  question: string
+  question_type: "multiple_choice" | "yes_no" | "open_ended" | "numeric"
+  priority: "required" | "recommended" | "optional"
+  options: string[]
+  default_value: string | null
+  context: string
+  category: string
+}
+
+export interface ClarificationNeededData {
+  questions: ClarificationQuestion[]
+  original_message: string
 }
 
 // Labels for each pipeline step (Thai)

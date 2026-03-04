@@ -6,6 +6,7 @@ import type {
   SourceDocumentSchema,
 } from "./schemas/chat"
 import type { PlacedFurnitureItem } from "./editor"
+import type { ClarificationQuestion } from "./pipeline"
 
 export type ChatMode = z.infer<typeof ChatModeSchema>
 export type ChatRequest = z.infer<typeof ChatRequestSchema>
@@ -28,6 +29,7 @@ export interface ChatMessage {
   reasoning?: string
   reasoningSteps?: ReasoningStep[]
   isThinking?: boolean
+  clarificationQuestions?: ClarificationQuestion[]
 }
 
 export interface LayoutActionData {

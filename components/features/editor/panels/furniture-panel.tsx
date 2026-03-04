@@ -90,7 +90,7 @@ export function FurniturePanel() {
   // Collapsed state - icon strip
   if (!isOpen) {
     return (
-      <div className="fixed left-0 top-12 bottom-0 z-20 flex w-12 flex-col items-center border-r bg-background pt-2">
+      <div className="fixed left-0 top-12 bottom-0 z-20 hidden w-12 flex-col items-center border-r bg-background pt-2 lg:flex">
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
@@ -110,7 +110,7 @@ export function FurniturePanel() {
 
   return (
     <div
-      className="fixed left-0 top-12 bottom-0 z-20 flex w-72 flex-col border-r bg-background"
+      className="fixed left-0 top-12 bottom-0 z-20 hidden w-72 flex-col border-r bg-background lg:flex"
       onDragOver={(e) => e.preventDefault()}
       onDrop={handleDrop}
     >

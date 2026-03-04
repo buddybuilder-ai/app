@@ -42,7 +42,7 @@ export function PropertiesPanel() {
   }
 
   return (
-    <div className="fixed right-0 top-12 bottom-0 z-20 flex w-80 flex-col border-l bg-background">
+    <div className="fixed right-0 top-12 bottom-0 z-20 hidden w-80 flex-col border-l bg-background lg:flex">
       {/* Header */}
       <div className="flex items-center justify-between border-b px-4 py-2">
         <h2 className="text-sm font-semibold">{item.name}</h2>
