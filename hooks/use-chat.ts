@@ -171,6 +171,7 @@ export function useChat() {
         setLoading(false)
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- handleEvent uses stable store actions
     [
       addMessage,
       updateMessage,

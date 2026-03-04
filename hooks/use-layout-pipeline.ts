@@ -140,6 +140,7 @@ export function useLayoutPipeline() {
         }
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- handleEvent/failPipeline use stable store actions
     [room, isRunning]
   )
 

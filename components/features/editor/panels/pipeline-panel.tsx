@@ -23,7 +23,6 @@ export function PipelinePanel() {
   const steps = usePipelineStore((s) => s.steps)
   const conflicts = usePipelineStore((s) => s.conflicts)
   const repairActions = usePipelineStore((s) => s.repairActions)
-  const explanation = usePipelineStore((s) => s.explanation)
   const fengShuiScore = usePipelineStore((s) => s.fengShuiScore)
   const totalDurationMs = usePipelineStore((s) => s.totalDurationMs)
   const error = usePipelineStore((s) => s.error)

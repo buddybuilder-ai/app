@@ -27,7 +27,6 @@ interface ChatMessageProps {
 
 export function ChatMessage({ message, onSubmitClarification }: ChatMessageProps) {
   const [sourcesOpen, setSourcesOpen] = useState(false)
-  const isUser = message.role === "user"
   const isAssistant = message.role === "assistant"
 
   return (

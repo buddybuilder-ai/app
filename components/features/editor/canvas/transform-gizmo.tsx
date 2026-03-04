@@ -219,7 +219,7 @@ export function TransformGizmo({ item }: TransformGizmoProps) {
     }
     
     document.body.style.cursor = "grabbing"
-  }, [item, camera, raycaster, gl])
+  }, [item, camera, raycaster, gl, setIsGizmoDragging])
 
   const handlePointerMove = useCallback((e: PointerEvent) => {
     if (!isDraggingRef.current || !activeAxisRef.current) return
@@ -238,7 +238,7 @@ export function TransformGizmo({ item }: TransformGizmoProps) {
       const axis = activeAxisRef.current
       
       // Calculate new position based on mouse position projected onto axis
-      let newPos = { ...initialPosition.current }
+      const newPos = { ...initialPosition.current }
       
       // Get the current axis component from the intersection
       // and calculate the offset from the start point

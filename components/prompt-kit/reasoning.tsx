@@ -46,10 +46,25 @@ function Reasoning({
   isStreaming,
 }: ReasoningProps) {
   const [internalOpen, setInternalOpen] = useState(false)
-  const [wasAutoOpened, setWasAutoOpened] = useState(false)
+  const [prevStreaming, setPrevStreaming] = useState(false)
 
   const isControlled = open !== undefined
-  const isOpen = isControlled ? open : internalOpen
+  let isOpen = isControlled ? open : internalOpen
+
+  // Auto-open/close based on streaming state changes (derived from props)
+  if (isStreaming && !prevStreaming) {
+    setPrevStreaming(true)
+    if (!isControlled) {
+      setInternalOpen(true)
+      isOpen = true
+    }
+  } else if (!isStreaming && prevStreaming) {
+    setPrevStreaming(false)
+    if (!isControlled) {
+      setInternalOpen(false)
+      isOpen = false
+    }
+  }
 
   const handleOpenChange = (newOpen: boolean) => {
     if (!isControlled) {
@@ -57,18 +72,6 @@ function Reasoning({
     }
     onOpenChange?.(newOpen)
   }
-
-  useEffect(() => {
-    if (isStreaming && !wasAutoOpened) {
-      if (!isControlled) setInternalOpen(true)
-      setWasAutoOpened(true)
-    }
-
-    if (!isStreaming && wasAutoOpened) {
-      if (!isControlled) setInternalOpen(false)
-      setWasAutoOpened(false)
-    }
-  }, [isStreaming, wasAutoOpened, isControlled])
 
   return (
     <ReasoningContext.Provider
@@ -129,21 +132,24 @@ function ReasoningContent({
 }: ReasoningContentProps) {
   const contentRef = useRef<HTMLDivElement>(null)
   const innerRef = useRef<HTMLDivElement>(null)
+  const [maxHeight, setMaxHeight] = useState<string>("0px")
   const { isOpen } = useReasoningContext()
 
   useEffect(() => {
     if (!contentRef.current || !innerRef.current) return
 
     const observer = new ResizeObserver(() => {
-      if (contentRef.current && innerRef.current && isOpen) {
-        contentRef.current.style.maxHeight = `${innerRef.current.scrollHeight}px`
+      if (innerRef.current && isOpen) {
+        setMaxHeight(`${innerRef.current.scrollHeight}px`)
       }
     })
 
     observer.observe(innerRef.current)
 
     if (isOpen) {
-      contentRef.current.style.maxHeight = `${innerRef.current.scrollHeight}px`
+      setMaxHeight(`${innerRef.current.scrollHeight}px`)
+    } else {
+      setMaxHeight("0px")
     }
 
     return () => observer.disconnect()
@@ -162,9 +168,7 @@ function ReasoningContent({
         "overflow-hidden transition-[max-height] duration-150 ease-out",
         className
       )}
-      style={{
-        maxHeight: isOpen ? contentRef.current?.scrollHeight : "0px",
-      }}
+      style={{ maxHeight }}
       {...props}
     >
       <div

@@ -121,7 +121,7 @@ function GLTFModel({
       clonedScene: clone, 
       scale: { x: scaleX, y: scaleY, z: scaleZ } 
     }
-  }, [scene, targetDimensions])
+  }, [scene, targetDimensions, url])
   
   // Apply or remove selection highlight to all meshes
   useEffect(() => {
