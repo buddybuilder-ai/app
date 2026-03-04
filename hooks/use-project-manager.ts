@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useEffect } from "react"
+import { useState, useCallback } from "react"
 import type { RoomConfig } from "@/types/editor"
 
 export interface ProjectMeta {
@@ -14,17 +14,18 @@ export interface ProjectMeta {
 const INDEX_KEY = "buddybuilder-projects-index"
 const PROJECT_PREFIX = "buddybuilder-project-"
 
-export function useProjectManager() {
-  const [projects, setProjects] = useState<ProjectMeta[]>([])
+function loadProjects(): ProjectMeta[] {
+  try {
+    const raw = localStorage.getItem(INDEX_KEY)
+    if (raw) return JSON.parse(raw)
+  } catch {
+    // ignore parse errors
+  }
+  return []
+}
 
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(INDEX_KEY)
-      if (raw) setProjects(JSON.parse(raw))
-    } catch {
-      // ignore parse errors
-    }
-  }, [])
+export function useProjectManager() {
+  const [projects, setProjects] = useState<ProjectMeta[]>(loadProjects)
 
   const saveIndex = useCallback((list: ProjectMeta[]) => {
     localStorage.setItem(INDEX_KEY, JSON.stringify(list))

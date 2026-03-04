@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useRef } from "react"
+import { useCallback, useRef, useState } from "react"
 import { useEditorStore } from "@/stores/editor-store"
 import type { FurnitureInstance } from "@/types/editor"
 
@@ -9,6 +9,8 @@ const MAX_HISTORY = 50
 export function useUndoRedo() {
   const pastRef = useRef<FurnitureInstance[][]>([])
   const futureRef = useRef<FurnitureInstance[][]>([])
+  const [canUndo, setCanUndo] = useState(false)
+  const [canRedo, setCanRedo] = useState(false)
 
   const furnitureItems = useEditorStore((s) => s.furnitureItems)
   const setFurnitureItems = useEditorStore((s) => s.setFurnitureItems)
@@ -19,6 +21,8 @@ export function useUndoRedo() {
       furnitureItems.map((item) => ({ ...item })),
     ]
     futureRef.current = []
+    setCanUndo(true)
+    setCanRedo(false)
   }, [furnitureItems])
 
   const undo = useCallback(() => {
@@ -31,6 +35,8 @@ export function useUndoRedo() {
       furnitureItems.map((item) => ({ ...item })),
     ]
     setFurnitureItems(previous)
+    setCanUndo(pastRef.current.length > 0)
+    setCanRedo(true)
   }, [furnitureItems, setFurnitureItems])
 
   const redo = useCallback(() => {
@@ -43,13 +49,15 @@ export function useUndoRedo() {
       furnitureItems.map((item) => ({ ...item })),
     ]
     setFurnitureItems(next)
+    setCanUndo(true)
+    setCanRedo(futureRef.current.length > 0)
   }, [furnitureItems, setFurnitureItems])
 
   return {
     undo,
     redo,
     saveSnapshot,
-    canUndo: pastRef.current.length > 0,
-    canRedo: futureRef.current.length > 0,
+    canUndo,
+    canRedo,
   }
 }

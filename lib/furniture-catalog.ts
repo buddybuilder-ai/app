@@ -1,7 +1,7 @@
 import type { FurnitureCatalogItem } from "@/types/furniture"
 
 export const FURNITURE_CATALOG: FurnitureCatalogItem[] = [
-  // Bedroom
+  // QueenBedroom
   {
     id: "bed-queen",
     name: "Queen Bed",
@@ -10,6 +10,7 @@ export const FURNITURE_CATALOG: FurnitureCatalogItem[] = [
     min_clearance: 0.6,
     element: "wood",
     is_essential: true,
+    model_url: "/furniture_models/queen_bed.glb",
   },
   {
     id: "wardrobe-large",
@@ -19,6 +20,8 @@ export const FURNITURE_CATALOG: FurnitureCatalogItem[] = [
     min_clearance: 0.8,
     element: "wood",
     is_essential: true,
+    model_url: "/furniture_models/large_wardrobe.glb",
+    
   },
   {
     id: "nightstand",
@@ -28,6 +31,7 @@ export const FURNITURE_CATALOG: FurnitureCatalogItem[] = [
     min_clearance: 0.3,
     element: "wood",
     is_essential: false,
+    model_url: "/furniture_models/nightstand.glb",
   },
   {
     id: "dresser",
@@ -47,6 +51,7 @@ export const FURNITURE_CATALOG: FurnitureCatalogItem[] = [
     min_clearance: 0.6,
     element: "earth",
     is_essential: true,
+    model_url: "/furniture_models/3_seat_sofa.glb",
   },
   {
     id: "armchair",
@@ -65,6 +70,7 @@ export const FURNITURE_CATALOG: FurnitureCatalogItem[] = [
     min_clearance: 0.4,
     element: "wood",
     is_essential: false,
+    model_url: "/furniture_models/coffee_table.glb",
   },
   {
     id: "tv-stand",
@@ -74,6 +80,7 @@ export const FURNITURE_CATALOG: FurnitureCatalogItem[] = [
     min_clearance: 0.6,
     element: "metal",
     is_essential: false,
+    model_url: "/furniture_models/tv_stand.glb",
   },
   {
     id: "bookshelf",
@@ -83,6 +90,7 @@ export const FURNITURE_CATALOG: FurnitureCatalogItem[] = [
     min_clearance: 0.5,
     element: "wood",
     is_essential: false,
+    model_url: "/furniture_models/bookshelf.glb",
   },
   // Office
   {
@@ -93,6 +101,7 @@ export const FURNITURE_CATALOG: FurnitureCatalogItem[] = [
     min_clearance: 0.8,
     element: "wood",
     is_essential: true,
+    model_url: "/furniture_models/work_desk.glb",
   },
   {
     id: "office-chair",
@@ -102,6 +111,7 @@ export const FURNITURE_CATALOG: FurnitureCatalogItem[] = [
     min_clearance: 0.6,
     element: "metal",
     is_essential: true,
+    model_url: "/furniture_models/office_chair_v2.glb",
   },
   // Dining
   {
@@ -112,6 +122,7 @@ export const FURNITURE_CATALOG: FurnitureCatalogItem[] = [
     min_clearance: 0.8,
     element: "wood",
     is_essential: true,
+    model_url: "/furniture_models/dining_table.glb",
   },
   {
     id: "dining-chair",
@@ -121,6 +132,7 @@ export const FURNITURE_CATALOG: FurnitureCatalogItem[] = [
     min_clearance: 0.5,
     element: "wood",
     is_essential: false,
+    model_url: "/furniture_models/dining_chair.glb",
   },
   // General
   {
@@ -131,6 +143,7 @@ export const FURNITURE_CATALOG: FurnitureCatalogItem[] = [
     min_clearance: 0.2,
     element: "wood",
     is_essential: false,
+    model_url: "/furniture_models/indoor_plant.glb",
   },
   {
     id: "floor-lamp",
@@ -140,6 +153,7 @@ export const FURNITURE_CATALOG: FurnitureCatalogItem[] = [
     min_clearance: 0.2,
     element: "fire",
     is_essential: false,
+    model_url: "/furniture_models/floor_lamp.glb",
   },
   {
     id: "area-rug",
@@ -149,6 +163,7 @@ export const FURNITURE_CATALOG: FurnitureCatalogItem[] = [
     min_clearance: 0,
     element: "earth",
     is_essential: false,
+    model_url: "/furniture_models/area_rug.glb",
   },
   // Studio Apartment
   {
@@ -159,6 +174,7 @@ export const FURNITURE_CATALOG: FurnitureCatalogItem[] = [
     min_clearance: 0.6,
     element: "earth",
     is_essential: true,
+    model_url: "/furniture_models/sofa_bed.glb",
   },
   {
     id: "compact-wardrobe",
@@ -168,6 +184,7 @@ export const FURNITURE_CATALOG: FurnitureCatalogItem[] = [
     min_clearance: 0.7,
     element: "wood",
     is_essential: true,
+    model_url: "/furniture_models/compact_wardrobe.glb",
   },
   {
     id: "room-divider",
@@ -177,6 +194,7 @@ export const FURNITURE_CATALOG: FurnitureCatalogItem[] = [
     min_clearance: 0.3,
     element: "wood",
     is_essential: false,
+    model_url: "/furniture_models/room_divider.glb",
   },
   {
     id: "folding-desk",
@@ -186,6 +204,7 @@ export const FURNITURE_CATALOG: FurnitureCatalogItem[] = [
     min_clearance: 0.7,
     element: "wood",
     is_essential: false,
+    model_url: "/furniture_models/folding_desk.glb",
   },
   {
     id: "compact-dining-set",
@@ -195,6 +214,7 @@ export const FURNITURE_CATALOG: FurnitureCatalogItem[] = [
     min_clearance: 0.6,
     element: "wood",
     is_essential: false,
+    model_url: "/furniture_models/compact_dining_set.glb",
   },
   {
     id: "kitchen-counter",
@@ -204,6 +224,7 @@ export const FURNITURE_CATALOG: FurnitureCatalogItem[] = [
     min_clearance: 0.8,
     element: "metal",
     is_essential: true,
+    model_url: "/furniture_models/kitchen_counter.glb",
   },
   {
     id: "mini-fridge",
@@ -213,6 +234,7 @@ export const FURNITURE_CATALOG: FurnitureCatalogItem[] = [
     min_clearance: 0.5,
     element: "metal",
     is_essential: true,
+    model_url: "/furniture_models/mini_fridge.glb",
   },
   {
     id: "microwave-stand",
@@ -222,6 +244,7 @@ export const FURNITURE_CATALOG: FurnitureCatalogItem[] = [
     min_clearance: 0.4,
     element: "metal",
     is_essential: false,
+    model_url: "/furniture_models/microwave_stand.glb",
   },
   {
     id: "shoe-cabinet",
@@ -231,6 +254,7 @@ export const FURNITURE_CATALOG: FurnitureCatalogItem[] = [
     min_clearance: 0.5,
     element: "wood",
     is_essential: false,
+    model_url: "/furniture_models/shoe_cabinet.glb",
   },
   {
     id: "coat-rack",
@@ -240,6 +264,7 @@ export const FURNITURE_CATALOG: FurnitureCatalogItem[] = [
     min_clearance: 0.3,
     element: "metal",
     is_essential: false,
+    model_url: "/furniture_models/coat_rack.glb",
   },
 ]
 

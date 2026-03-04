@@ -31,6 +31,9 @@ interface EditorState {
 
   fengShuiScore: FengShuiScoreBreakdown | null
   setFengShuiScore: (score: FengShuiScoreBreakdown | null) => void
+
+  isGizmoDragging: boolean
+  setIsGizmoDragging: (dragging: boolean) => void
 }
 
 export const useEditorStore = create<EditorState>((set) => ({
@@ -81,4 +84,7 @@ export const useEditorStore = create<EditorState>((set) => ({
 
   fengShuiScore: null,
   setFengShuiScore: (score) => set({ fengShuiScore: score }),
+
+  isGizmoDragging: false,
+  setIsGizmoDragging: (dragging) => set({ isGizmoDragging: dragging }),
 }))

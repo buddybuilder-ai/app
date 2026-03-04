@@ -1,8 +1,11 @@
 "use client"
 
 import { OrbitControls } from "@react-three/drei"
+import { useEditorStore } from "@/stores/editor-store"
 
 export function CameraControls() {
+  const isGizmoDragging = useEditorStore((s) => s.isGizmoDragging)
+
   return (
     <OrbitControls
       makeDefault
@@ -12,6 +15,7 @@ export function CameraControls() {
       maxDistance={20}
       enableDamping
       dampingFactor={0.05}
+      enabled={!isGizmoDragging}
     />
   )
 }

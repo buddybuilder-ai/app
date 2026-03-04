@@ -13,4 +13,5 @@ export type ViewMode = "2d" | "3d"
 
 export interface FurnitureInstance extends PlacedFurnitureItem {
   instanceId: string
+  model_url?: string  // เพิ่มบรรทัดนี้
 }
