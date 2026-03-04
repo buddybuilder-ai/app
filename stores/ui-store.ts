@@ -1,6 +1,7 @@
 import { create } from "zustand"
 
 type Locale = "en" | "th"
+export type BottomSheet = "furniture" | "properties" | "feng-shui" | "settings" | "chat"
 
 interface UIState {
   furniturePanelOpen: boolean
@@ -8,12 +9,14 @@ interface UIState {
   fengShuiPanelOpen: boolean
   roomSettingsPanelOpen: boolean
   locale: Locale
+  activeBottomSheet: BottomSheet | null
 
   toggleFurniturePanel: () => void
   togglePropertiesPanel: () => void
   toggleFengShuiPanel: () => void
   toggleRoomSettingsPanel: () => void
   setLocale: (locale: Locale) => void
+  setActiveBottomSheet: (sheet: BottomSheet | null) => void
 }
 
 export const useUIStore = create<UIState>((set) => ({
@@ -22,6 +25,7 @@ export const useUIStore = create<UIState>((set) => ({
   fengShuiPanelOpen: false,
   roomSettingsPanelOpen: false,
   locale: "th",
+  activeBottomSheet: null,
 
   toggleFurniturePanel: () =>
     set((state) => ({ furniturePanelOpen: !state.furniturePanelOpen })),
@@ -42,4 +46,5 @@ export const useUIStore = create<UIState>((set) => ({
         : false,
     })),
   setLocale: (locale) => set({ locale }),
+  setActiveBottomSheet: (sheet) => set({ activeBottomSheet: sheet }),
 }))

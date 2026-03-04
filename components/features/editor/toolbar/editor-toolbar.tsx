@@ -12,6 +12,8 @@ import {
   Eye,
   Box,
   Settings2,
+  Sparkles,
+  Square,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Toggle } from "@/components/ui/toggle"
@@ -26,6 +28,7 @@ import { useUIStore } from "@/stores/ui-store"
 import { useProject } from "@/hooks/use-project"
 import { useUndoRedo } from "@/hooks/use-undo-redo"
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts"
+import { useLayoutPipeline } from "@/hooks/use-layout-pipeline"
 import type { ActiveTool } from "@/types/editor"
 import { toast } from "sonner"
 
@@ -54,6 +57,7 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
   const { save } = useProject(projectId)
   const { undo, redo, canUndo, canRedo } = useUndoRedo()
   useKeyboardShortcuts({ onUndo: undo, onRedo: redo })
+  const { generate, cancel, isRunning } = useLayoutPipeline()
 
   function handleSave() {
     const ok = save()
@@ -65,7 +69,7 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
   }
 
   return (
-    <div className="fixed left-0 right-0 top-0 z-30 flex h-12 items-center gap-2 border-b bg-background px-4">
+    <div className="fixed left-0 right-0 top-0 z-30 flex h-10 items-center gap-1 border-b bg-background px-2 lg:h-12 lg:gap-2 lg:px-4">
       <Link
         href="/projects"
         className="flex items-center gap-2 text-sm font-bold"
@@ -142,7 +146,7 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
             ) : (
               <Eye className="h-4 w-4" />
             )}
-            <span className="text-xs">{viewMode.toUpperCase()}</span>
+            <span className="hidden text-xs lg:inline">{viewMode.toUpperCase()}</span>
           </Toggle>
         </TooltipTrigger>
         <TooltipContent>Toggle View Mode</TooltipContent>
@@ -162,6 +166,41 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
         <TooltipContent>ตั้งค่าห้อง</TooltipContent>
       </Tooltip>
 
+      <Separator orientation="vertical" className="mx-1 h-6" />
+
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            size="sm"
+            className="h-8 gap-1.5"
+            variant={isRunning ? "destructive" : "default"}
+            onClick={() => {
+              if (isRunning) {
+                cancel()
+                toast.info("ยกเลิกการสร้าง Layout")
+              } else {
+                generate()
+              }
+            }}
+          >
+            {isRunning ? (
+              <>
+                <Square className="h-3.5 w-3.5" />
+                <span className="hidden text-xs lg:inline">หยุด</span>
+              </>
+            ) : (
+              <>
+                <Sparkles className="h-3.5 w-3.5" />
+                <span className="hidden text-xs lg:inline">สร้าง Layout</span>
+              </>
+            )}
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          {isRunning ? "หยุดสร้าง Layout" : "สร้าง Layout อัตโนมัติด้วย AI"}
+        </TooltipContent>
+      </Tooltip>
+
       <div className="flex-1" />
 
       <Tooltip>
@@ -173,7 +212,7 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
             onClick={handleSave}
           >
             <Save className="h-4 w-4" />
-            <span className="text-xs">Save</span>
+            <span className="hidden text-xs lg:inline">Save</span>
           </Button>
         </TooltipTrigger>
         <TooltipContent>Save Project</TooltipContent>

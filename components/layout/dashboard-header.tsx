@@ -8,13 +8,27 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Settings, LogOut } from "lucide-react"
+import { Settings, LogOut, Menu } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
-export function DashboardHeader() {
+interface DashboardHeaderProps {
+  onMenuClick?: () => void
+}
+
+export function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
   return (
-    <header className="flex h-16 items-center justify-between border-b px-6">
-      <div />
+    <header className="flex h-16 items-center justify-between border-b px-4 sm:px-6">
+      {/* Hamburger — mobile only */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="lg:hidden"
+        onClick={onMenuClick}
+      >
+        <Menu className="h-5 w-5" />
+      </Button>
+      <div className="hidden lg:block" />
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

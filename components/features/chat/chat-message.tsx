@@ -18,14 +18,15 @@ import {
 } from "@/components/prompt-kit/chain-of-thought"
 import type { ChatMessage as ChatMessageType } from "@/types/chat"
 import { ChatActionButton } from "./chat-action-button"
+import { ClarificationCard } from "./clarification-card"
 
 interface ChatMessageProps {
   message: ChatMessageType
+  onSubmitClarification?: (answers: Record<string, string>) => void
 }
 
-export function ChatMessage({ message }: ChatMessageProps) {
+export function ChatMessage({ message, onSubmitClarification }: ChatMessageProps) {
   const [sourcesOpen, setSourcesOpen] = useState(false)
-  const isUser = message.role === "user"
   const isAssistant = message.role === "assistant"
 
   return (
@@ -134,6 +135,18 @@ export function ChatMessage({ message }: ChatMessageProps) {
               <ChatActionButton action={message.layoutAction} />
             </div>
           )}
+
+          {!message.isThinking &&
+            message.clarificationQuestions &&
+            message.clarificationQuestions.length > 0 &&
+            onSubmitClarification && (
+              <div className="px-2 animate-in fade-in duration-500">
+                <ClarificationCard
+                  questions={message.clarificationQuestions}
+                  onSubmit={onSubmitClarification}
+                />
+              </div>
+            )}
 
           {!message.isThinking &&
             message.sources &&

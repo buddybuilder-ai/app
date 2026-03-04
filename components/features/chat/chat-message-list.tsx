@@ -7,11 +7,13 @@ import {
   ChatContainerScrollAnchor,
 } from "@/components/ui/chat-container"
 import { useChatStore } from "@/stores/chat-store"
+import { useChat } from "@/hooks/use-chat"
 import { ChatMessage } from "./chat-message"
 
 export function ChatMessageList() {
   const messages = useChatStore((s) => s.messages)
   const isLoading = useChatStore((s) => s.isLoading)
+  const { submitClarification } = useChat()
 
   return (
     <ChatContainerRoot className="flex-1">
@@ -25,7 +27,11 @@ export function ChatMessageList() {
         )}
 
         {messages.map((msg) => (
-          <ChatMessage key={msg.id} message={msg} />
+          <ChatMessage
+            key={msg.id}
+            message={msg}
+            onSubmitClarification={submitClarification}
+          />
         ))}
 
         {isLoading && (

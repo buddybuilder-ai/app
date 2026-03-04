@@ -121,7 +121,7 @@ function GLTFModel({
       clonedScene: clone, 
       scale: { x: scaleX, y: scaleY, z: scaleZ } 
     }
-  }, [scene, targetDimensions])
+  }, [scene, targetDimensions, url])
   
   // Apply or remove selection highlight to all meshes
   useEffect(() => {
@@ -193,7 +193,7 @@ export function FurnitureMesh({ item }: FurnitureMeshProps) {
         item.dimensions.height / 2 + item.pos_y,
         item.pos_z,
       ]}
-      rotation={[0, (item.rotation * Math.PI) / 180, 0]}
+      rotation={[0, ((item.rotation + (item.model_rotation_offset ?? 0)) * Math.PI) / 180, 0]}
     >
       {item.model_url ? (
         // Render 3D Model if model_url exists

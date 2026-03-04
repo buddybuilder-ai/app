@@ -1,5 +1,6 @@
 import { create } from "zustand"
 import type { ChatMessage, ChatMode } from "@/types/chat"
+import type { ClarificationQuestion } from "@/types/pipeline"
 
 export interface ChatSession {
   id: string
@@ -7,6 +8,13 @@ export interface ChatSession {
   messages: ChatMessage[]
   createdAt: Date
   updatedAt: Date
+}
+
+export interface PendingClarification {
+  messageId: string
+  originalMessage: string
+  questions: ClarificationQuestion[]
+  answers: Record<string, string>
 }
 
 interface ChatState {
@@ -19,6 +27,9 @@ interface ChatState {
   sessions: ChatSession[]
   activeSessionId: string | null
   showHistory: boolean
+
+  // Pending clarification (set when backend asks questions before pipeline)
+  pendingClarification: PendingClarification | null
 
   toggleOpen: () => void
   setOpen: (open: boolean) => void
@@ -33,6 +44,9 @@ interface ChatState {
   newSession: () => void
   switchSession: (sessionId: string) => void
   deleteSession: (sessionId: string) => void
+
+  // Clarification actions
+  setPendingClarification: (data: PendingClarification | null) => void
 }
 
 function generateSessionTitle(messages: ChatMessage[]): string {
@@ -51,6 +65,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
   sessions: [],
   activeSessionId: null,
   showHistory: false,
+
+  pendingClarification: null,
 
   toggleOpen: () => set((state) => ({ isOpen: !state.isOpen })),
   setOpen: (open) => set({ isOpen: open }),
@@ -138,4 +154,6 @@ export const useChatStore = create<ChatState>((set, get) => ({
         ...(isActive ? { messages: [], activeSessionId: null } : {}),
       }
     }),
+
+  setPendingClarification: (data) => set({ pendingClarification: data }),
 }))
