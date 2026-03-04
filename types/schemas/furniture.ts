@@ -32,5 +32,5 @@ export const PlacedFurnitureItemSchema = z.object({
   // Correction offset (degrees) for 3D models whose "forward" direction
   // doesn't match the system convention (rotation=0 → front faces +Z).
   // Added to rotation before rendering. Default 0 = no correction needed.
-  model_rotation_offset: z.number().int().default(0),
+  model_rotation_offset: z.number().int().default(0).optional(),
 })

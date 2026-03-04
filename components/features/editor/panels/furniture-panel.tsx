@@ -77,6 +77,7 @@ export function FurniturePanel() {
       is_essential: item.is_essential,
       feng_shui_notes: [],
       model_url: item.model_url ?? undefined,
+      model_rotation_offset: 0,
     })
   }
 

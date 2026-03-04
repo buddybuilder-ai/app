@@ -38,6 +38,7 @@ function layoutItemsToFurnitureInstances(
       feng_shui_notes: item.feng_shui_notes,
       instanceId: prev?.instanceId ?? `${item.id}-${Date.now()}-${i}`,
       model_url: item.model_url ?? prev?.model_url,
+      model_rotation_offset: prev?.model_rotation_offset ?? 0,
     }
   })
 }
