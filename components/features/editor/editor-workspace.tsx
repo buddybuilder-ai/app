@@ -14,6 +14,8 @@ import { ErrorBoundary } from "@/components/shared/error-boundary"
 import { LoadingSpinner } from "@/components/shared/loading-spinner"
 import { useProject } from "@/hooks/use-project"
 
+import { AutoPlaceholder } from "./auto-placeholder" // Import ตัวที่เราเพิ่งสร้าง
+
 interface EditorWorkspaceProps {
   projectId: string
 }
@@ -27,6 +29,9 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
 
   return (
     <div className="relative h-full w-full">
+
+      <AutoPlaceholder />
+
       <EditorToolbar projectId={projectId} />
 
       {/* Canvas area — top-10 on mobile (h-10 toolbar), top-12 on desktop (h-12) */}
