@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>BuddyBuilder.ai - Full Panorama Scanner</title>
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+</head>
+<body style="margin: 0; overflow: hidden;">
+    <div id="status" style="position:fixed; top:20px; width:100%; text-align:center; color:#FFEB3B; z-index:1000; font-weight:bold; text-shadow:2px 2px 4px #000;">
+        รอสักครู่... กำลังเปิดกล้อง
+    </div>
+
+    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+        <a-camera rotation-reader></a-camera>
+        <a-entity id="panorama-wall"></a-entity>
+    </a-scene>
+
+    <script>
+        const wall = document.querySelector('#panorama-wall');
+        const status = document.querySelector('#status');
+        let capturedAngles = new Set();
+        let scanData = []; 
+        const STEP = 15; 
+        let isSent = false;
+
+        function init() {
+            if (!document.querySelector('video').id) document.querySelector('video').id = 'arjs-video';
+            
+            for (let i = 0; i < 360; i += STEP) {
+                const plane = document.createElement('a-plane');
+                const rad = i * (Math.PI / 180);
+                plane.setAttribute('id', `slice-${i}`);
+                plane.setAttribute('position', `${-Math.sin(rad)*4} 0 ${-Math.cos(rad)*4}`);
+                plane.setAttribute('rotation', `0 ${i} 0`);
+                plane.setAttribute('width', '1.5');
+                plane.setAttribute('height', '5');
+                plane.setAttribute('material', 'color: #000000; shader: flat; side: double');
+                wall.appendChild(plane);
+            }
+            status.innerText = "หมุนตัวช้าๆ เพื่อเก็บภาพและพิกัด (0%)";
+            renderLoop();
+        }
+
+        // ฟังก์ชันถ่ายภาพจาก Video Stream
+        function captureFrame() {
+            const video = document.querySelector('video');
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            return canvas.toDataURL('image/jpeg', 0.9); // บีบอัด 90% เพื่อให้ส่งไวขึ้น
+        }
+
+        function renderLoop() {
+            const camera = document.querySelector('a-camera');
+            const rotation = camera.getAttribute('rotation');
+            let currentAngle = Math.round(rotation.y / STEP) * STEP;
+            currentAngle = ((currentAngle % 360) + 360) % 360;
+
+            if (!capturedAngles.has(currentAngle)) {
+                const slice = document.querySelector(`#slice-${currentAngle}`);
+                if (slice) {
+                    const imgData = captureFrame(); // ถ่ายรูป
+                    slice.setAttribute('material', { shader: 'flat', src: imgData, color: '#ffffff' });
+                    capturedAngles.add(currentAngle);
+                    
+                    scanData.push({
+                        angle: currentAngle,
+                        image: imgData,
+                        x: slice.object3D.position.x,
+                        z: slice.object3D.position.z
+                    });
+                    
+                    let progress = Math.round((capturedAngles.size / (360/STEP)) * 100);
+                    status.innerText = `เก็บข้อมูลแล้ว: ${progress}%`;
+
+                    if (progress >= 100 && !isSent) {
+                        isSent = true;
+                        status.innerText = "กำลังส่งรูปภาพและพิกัดห้อง...";
+                        sendData(scanData);
+                    }
+                }
+            }
+            requestAnimationFrame(renderLoop);
+        }
+
+        function sendData(pointsData) {
+            fetch('/upload-room-data', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    project: "BuddyBuilder.ai",
+                    student_id: "66073169",
+                    room_data: pointsData
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                status.innerText = "สำเร็จ! ตรวจสอบรูปภาพในโน้ตบุ๊กของคุณ";
+                alert("บันทึกข้อมูลและรูปภาพเรียบร้อย!");
+            })
+            .catch(err => alert("Error: " + err));
+        }
+
+        window.addEventListener('arjs-video-loaded', init);
+    </script>
+</body>
+</html>
