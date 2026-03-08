@@ -46,7 +46,7 @@ const tools: {
 
 interface EditorToolbarProps {
   projectId: string
-  onStartScan: () => void // รับฟังก์ชันสำหรับเปิด Scanner
+  onStartScan: () => void // รับฟังก์ชันสำหรับเปิด modal ถ่ายรูป
 }
 
 export function EditorToolbar({ projectId, onStartScan }: EditorToolbarProps) {
@@ -179,7 +179,7 @@ export function EditorToolbar({ projectId, onStartScan }: EditorToolbarProps) {
 
       <Separator orientation="vertical" className="mx-1 h-6" />
 
-      {/* Scanner Button (NEW) */}
+      {/* Camera button (ใช้สำหรับถ่ายรูป) */}
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
@@ -189,10 +189,10 @@ export function EditorToolbar({ projectId, onStartScan }: EditorToolbarProps) {
             onClick={onStartScan}
           >
             <Camera className="h-4 w-4" />
-            <span className="hidden text-xs lg:inline font-medium">สแกนห้องจริง</span>
+            <span className="hidden text-xs lg:inline font-medium">ถ่ายรูปห้อง</span>
           </Button>
         </TooltipTrigger>
-        <TooltipContent>เปิดกล้องสแกนห้องด้วย AR</TooltipContent>
+        <TooltipContent>ถ่ายรูปห้องด้วยกล้อง (AI วิเคราะห์ภาพ)</TooltipContent>
       </Tooltip>
 
       <Separator orientation="vertical" className="mx-1 h-6" />

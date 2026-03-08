@@ -16,7 +16,7 @@ import { LoadingSpinner } from "@/components/shared/loading-spinner";
 import { useProject } from "@/hooks/use-project";
 import { useEditorStore } from "@/stores/editor-store";
 
-import { PanoramaScanner } from "@/components/camera/PanoramaScanner";
+// panorama scanner component removed; camera capture uses file input instead
 
 interface EditorWorkspaceProps {
   projectId: string;
@@ -27,7 +27,7 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
 
   // 🚨 เพิ่ม State จัดการหน้าต่างตัวเลือก
   const [showScannerOptions, setShowScannerOptions] = useState(false);
-  const [isScanning, setIsScanning] = useState(false);
+  // previously used for panorama scanner – removed, we now capture a single photo
 
   // ใน editor-workspace.tsx
 const [isProcessing, setIsProcessing] = useState(false); // เช็คว่ากำลังประมวลผล AI หรือไม่
@@ -57,7 +57,7 @@ const [showUploadModal, setShowUploadModal] = useState(true); // เช็คว
       console.log("📤 กำลังส่งรูปภาพ...");
 
       const response = await fetch(
-        "https://substructural-theodora-ungenerable.ngrok-free.dev/api/v1/chat/process-single-image",
+        "http://localhost:8000/api/v1/chat/process-single-image",
         {
           method: "POST",
           body: formData,
@@ -167,19 +167,23 @@ return (
           <div className="bg-background p-6 rounded-xl shadow-2xl w-80 max-w-[90%] flex flex-col gap-4 border border-border">
             <h3 className="text-xl font-bold text-center">เลือกวิธีเพิ่มรูปห้อง</h3>
             <p className="text-sm text-muted-foreground text-center mb-2">
-              คุณต้องการสแกนห้องด้วยกล้อง หรืออัปโหลดรูปภาพพาโนรามาที่มีอยู่แล้ว?
+              ถ่ายรูปห้องด้วยกล้องหรือเลือกรูปจากเครื่องของคุณ
             </p>
-
-            {/* ปุ่มเปิดกล้อง */}
-            <button
-              className="w-full py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:opacity-90 transition flex items-center justify-center gap-2"
-              onClick={() => {
-                setShowScannerOptions(false); // ปิดหน้าต่างตัวเลือกทันที
-                setIsScanning(true);
-              }}
-            >
-              📸 เปิดกล้องสแกนห้อง (360°)
-            </button>
+            {/* ปุ่มถ่ายรูป */}
+            {/* ปุ่มถ่ายรูปด้วยกล้องมือถือ */}
+            <label className="w-full py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:opacity-90 transition flex items-center justify-center gap-2 cursor-pointer">
+              📸 ถ่ายรูประบบกล้อง
+              <input
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="hidden"
+                onChange={(e) => {
+                  setShowScannerOptions(false); // ปิดหน้าตัวเลือก
+                  handleFileUpload(e);
+                }}
+              />
+            </label>
 
             {/* ปุ่มอัปโหลดไฟล์ */}
             <label className="w-full py-3 bg-secondary text-secondary-foreground font-semibold rounded-lg text-center cursor-pointer hover:bg-secondary/80 transition border border-border flex items-center justify-center gap-2">
@@ -205,12 +209,10 @@ return (
         </div>
       )}
 
-      {/* เปิด Panorama Scanner เมื่อเลือกกล้อง */}
-      {isScanning && <PanoramaScanner onClose={() => setIsScanning(false)} />}
-
+      {/* removed panorama view; camera capture handled by hidden file input below */}
       <EditorToolbar
         projectId={projectId}
-        onStartScan={() => setShowScannerOptions(true)}
+        onStartScan={() => setShowScannerOptions(true)} // now opens camera/photo modal
       />
 
       {/* Canvas area */}
