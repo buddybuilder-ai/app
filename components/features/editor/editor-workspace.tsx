@@ -2,6 +2,7 @@
 
 
 
+import { QRCodeSVG } from "qrcode.react";
 import { Suspense, useEffect, useState } from "react";
 import { EditorToolbar } from "./toolbar/editor-toolbar";
 import { SceneCanvas } from "./canvas/scene-canvas";
@@ -42,14 +43,83 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
   const [showScannerOptions, setShowScannerOptions] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(true);
+    const [showQrModal, setShowQrModal] = useState(false);
+      const [sessionId, setSessionId] = useState("");
+      const [serverIp, setServerIp] = useState("localhost");
+    
+      // State for the new confirmation flow
+      const [detectedObjects, setDetectedObjects] = useState<DetectedObject[]>([]);
+      const [currentObjectIndex, setCurrentObjectIndex] = useState(0);
+    
+      useEffect(() => {
+        load();
+        // Fetch the server's IP address when the component mounts
+        const fetchIp = async () => {
+          try {
+            const response = await fetch("/api/get-ip");
+            const data = await response.json();
+            if (data.ipAddress) {
+              setServerIp(data.ipAddress);
+            }
+          } catch (error) {
+            console.error("Failed to fetch server IP:", error);
+          }
+        };
+        fetchIp();
+      }, [load]);
+    
+      useEffect(() => {
+        if (showQrModal && sessionId) {      const interval = setInterval(async () => {
+        try {
+          const response = await fetch(
+            `/api/check-upload-status?sessionId=${sessionId}`,
+          );
+          if (response.ok) {
+            const data = await response.json();
+            console.log("Polling response:", data);
+            if (data.status !== "pending") {
+              clearInterval(interval);
+              setShowQrModal(false);
 
-  // State for the new confirmation flow
-  const [detectedObjects, setDetectedObjects] = useState<DetectedObject[]>([]);
-  const [currentObjectIndex, setCurrentObjectIndex] = useState(0);
+              setIsProcessing(true);
+              if (data.status === "success" && data.objects) {
+                const objectsWithCatalogItems = data.objects
+                  .map((obj: any) => {
+                    const catalogItem = FURNITURE_CATALOG.find(
+                      (item) =>
+                        item.category.toLowerCase() ===
+                          obj.label.toLowerCase() ||
+                        item.name
+                          .toLowerCase()
+                          .includes(obj.label.toLowerCase()),
+                    );
+                    return { ...obj, catalogItem };
+                  })
+                  .filter((obj: any) => obj.catalogItem);
 
-  useEffect(() => {
-    load();
-  }, [load]);
+                if (objectsWithCatalogItems.length > 0) {
+                  setDetectedObjects(objectsWithCatalogItems);
+                  setCurrentObjectIndex(0); // Start confirmation from the first object
+                } else {
+                  alert("ไม่พบเฟอร์นิเจอร์ที่รู้จักในรูปภาพ");
+                  setShowUploadModal(true);
+                }
+                setIsProcessing(false);
+              } else {
+                alert(data.message || "ไม่สามารถประมวลผลรูปภาพได้");
+                setShowUploadModal(true);
+                setIsProcessing(false);
+              }
+            }
+          }
+        } catch (error) {
+          console.error("Polling error:", error);
+        }
+      }, 3000); // Poll every 3 seconds
+
+      return () => clearInterval(interval);
+    }
+  }, [showQrModal, sessionId]);
 
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -169,6 +239,13 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
       setShowUploadModal(true); // Show upload options again
     }
   };
+    
+    const handleQrScan = () => {
+    const newSessionId = Math.random().toString(36).substr(2, 9);
+    setSessionId(newSessionId);
+    setShowScannerOptions(false);
+    setShowQrModal(true);
+  };
 
   return (
     <div className="relative h-full w-full">
@@ -195,6 +272,30 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
                 กำลังวิเคราะห์พื้นที่ของเฟอร์นิเจอร์...
               </p>
             </div>
+          </div>
+        </div>
+      )}
+        
+        {showQrModal && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-background p-6 rounded-xl shadow-2xl w-80 max-w-[90%] flex flex-col gap-4 border border-border">
+            <h3 className="text-xl font-bold text-center">
+              สแกน QR Code ด้วยมือถือ
+            </h3>
+            <div className="flex justify-center">
+              <QRCodeSVG
+                value={`${window.location.protocol}//${serverIp}:${window.location.port}/upload-mobile?sessionId=${sessionId}`}
+              />
+            </div>
+            <p className="text-sm text-muted-foreground text-center">
+              หลังจากถ่ายและอัปโหลดรูปภาพแล้ว กรุณารอสักครู่
+            </p>
+            <button
+              className="mt-2 text-sm text-muted-foreground hover:text-foreground underline transition"
+              onClick={() => setShowQrModal(false)}
+            >
+              ยกเลิก
+            </button>
           </div>
         </div>
       )}
@@ -234,6 +335,12 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
                 }}
               />
             </label>
+            <button
+              className="w-full py-3 bg-gray-500 text-white font-semibold rounded-lg hover:opacity-90 transition flex items-center justify-center gap-2"
+              onClick={handleQrScan}
+            >
+              📱 สแกนด้วย QR Code
+            </button>
             <button
               className="mt-2 text-sm text-muted-foreground hover:text-foreground underline transition"
               onClick={() => setShowScannerOptions(false)}
@@ -277,4 +384,3 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
     </div>
   );
 }
-
