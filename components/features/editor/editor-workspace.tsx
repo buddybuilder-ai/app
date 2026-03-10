@@ -29,6 +29,9 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
   const [showScannerOptions, setShowScannerOptions] = useState(false);
   // previously used for panorama scanner – removed, we now capture a single photo
 
+  // ภาพล่าสุดที่มาจากมือถือเครื่องอื่น (ผ่าน SSE)
+  const [incomingPhoto, setIncomingPhoto] = useState<string | null>(null);
+
   // ใน editor-workspace.tsx
 const [isProcessing, setIsProcessing] = useState(false); // เช็คว่ากำลังประมวลผล AI หรือไม่
 const [showUploadModal, setShowUploadModal] = useState(true); // เช็คว่าจะเปิด/ปิดหน้าเลือกรูป
@@ -36,6 +39,19 @@ const [showUploadModal, setShowUploadModal] = useState(true); // เช็คว
   useEffect(() => {
     load();
   }, [load]);
+
+  // subscribe to photo updates from any client
+  useEffect(() => {
+    const es = new EventSource("/api/chat/updates");
+    es.onmessage = (e) => {
+      try {
+        const url = JSON.parse(e.data);
+        setIncomingPhoto(url);
+      } catch {}
+    };
+    es.onerror = () => es.close();
+    return () => es.close();
+  }, []);
 
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -56,13 +72,11 @@ const [showUploadModal, setShowUploadModal] = useState(true); // เช็คว
     try {
       console.log("📤 กำลังส่งรูปภาพ...");
 
-      const response = await fetch(
-        "http://localhost:8000/api/v1/chat/process-single-image",
-        {
-          method: "POST",
-          body: formData,
-        },
-      );
+      // proxy through Next.js so origin matches current host
+      const response = await fetch("/api/chat/process-single-image", {
+        method: "POST",
+        body: formData,
+      });
 
       if (response.ok) {
         const data = await response.json();
@@ -147,6 +161,20 @@ const [showUploadModal, setShowUploadModal] = useState(true); // เช็คว
 return (
     <div className="relative h-full w-full">
       {/* 1. หน้าจอ Loading แสดงข้อความ "กำลัง..." ระหว่างรอ AI */}
+      {/* แสดงภาพที่มาจากมือถือเครื่องอื่น */}
+      {incomingPhoto && (
+        <div className="fixed inset-0 z-[10001] flex items-center justify-center bg-black/80">
+          <div className="relative">
+            <img src={incomingPhoto} className="max-w-full max-h-full" />
+            <button
+              className="absolute top-2 right-2 p-2 bg-white rounded-full"
+              onClick={() => setIncomingPhoto(null)}
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
       {isProcessing && (
         <div className="fixed inset-0 z-[10000] flex flex-col items-center justify-center bg-black/70 backdrop-blur-md">
           <div className="flex flex-col items-center gap-4 text-white">
