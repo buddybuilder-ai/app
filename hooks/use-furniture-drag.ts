@@ -39,7 +39,7 @@ export function useFurnitureDrag() {
         is_essential: catalogItem.is_essential,
         feng_shui_notes: [],
         model_url: catalogItem.model_url ?? undefined,
-        model_rotation_offset: 0,
+        model_rotation_offset: catalogItem.model_rotation_offset ?? 0,
       })
     },
     [addFurniture, room.width, room.depth]

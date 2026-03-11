@@ -16,6 +16,9 @@ export const FurnitureCatalogItemSchema = z.object({
   element: FiveElementSchema.default("wood"),
   is_essential: z.boolean().default(false),
   model_url: z.string().nullable().optional(),
+  // Correction offset (degrees) baked into the .glb file.
+  // Added to AI rotation before rendering. Default 0 = no correction needed.
+  model_rotation_offset: z.number().int().default(0).optional(),
 })
 
 export const PlacedFurnitureItemSchema = z.object({

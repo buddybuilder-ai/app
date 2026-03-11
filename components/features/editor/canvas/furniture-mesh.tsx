@@ -1,12 +1,22 @@
 "use client"
 
 import { useRef, useMemo, useEffect, Suspense } from "react"
-import { BoxGeometry, Box3, Vector3, type Mesh, type Object3D, type Material } from "three"
+import { BoxGeometry, Box3, Vector3, ArrowHelper, type Mesh, type Object3D, type Material } from "three"
 import { useGLTF } from "@react-three/drei"
 import { useEditorStore } from "@/stores/editor-store"
 import type { FurnitureInstance } from "@/types/editor"
 import { TransformGizmo } from "./transform-gizmo"
 import { RotationGizmo } from "./rotation-gizmo"
+
+// Debug: show front-facing arrow on furniture (red = front direction)
+function FrontArrow({ height }: { height: number }) {
+  const arrow = useMemo(() => {
+    const dir = new Vector3(0, 0, 1) // +Z = front in local space
+    const origin = new Vector3(0, height / 2 + 0.05, 0)
+    return new ArrowHelper(dir, origin, 0.5, 0xff0000, 0.15, 0.1)
+  }, [height])
+  return <primitive object={arrow} />
+}
 
 const CATEGORY_COLORS: Record<string, string> = {
   bed: "#8B7355",
@@ -186,6 +196,16 @@ export function FurnitureMesh({ item }: FurnitureMeshProps) {
     return box
   }, [item.dimensions.width, item.dimensions.height, item.dimensions.depth])
 
+  const rawRot = item.rotation ?? 0
+  const offset = item.model_rotation_offset ?? 0
+  const effectiveDeg = rawRot + offset
+  const radY = (effectiveDeg * Math.PI) / 180
+  console.log(
+    `[FurnitureMesh] ${item.instanceId} (${item.category})` +
+    ` pos=(${item.pos_x.toFixed(3)}, ${item.pos_z.toFixed(3)})` +
+    ` rotation=${rawRot}° offset=${offset}° effective=${effectiveDeg}° radY=${radY.toFixed(4)}`
+  )
+
   return (
     <group
       position={[
@@ -193,7 +213,7 @@ export function FurnitureMesh({ item }: FurnitureMeshProps) {
         item.dimensions.height / 2 + item.pos_y,
         item.pos_z,
       ]}
-      rotation={[0, ((item.rotation + (item.model_rotation_offset ?? 0)) * Math.PI) / 180, 0]}
+      rotation={[0, radY, 0]}
     >
       {item.model_url ? (
         // Render 3D Model if model_url exists
@@ -239,6 +259,7 @@ export function FurnitureMesh({ item }: FurnitureMeshProps) {
           <lineBasicMaterial color="#f89d2a" />
         </lineSegments>
       )}
+      <FrontArrow height={item.dimensions.height} />
     </group>
   )
 }

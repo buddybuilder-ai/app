@@ -60,6 +60,7 @@ export function useLayoutPipeline() {
         windows: room.windows,
         direction: room.direction,
         budget_level: "medium",
+        user_preferences: room.user_preferences ?? {},
         ...overrides,
       }
 
@@ -244,6 +245,15 @@ export function useLayoutPipeline() {
         const existingMap = new Map(
           useEditorStore.getState().furnitureItems.map((f) => [f.id, f])
         )
+        console.group("[Layout] Furniture placements")
+        items.forEach((item) => {
+          console.log(
+            `%c${item.name}%c pos=(${item.pos_x}, ${item.pos_z}) rot=${item.rotation}° dim=${item.dimensions.width}x${item.dimensions.depth}`,
+            "color: #4fc3f7; font-weight: bold",
+            "color: inherit"
+          )
+        })
+        console.groupEnd()
         const furnitureItems: FurnitureInstance[] = items.map((item, i) => {
           const prev = existingMap.get(item.id)
           return {
@@ -259,7 +269,7 @@ export function useLayoutPipeline() {
             feng_shui_notes: item.feng_shui_notes,
             instanceId: prev?.instanceId ?? `${item.id}-${Date.now()}-${i}`,
             model_url: item.model_url ?? prev?.model_url,
-            model_rotation_offset: prev?.model_rotation_offset ?? 0,
+            model_rotation_offset: item.model_rotation_offset ?? prev?.model_rotation_offset ?? 0,
           }
         })
         setFurnitureItems(furnitureItems)
