@@ -7,6 +7,7 @@ import { useEditorStore } from "@/stores/editor-store"
 import type { FurnitureInstance } from "@/types/editor"
 import { TransformGizmo } from "./transform-gizmo"
 import { RotationGizmo } from "./rotation-gizmo"
+import { FengShuiAlert } from "./feng-shui-alert"
 
 const CATEGORY_COLORS: Record<string, string> = {
   bed: "#8B7355",
@@ -239,6 +240,9 @@ export function FurnitureMesh({ item }: FurnitureMeshProps) {
           <lineBasicMaterial color="#f89d2a" />
         </lineSegments>
       )}
+
+      {/* Feng Shui Alert - only shown for selected item */}
+      {isSelected && <FengShuiAlert item={item} />}
     </group>
   )
 }

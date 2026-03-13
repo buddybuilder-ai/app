@@ -1,16 +1,18 @@
 "use client"
 
-import { X, RotateCw, Trash2 } from "lucide-react"
+import { X, RotateCw, Trash2, AlertTriangle } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import { Separator } from "@/components/ui/separator"
 import { useEditorStore } from "@/stores/editor-store"
+import { validateFengShui, type FengShuiViolation } from "@/lib/feng-shui-validator"
 
 export function PropertiesPanel() {
   const selectedId = useEditorStore((s) => s.selectedId)
   const furnitureItems = useEditorStore((s) => s.furnitureItems)
+  const room = useEditorStore((s) => s.room)
   const updateFurniture = useEditorStore((s) => s.updateFurniture)
   const removeFurniture = useEditorStore((s) => s.removeFurniture)
   const setSelectedId = useEditorStore((s) => s.setSelectedId)
@@ -18,6 +20,9 @@ export function PropertiesPanel() {
   const item = furnitureItems.find((f) => f.instanceId === selectedId)
 
   if (!item) return null
+
+  // Validate feng shui for selected item
+  const violations = validateFengShui(item, room, furnitureItems)
 
   function handlePositionChange(
     axis: "pos_x" | "pos_y" | "pos_z",
@@ -113,9 +118,21 @@ export function PropertiesPanel() {
               step={15}
               className="flex-1"
             />
-            <span className="w-10 text-right text-sm text-muted-foreground">
-              {item.rotation}°
-            </span>
+            <div className="relative">
+              <span className="absolute right-0 top-0 -translate-y-1/2 text-sm text-muted-foreground">
+                °
+              </span>
+              <Input 
+                value={item.rotation} 
+                onChange={(e) => {
+                  const val = parseInt(e.target.value) || 0
+                  if (val >= 0 && val <= 359) {
+                    updateFurniture(item.instanceId, { rotation: val })
+                  }
+                }}
+                className="h-8 w-16 pr-6 text-right" 
+              />
+            </div>
           </div>
         </div>
 
@@ -163,7 +180,40 @@ export function PropertiesPanel() {
           </div>
         </div>
 
-        {/* Feng Shui Notes */}
+        {/* Feng Shui Violations */}
+        <Separator />
+        <div>
+          <h3 className="mb-3 flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            <AlertTriangle className="h-3.5 w-3.5" />
+            Feng Shui Issues
+          </h3>
+          {violations.length === 0 ? (
+            <div className="flex items-center gap-2 rounded-md bg-green-50 p-2 text-xs text-green-700 dark:bg-green-950 dark:text-green-300">
+              <span>✓</span>
+              <span>No Feng Shui Issues</span>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {violations.map((violation, index) => (
+                <div
+                  key={`${violation.rule_id}-${index}`}
+                  className={`rounded-md p-2 text-xs ${
+                    violation.severity === "error"
+                      ? "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300"
+                      : "bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300"
+                  }`}
+                >
+                  <div className="font-medium">{violation.message}</div>
+                  <div className="mt-1 opacity-80">
+                    {violation.recommendation}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Original Feng Shui Notes (if any) */}
         {item.feng_shui_notes.length > 0 && (
           <>
             <Separator />
