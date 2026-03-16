@@ -29,7 +29,7 @@ export default function MobileUploadPage() {
     formData.append("sessionId", sessionId);
 
     try {
-      const response = await fetch("/api/chat/process-single-image-mobile", {
+      const response = await fetch("/api/chat/process-single-image", {
         method: "POST",
         body: formData,
       });
