@@ -14,3 +14,4 @@ declare global {
     }
   }
 }
+export {}; // บอก TS ว่านี่เป็น module
