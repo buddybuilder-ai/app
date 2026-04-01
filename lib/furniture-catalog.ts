@@ -112,6 +112,7 @@ export const FURNITURE_CATALOG: FurnitureCatalogItem[] = [
     element: "metal",
     is_essential: true,
     model_url: "/furniture_models/office_chair_v2.glb",
+    model_rotation_offset: 180,
   },
   // Dining
   {

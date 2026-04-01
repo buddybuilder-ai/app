@@ -76,6 +76,7 @@ export interface LayoutItem {
   is_essential: boolean
   feng_shui_notes: string[]
   model_url?: string
+  model_rotation_offset?: number
 }
 
 export interface StepProgressData {
