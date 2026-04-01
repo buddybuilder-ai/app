@@ -1,7 +1,19 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, ReactNode } from "react";
 import * as THREE from "three";
+
+// 1. สร้าง Interface มารองรับ Props ของ A-Frame โดยเฉพาะ
+// ใช้ unknown แทน any เพื่อให้ผ่าน ESLint และ [key: string] เพื่อให้รับ attribute อะไรก็ได้
+interface AFrameProps {
+  children?: ReactNode;
+  [key: string]: unknown; 
+}
+
+// 2. ประกาศตัวแปรโดยใช้ Interface ที่เราสร้างขึ้น
+const AScene = 'a-scene' as unknown as React.FC<AFrameProps>;
+const ACamera = 'a-camera' as unknown as React.FC<AFrameProps>;
+const AEntity = 'a-entity' as unknown as React.FC<AFrameProps>;
 
 // --- Types & Interfaces ---
 interface ScanDataItem {
@@ -270,16 +282,15 @@ export function PanoramaScanner() {
       {arReady && (
         <div className="h-full w-full pointer-events-auto">
           
-          <a-scene
-            embedded
-            arjs="sourceType: webcam; debugUIEnabled: false;"
-            renderer="logarithmicDepthBuffer: true; alpha: true;"
-            vr-mode-ui="enabled: false"
-          >
-            <a-camera look-controls="enabled: true" rotation-reader></a-camera>
-            
-            <a-entity id="panorama-wall"></a-entity>
-          </a-scene>
+          <AScene
+          embedded
+          arjs="sourceType: webcam; debugUIEnabled: false;"
+          renderer="logarithmicDepthBuffer: true; alpha: true;"
+          vr-mode-ui="enabled: false"
+        >
+          <ACamera look-controls="enabled: true" rotation-reader></ACamera>
+          <AEntity id="panorama-wall"></AEntity>
+        </AScene>
         </div>
       )}
     </div>
