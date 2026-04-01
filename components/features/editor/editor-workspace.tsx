@@ -3,6 +3,7 @@
 
 
 import { QRCodeSVG } from "qrcode.react";
+import { FurnitureCatalogItem } from "@/types/furniture";
 import { Suspense, useEffect, useState } from "react";
 import { EditorToolbar } from "./toolbar/editor-toolbar";
 import { SceneCanvas } from "./canvas/scene-canvas";
@@ -34,7 +35,7 @@ type DetectedObject = {
   elevation_m: number;
   distance_m: number;
   center_pixel: [number, number];
-  catalogItem: any; // Replace with a proper type
+  catalogItem: FurnitureCatalogItem;
 };
 
 export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
@@ -42,7 +43,7 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
 
   const [showScannerOptions, setShowScannerOptions] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [showUploadModal, setShowUploadModal] = useState(true);
+  
     const [showQrModal, setShowQrModal] = useState(false);
       const [sessionId, setSessionId] = useState("");
       const [serverIp, setServerIp] = useState("localhost");

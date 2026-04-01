@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
       headers: { ...headers, "Content-Type": "application/json" },
     });
 
-  } catch (error) {
+  } catch {
     // File does not exist yet
     return NextResponse.json({ status: "pending" }, { headers });
   }

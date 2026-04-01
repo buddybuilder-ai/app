@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import * as THREE from "three";
 
 // --- Types & Interfaces ---
 interface ScanDataItem {
@@ -23,7 +24,7 @@ interface AFrameEntity extends HTMLElement {
   };
   getObject3D(name: string): {
     material: {
-      map: any;
+      map: THREE.Texture;
       color: { setHex(hex: number): void };
       opacity: number;
       needsUpdate: boolean;
@@ -107,7 +108,7 @@ export function PanoramaScanner() {
       
       if (slice) {
         const frameData = captureFrame();
-        const AFRAME_GLOBAL = (window as any).AFRAME;
+        const AFRAME_GLOBAL = (window as { AFRAME?: { THREE: typeof THREE } }).AFRAME;
 
         if (frameData && AFRAME_GLOBAL) {
           const mesh = slice.getObject3D("mesh");
