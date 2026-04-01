@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, Suspense } from "react"; // เพิ่ม Suspense
 import { useSearchParams } from "next/navigation";
 import { LoadingSpinner } from "@/components/shared/loading-spinner";
 
-export default function MobileUploadPage() {
+// 1. แยกเนื้อหาหลักออกมาเป็น Component ย่อย
+function MobileUploadContent() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("sessionId");
   const [isUploading, setIsUploading] = useState(false);
@@ -137,5 +138,18 @@ export default function MobileUploadPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+// 2. หน้าหลักที่ Export ออกไป ให้หุ้มด้วย Suspense
+export default function MobileUploadPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen">
+        <LoadingSpinner size="lg" />
+      </div>
+    }>
+      <MobileUploadContent />
+    </Suspense>
   );
 }
