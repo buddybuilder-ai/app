@@ -24,12 +24,12 @@
   },
   "include": [
     "next-env.d.ts",
+    "types",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
-    "**/*.mts", 
-    "aframe.d.ts"
+    "**/*.mts"
   ],
   "exclude": ["node_modules"]
 }

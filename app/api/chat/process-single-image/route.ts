@@ -22,15 +22,15 @@ export async function POST(request: NextRequest) {
 
   // forward request to backend
   const forwardData = new FormData();
-  if (image) forwardData.append("image", image, (image as any).name || "photo.jpg");
+  if (image) forwardData.append("image", image, image.name || "photo.jpg");
   forwardData.append("target_height", height);
 
   const res = await fetch(`${FASTAPI_URL}/api/v1/chat/process-single-image`, {
     method: "POST",
-    body: forwardData as any,
+    body: forwardData,
   });
 
-  let body: any;
+  let body: unknown;
   try {
     body = await res.json();
   } catch {

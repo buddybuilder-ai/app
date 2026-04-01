@@ -268,7 +268,7 @@ export function PanoramaScanner() {
 
       {arReady && (
         <div className="h-full w-full pointer-events-auto">
-          {/* @ts-expect-error - A-Frame elements are not defined in React JSX Types */}
+          
           <a-scene
             embedded
             arjs="sourceType: webcam; debugUIEnabled: false;"
@@ -276,7 +276,7 @@ export function PanoramaScanner() {
             vr-mode-ui="enabled: false"
           >
             <a-camera look-controls="enabled: true" rotation-reader></a-camera>
-            {/* @ts-expect-error - A-Frame elements are not defined in React JSX Types */}
+            
             <a-entity id="panorama-wall"></a-entity>
           </a-scene>
         </div>

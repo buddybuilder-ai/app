@@ -1,17 +1,33 @@
-// global.d.ts
-import { DetailedHTMLProps, HTMLAttributes } from 'react';
-
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      'a-scene': any;
-      'a-camera': any;
-      'a-entity': any;
-      'a-plane': any;
+      'a-scene': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement> & {
+        embedded?: boolean | string;
+        arjs?: string;
+        renderer?: string;
+        'vr-mode-ui'?: string;
+      }, HTMLElement>;
+      'a-camera': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement> & {
+        'look-controls'?: string;
+        'rotation-reader'?: boolean | string;
+      }, HTMLElement>;
+      'a-entity': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement> & {
+        id?: string;
+        position?: string;
+        rotation?: string;
+      }, HTMLElement>;
+      'a-plane': React.detailedHTMLProps<React.HTMLAttributes<HTMLElement> & {
+        id?: string;
+        position?: string;
+        rotation?: string;
+        width?: string;
+        height?: string;
+        material?: string;
+        color?: string;
+      }, HTMLElement>;
       'a-assets': any;
       'a-asset-item': any;
-      // เพิ่ม tag อื่นๆ ของ A-Frame ที่คุณใช้ที่นี่
     }
   }
 }
-export {}; // บอก TS ว่านี่เป็น module
+export {};
