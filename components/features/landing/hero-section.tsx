@@ -23,21 +23,27 @@ export function HeroSection() {
             and let AI generate optimal layouts for your space.
           </p>
 
-          <div className="mt-10 flex items-center justify-center gap-4">
+          <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Button size="lg" asChild>
+              <Link href="/chat">
+                <Sparkles className="mr-2 h-4 w-4" />
+                ลองถามผู้เชี่ยวชาญฮวงจุ้ย
+              </Link>
+            </Button>
+            <Button size="lg" variant="outline" asChild>
               <Link href="/register">
                 Start Designing
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
-            <Button size="lg" variant="outline" asChild>
-              <Link href="#features">Learn More</Link>
-            </Button>
           </div>
+          <p className="mt-3 text-xs text-muted-foreground">
+            ไม่ต้องสมัครสมาชิก · เริ่มใช้งานได้เลย
+          </p>
         </div>
 
         <div className="mt-16 rounded-xl border bg-muted/50 p-4">
-          <div className="aspect-video rounded-lg bg-gradient-to-br from-primary/10 via-background to-primary/5 flex items-center justify-center">
+          <div className="aspect-video rounded-lg bg-linear-to-br from-primary/10 via-background to-primary/5 flex items-center justify-center">
             <p className="text-muted-foreground">3D Editor Preview</p>
           </div>
         </div>
