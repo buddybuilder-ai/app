@@ -7,6 +7,7 @@ import { useEditorStore } from "@/stores/editor-store"
 import type { FurnitureInstance } from "@/types/editor"
 import { TransformGizmo } from "./transform-gizmo"
 import { RotationGizmo } from "./rotation-gizmo"
+import { FengShuiAlert } from "./feng-shui-alert"
 
 // Debug: show front-facing arrow on furniture (red = front direction)
 function FrontArrow({ height }: { height: number }) {
@@ -260,6 +261,9 @@ export function FurnitureMesh({ item }: FurnitureMeshProps) {
         </lineSegments>
       )}
       <FrontArrow height={item.dimensions.height} />
+
+      {/* Feng Shui Alert - only shown for selected item */}
+      {isSelected && <FengShuiAlert item={item} />}
     </group>
   )
 }
