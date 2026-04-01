@@ -9,7 +9,7 @@ declare global {
           arjs?: string;
           renderer?: string;
           'vr-mode-ui'?: string;
-          [key: string]: any;
+          [key: string]: unknown;
         },
         HTMLElement
       >;
@@ -17,7 +17,7 @@ declare global {
         React.HTMLAttributes<HTMLElement> & {
           'look-controls'?: string;
           'rotation-reader'?: boolean | string;
-          [key: string]: any;
+          [key: string]: unknown;
         },
         HTMLElement
       >;
@@ -26,7 +26,7 @@ declare global {
           id?: string;
           position?: string;
           rotation?: string;
-          [key: string]: any;
+          [key: string]: unknown;
         },
         HTMLElement
       >;
@@ -39,7 +39,7 @@ declare global {
           height?: string;
           material?: string;
           color?: string;
-          [key: string]: any;
+          [key: string]: unknown;
         },
         HTMLElement
       >;
@@ -66,7 +66,7 @@ declare global {
           position?: string;
           rotation?: string;
           color?: string;
-          [key: string]: any;
+          [key: string]: unknown;
         },
         HTMLElement
       >;
@@ -75,7 +75,7 @@ declare global {
           position?: string;
           radius?: string;
           color?: string;
-          [key: string]: any;
+          [key: string]: unknown;
         },
         HTMLElement
       >;
