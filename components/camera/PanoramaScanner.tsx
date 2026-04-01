@@ -17,71 +17,6 @@ export function PanoramaScanner() {
     setIsMounted(true)
   }, [])
 
-  // 1. โหลดสคริปต์แบบ Sequential และใช้ State ควบคุมการ Render
-  useEffect(() => {
-    if (!isMounted) return
-
-    const loadScript = (src: string, id: string) => {
-      return new Promise<void>((resolve, reject) => {
-        if (document.getElementById(id)) { resolve(); return; }
-        const s = document.createElement("script")
-        s.id = id
-        s.src = src
-        s.crossOrigin = "anonymous"
-        s.onload = () => resolve()
-        s.onerror = (e) => reject(e)
-        document.head.appendChild(s)
-      })
-    }
-
-    const setupAR = async () => {
-      try {
-        setStatus("กำลังโหลดระบบ A-Frame...")
-        await loadScript("https://aframe.io/releases/1.3.0/aframe.min.js", "aframe-script")
-
-        setStatus("กำลังโหลดระบบ AR.js...")
-        await loadScript("https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js", "arjs-script")
-
-        console.log("✅ Scripts โหลดเสร็จสมบูรณ์")
-        setArReady(true) // ให้ React สร้าง <a-scene> อย่างปลอดภัย
-      } catch (err) {
-        setStatus("❌ โหลดสคริปต์ไม่สำเร็จ กรุณารีเฟรช")
-      }
-    }
-
-    setupAR()
-  }, [isMounted])
-
-  // 2. รอกล้องทำงานหลังจาก a-scene ถูกวาดแล้ว
-  useEffect(() => {
-    if (!arReady) return
-
-    const startScanning = () => {
-      setStatus("หมุนตัวช้าๆ เพื่อเก็บภาพ (0%)")
-      initAR()
-    }
-
-    // ดักจับ Event ทันทีที่วิดีโอพร้อม
-    window.addEventListener('arjs-video-loaded', startScanning)
-
-    // Fallback: สอดแนมหากล้องเผื่อ Event ทำงานพลาด
-    const checkVideo = setInterval(() => {
-      const video = document.querySelector('video')
-      // ถ้าวิดีโอมีขนาดแล้ว แปลว่ากล้องเปิดสำเร็จ
-      if (video && video.readyState >= 2) {
-        clearInterval(checkVideo)
-        if (status.includes("กำลังโหลด")) {
-          startScanning()
-        }
-      }
-    }, 1000)
-
-    return () => {
-      window.removeEventListener('arjs-video-loaded', startScanning)
-      clearInterval(checkVideo)
-    }
-  }, [arReady, status])
-
   const initAR = () => {
     const wall = document.querySelector('#panorama-wall')
     if (!wall) return
@@ -194,6 +129,69 @@ const captureFrame = () => {
       alert("Error: " + err)
     }
   }
+
+    useEffect(() => {
+    if (!isMounted) return
+
+    const loadScript = (src: string, id: string) => {
+      return new Promise<void>((resolve, reject) => {
+        if (document.getElementById(id)) { resolve(); return; }
+        const s = document.createElement("script")
+        s.id = id
+        s.src = src
+        s.crossOrigin = "anonymous"
+        s.onload = () => resolve()
+        s.onerror = (e) => reject(e)
+        document.head.appendChild(s)
+      })
+    }
+
+    const setupAR = async () => {
+      try {
+        setStatus("กำลังโหลดระบบ A-Frame...")
+        await loadScript("https://aframe.io/releases/1.3.0/aframe.min.js", "aframe-script")
+
+        setStatus("กำลังโหลดระบบ AR.js...")
+        await loadScript("https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js", "arjs-script")
+
+        console.log("✅ Scripts โหลดเสร็จสมบูรณ์")
+        setArReady(true) // ให้ React สร้าง <a-scene> อย่างปลอดภัย
+      } catch (err) {
+        setStatus("❌ โหลดสคริปต์ไม่สำเร็จ กรุณารีเฟรช")
+      }
+    }
+
+    setupAR()
+  }, [isMounted])
+
+    useEffect(() => {
+    if (!arReady) return
+
+    const startScanning = () => {
+      setStatus("หมุนตัวช้าๆ เพื่อเก็บภาพ (0%)")
+      initAR()
+    }
+
+    // ดักจับ Event ทันทีที่วิดีโอพร้อม
+    window.addEventListener('arjs-video-loaded', startScanning)
+
+    // Fallback: สอดแนมหากล้องเผื่อ Event ทำงานพลาด
+    const checkVideo = setInterval(() => {
+      const video = document.querySelector('video')
+      // ถ้าวิดีโอมีขนาดแล้ว แปลว่ากล้องเปิดสำเร็จ
+      if (video && video.readyState >= 2) {
+        clearInterval(checkVideo)
+        if (status.includes("กำลังโหลด")) {
+          startScanning()
+        }
+      }
+    }, 1000)
+
+    return () => {
+      window.removeEventListener('arjs-video-loaded', startScanning)
+      clearInterval(checkVideo)
+    }
+  }, [arReady, status])
 
   // 🚨 CSS ดันระดับ 10 ล้าน! ชนะ Navbar และทุก UI ในจักรวาลแน่นอน
   const forceCameraStyle = `
