@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
+import { FurnitureCatalogItem } from "@/types/furniture";
 
 // This type should ideally be defined in a shared types file e.g., types/editor.ts
 type DetectedObject = {
@@ -22,7 +23,7 @@ type DetectedObject = {
   elevation_m: number;
   distance_m: number;
   center_pixel: [number, number];
-  catalogItem: any; // Replace 'any' with a proper type for catalog items
+  catalogItem: FurnitureCatalogItem;
 };
 
 interface FurnitureConfirmationCardProps {
@@ -50,15 +51,6 @@ export function FurnitureConfirmationCard({
     height: height_m,
     depth: catalogItem.dimensions.depth,
   });
-
-  // Reset dimensions when the detected object changes
-  useEffect(() => {
-    setDimensions({
-      width: detectedObject.width_m,
-      height: detectedObject.height_m,
-      depth: detectedObject.catalogItem.dimensions.depth,
-    });
-  }, [detectedObject]);
 
   const handleDimensionChange = (
     axis: "width" | "height" | "depth",

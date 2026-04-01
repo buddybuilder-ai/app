@@ -38,6 +38,10 @@ type DetectedObject = {
   catalogItem: FurnitureCatalogItem;
 };
 
+// Type for the object received from the API
+type ApiDetectedObject = Omit<DetectedObject, "catalogItem">;
+
+
 export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
   const { load } = useProject(projectId);
 
@@ -85,7 +89,7 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
               setIsProcessing(true);
               if (data.status === "success" && data.objects) {
                 const objectsWithCatalogItems = data.objects
-                  .map((obj: any) => {
+                  .map((obj: ApiDetectedObject) => {
                     const catalogItem = FURNITURE_CATALOG.find(
                       (item) =>
                         item.category.toLowerCase() ===
@@ -96,19 +100,19 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
                     );
                     return { ...obj, catalogItem };
                   })
-                  .filter((obj: any) => obj.catalogItem);
+                  .filter((obj: { catalogItem: FurnitureCatalogItem | undefined; }): obj is DetectedObject => obj.catalogItem !== undefined);
 
                 if (objectsWithCatalogItems.length > 0) {
                   setDetectedObjects(objectsWithCatalogItems);
                   setCurrentObjectIndex(0); // Start confirmation from the first object
                 } else {
                   alert("ไม่พบเฟอร์นิเจอร์ที่รู้จักในรูปภาพ");
-                  setShowUploadModal(true);
+                  setShowScannerOptions(true);
                 }
                 setIsProcessing(false);
               } else {
                 alert(data.message || "ไม่สามารถประมวลผลรูปภาพได้");
-                setShowUploadModal(true);
+                setShowScannerOptions(true);
                 setIsProcessing(false);
               }
             }
@@ -128,7 +132,7 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    setShowUploadModal(false);
+    setShowScannerOptions(false);
     setIsProcessing(true);
 
     const formData = new FormData();
@@ -148,7 +152,7 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
 
         if (data.status === "success" && data.objects) {
           const objectsWithCatalogItems = data.objects
-            .map((obj: any) => {
+            .map((obj: ApiDetectedObject) => {
               const catalogItem = FURNITURE_CATALOG.find(
                 (item) =>
                   item.category.toLowerCase() === obj.label.toLowerCase() ||
@@ -156,27 +160,27 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
               );
               return { ...obj, catalogItem };
             })
-            .filter((obj: any) => obj.catalogItem);
+            .filter((obj: { catalogItem: FurnitureCatalogItem | undefined }): obj is DetectedObject => obj.catalogItem !== undefined);
 
           if (objectsWithCatalogItems.length > 0) {
             setDetectedObjects(objectsWithCatalogItems);
             setCurrentObjectIndex(0); // Start confirmation from the first object
           } else {
             alert("ไม่พบเฟอร์นิเจอร์ที่รู้จักในรูปภาพ");
-            setShowUploadModal(true);
+            setShowScannerOptions(true);
           }
         } else {
            alert(data.message || "ไม่สามารถประมวลผลรูปภาพได้");
-           setShowUploadModal(true);
+           setShowScannerOptions(true);
         }
       } else {
         alert("เกิดข้อผิดพลาดในการสื่อสารกับเซิร์ฟเวอร์");
-        setShowUploadModal(true);
+        setShowScannerOptions(true);
       }
     } catch (error) {
       console.error("AI Auto-add error:", error);
       alert("เกิดข้อผิดพลาดในการสแกน กรุณาลองใหม่");
-      setShowUploadModal(true);
+      setShowScannerOptions(true);
     } finally {
       setIsProcessing(false);
     }
@@ -224,7 +228,7 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
       setDetectedObjects([]);
       setCurrentObjectIndex(0);
       alert(`เพิ่มเฟอร์นิเจอร์ที่ยืนยันทั้งหมดเรียบร้อยแล้ว`);
-      setShowUploadModal(true); // Show upload options again
+      setShowScannerOptions(true); // Show upload options again
     }
   };
 
@@ -237,7 +241,7 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
       setDetectedObjects([]);
       setCurrentObjectIndex(0);
       alert("เสร็จสิ้นการตรวจสอบเฟอร์นิเจอร์");
-      setShowUploadModal(true); // Show upload options again
+      setShowScannerOptions(true); // Show upload options again
     }
   };
     
@@ -252,6 +256,7 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
     <div className="relative h-full w-full">
        {detectedObjects.length > 0 && (
         <FurnitureConfirmationCard
+          key={currentObjectIndex}
           detectedObject={detectedObjects[currentObjectIndex]}
           onConfirm={handleConfirmFurniture}
           onDiscard={handleDiscardFurniture}
@@ -347,6 +352,7 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
               onClick={() => setShowScannerOptions(false)}
             >
               ยกเลิก
+.
             </button>
           </div>
         </div>
