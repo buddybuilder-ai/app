@@ -54,6 +54,7 @@ export const useEditorStore = create<EditorState>((set) => ({
     ],
     direction: "north",
     zones: [],
+    user_preferences: {},
   },
   setRoom: (room) => set({ room }),
 

@@ -372,6 +372,64 @@ export function RoomSettingsPanel() {
 
           <Separator />
 
+          {/* Kua / Personal Preferences */}
+          <section className="space-y-3">
+            <Label className="text-xs font-semibold uppercase text-muted-foreground">
+              ข้อมูลส่วนตัว (ฮวงจุ้ยกัว)
+            </Label>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label className="text-xs">ปีเกิด (ค.ศ.)</Label>
+                <Input
+                  type="number"
+                  placeholder="เช่น 1990"
+                  value={room.user_preferences?.birth_year ?? ""}
+                  onChange={(e) => {
+                    const val = e.target.value
+                    updateRoom({
+                      user_preferences: {
+                        ...room.user_preferences,
+                        birth_year: val ? Number(val) : undefined,
+                      },
+                    })
+                  }}
+                  min={1900}
+                  max={2100}
+                  className="h-8 text-xs"
+                />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">เพศ</Label>
+                <Select
+                  value={room.user_preferences?.gender ?? ""}
+                  onValueChange={(v) =>
+                    updateRoom({
+                      user_preferences: {
+                        ...room.user_preferences,
+                        gender: v as "male" | "female",
+                      },
+                    })
+                  }
+                >
+                  <SelectTrigger className="h-8 text-xs">
+                    <SelectValue placeholder="เลือก" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="male">ชาย</SelectItem>
+                    <SelectItem value="female">หญิง</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            {room.user_preferences?.birth_year && room.user_preferences?.gender && (
+              <p className="text-xs text-muted-foreground">
+                ระบบจะเลือกทิศหัวเตียงตามเลขกัวของคุณโดยอัตโนมัติ
+              </p>
+            )}
+          </section>
+
+          <Separator />
+
           {/* Zones (Studio only) */}
           {room.room_type === "studio_apartment" && (
             <section className="space-y-3">

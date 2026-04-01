@@ -303,7 +303,6 @@ export function TransformGizmo({ item }: TransformGizmoProps) {
         item.dimensions.height / 2 + item.pos_y,
         item.pos_z,
       ]}
-      rotation={[0, (item.rotation * Math.PI) / 180, 0]}
     >
       {/* X Axis Arrow */}
       <AxisArrow

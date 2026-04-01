@@ -30,6 +30,11 @@ export const ZoneDefinitionSchema = z.object({
   depth: z.number().positive(),
 })
 
+export const UserPreferencesSchema = z.object({
+  birth_year: z.number().int().min(1900).max(2100).optional(),
+  gender: z.enum(["male", "female"]).optional(),
+})
+
 export const RoomConfigSchema = z.object({
   width: z.number().positive(),
   depth: z.number().positive(),
@@ -39,4 +44,5 @@ export const RoomConfigSchema = z.object({
   windows: z.array(WindowPositionSchema).default([]),
   direction: WallSideSchema.default("north"),
   zones: z.array(ZoneDefinitionSchema).default([]),
+  user_preferences: UserPreferencesSchema.optional(),
 })

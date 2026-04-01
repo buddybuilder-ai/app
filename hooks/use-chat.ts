@@ -21,10 +21,12 @@ function layoutItemsToFurnitureInstances(
   existing: FurnitureInstance[] = []
 ): FurnitureInstance[] {
   // Preserve instanceId and model_url from items already in the scene
-  const existingMap = new Map(existing.map((f) => [f.id, f]))
+  // Key by instanceId since item.id from server is now the instanceId
+  const existingMap = new Map(existing.map((f) => [f.instanceId, f]))
 
   return items.map((item, i) => {
-    const prev = existingMap.get(item.id)
+    // item.id from server is the instanceId we sent
+    const prev = existingMap.get(item.id) ?? existingMap.get(item.furniture_id)
     return {
       id: item.id,
       name: item.name,
@@ -36,9 +38,9 @@ function layoutItemsToFurnitureInstances(
       dimensions: item.dimensions,
       is_essential: item.is_essential,
       feng_shui_notes: item.feng_shui_notes,
-      instanceId: prev?.instanceId ?? `${item.id}-${Date.now()}-${i}`,
+      instanceId: prev?.instanceId ?? item.id,
       model_url: item.model_url ?? prev?.model_url,
-      model_rotation_offset: prev?.model_rotation_offset ?? 0,
+      model_rotation_offset: item.model_rotation_offset ?? prev?.model_rotation_offset ?? 0,
     }
   })
 }
@@ -100,8 +102,8 @@ export function useChat() {
             message: text,
             mode,
             current_layout: furnitureItems.map((f) => ({
-              id: f.id,
-              furniture_id: f.id,
+              id: f.instanceId,
+              furniture_id: f.instanceId,
               name: f.name,
               category: f.category,
               pos_x: f.pos_x,
@@ -118,6 +120,7 @@ export function useChat() {
               doors: room.doors,
               windows: room.windows,
               direction: room.direction,
+              user_preferences: room.user_preferences ?? {},
             },
             conversation_history: conversationHistory,
             clarification_answers: clarificationAnswers,
