@@ -14,6 +14,7 @@ import {
   Settings2,
   Sparkles,
   Square,
+  Camera, // เพิ่ม Icon สำหรับ Scan
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Toggle } from "@/components/ui/toggle"
@@ -45,9 +46,10 @@ const tools: {
 
 interface EditorToolbarProps {
   projectId: string
+  onStartScan: () => void // รับฟังก์ชันสำหรับเปิด modal ถ่ายรูป
 }
 
-export function EditorToolbar({ projectId }: EditorToolbarProps) {
+export function EditorToolbar({ projectId, onStartScan }: EditorToolbarProps) {
   const activeTool = useEditorStore((s) => s.activeTool)
   const setActiveTool = useEditorStore((s) => s.setActiveTool)
   const viewMode = useEditorStore((s) => s.viewMode)
@@ -81,89 +83,116 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
 
       <Separator orientation="vertical" className="mx-1 h-6" />
 
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8"
-            onClick={undo}
-            disabled={!canUndo}
-          >
-            <Undo2 className="h-4 w-4" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Undo</TooltipContent>
-      </Tooltip>
+      {/* History Controls */}
+      <div className="flex items-center gap-0.5">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={undo}
+              disabled={!canUndo}
+            >
+              <Undo2 className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Undo</TooltipContent>
+        </Tooltip>
 
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8"
-            onClick={redo}
-            disabled={!canRedo}
-          >
-            <Redo2 className="h-4 w-4" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Redo</TooltipContent>
-      </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={redo}
+              disabled={!canRedo}
+            >
+              <Redo2 className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Redo</TooltipContent>
+        </Tooltip>
+      </div>
 
       <Separator orientation="vertical" className="mx-1 h-6" />
 
-      {tools.map((tool) => (
-        <Tooltip key={tool.id}>
+      {/* Editor Tools */}
+      <div className="flex items-center gap-0.5">
+        {tools.map((tool) => (
+          <Tooltip key={tool.id}>
+            <TooltipTrigger asChild>
+              <Toggle
+                size="sm"
+                pressed={activeTool === tool.id}
+                onPressedChange={() => setActiveTool(tool.id)}
+                className="h-8 w-8 p-0"
+              >
+                <tool.icon className="h-4 w-4" />
+              </Toggle>
+            </TooltipTrigger>
+            <TooltipContent>{tool.label}</TooltipContent>
+          </Tooltip>
+        ))}
+      </div>
+
+      <Separator orientation="vertical" className="mx-1 h-6" />
+
+      {/* View & Settings */}
+      <div className="flex items-center gap-0.5">
+        <Tooltip>
           <TooltipTrigger asChild>
             <Toggle
               size="sm"
-              pressed={activeTool === tool.id}
-              onPressedChange={() => setActiveTool(tool.id)}
-              className="h-8 w-8 p-0"
+              pressed={viewMode === "2d"}
+              onPressedChange={() =>
+                setViewMode(viewMode === "3d" ? "2d" : "3d")
+              }
+              className="h-8 gap-1 px-2"
             >
-              <tool.icon className="h-4 w-4" />
+              {viewMode === "3d" ? (
+                <Box className="h-4 w-4" />
+              ) : (
+                <Eye className="h-4 w-4" />
+              )}
+              <span className="hidden text-xs lg:inline">{viewMode.toUpperCase()}</span>
             </Toggle>
           </TooltipTrigger>
-          <TooltipContent>{tool.label}</TooltipContent>
+          <TooltipContent>เปลี่ยนมุมมอง</TooltipContent>
         </Tooltip>
-      ))}
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={toggleRoomSettings}
+            >
+              <Settings2 className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>ตั้งค่าห้อง</TooltipContent>
+        </Tooltip>
+      </div>
 
       <Separator orientation="vertical" className="mx-1 h-6" />
 
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Toggle
-            size="sm"
-            pressed={viewMode === "2d"}
-            onPressedChange={() =>
-              setViewMode(viewMode === "3d" ? "2d" : "3d")
-            }
-            className="h-8 gap-1 px-2"
-          >
-            {viewMode === "3d" ? (
-              <Box className="h-4 w-4" />
-            ) : (
-              <Eye className="h-4 w-4" />
-            )}
-            <span className="hidden text-xs lg:inline">{viewMode.toUpperCase()}</span>
-          </Toggle>
-        </TooltipTrigger>
-        <TooltipContent>Toggle View Mode</TooltipContent>
-      </Tooltip>
-
+      {/* Camera button (ใช้สำหรับถ่ายรูป) */}
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8"
-            onClick={toggleRoomSettings}
+            variant="outline"
+            size="sm"
+            className="h-8 gap-1.5 border-dashed border-primary/50 text-primary hover:bg-primary/5 hover:border-primary"
+            onClick={onStartScan}
           >
-            <Settings2 className="h-4 w-4" />
+            <Camera className="h-4 w-4" />
+            <span className="hidden text-xs lg:inline font-medium">ถ่ายรูปห้อง</span>
           </Button>
         </TooltipTrigger>
-        <TooltipContent>ตั้งค่าห้อง</TooltipContent>
+        <TooltipContent>ถ่ายรูปห้องด้วยกล้อง (AI วิเคราะห์ภาพ)</TooltipContent>
       </Tooltip>
 
       <Separator orientation="vertical" className="mx-1 h-6" />
@@ -185,13 +214,13 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
           >
             {isRunning ? (
               <>
-                <Square className="h-3.5 w-3.5" />
+                <Square className="h-3.5 w-3.5 fill-current" />
                 <span className="hidden text-xs lg:inline">หยุด</span>
               </>
             ) : (
               <>
                 <Sparkles className="h-3.5 w-3.5" />
-                <span className="hidden text-xs lg:inline">สร้าง Layout</span>
+                <span className="hidden text-xs lg:inline">AI Layout</span>
               </>
             )}
           </Button>
@@ -203,12 +232,13 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
 
       <div className="flex-1" />
 
+      {/* Final Actions */}
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 gap-1"
+            className="h-8 gap-1 hover:bg-primary/10 hover:text-primary transition-colors"
             onClick={handleSave}
           >
             <Save className="h-4 w-4" />
