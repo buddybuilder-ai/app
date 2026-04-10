@@ -59,7 +59,7 @@ export function NewProjectDialog() {
     }
   }
 
-  function handleCreate() {
+  async function handleCreate() {
     const roomConfig: RoomConfig = {
       width,
       depth,
@@ -85,9 +85,13 @@ export function NewProjectDialog() {
       direction,
       zones: [],
     }
-    const id = createProject(name || "Studio Design", roomConfig)
-    setOpen(false)
-    router.push(`/editor/${id}`)
+    try {
+      const id = await createProject(name || "Studio Design", roomConfig)
+      setOpen(false)
+      router.push(`/editor/${id}`)
+    } catch {
+      // createProject throws on network error — keep dialog open
+    }
   }
 
   const isCustom = preset === "custom"

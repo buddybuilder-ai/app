@@ -13,6 +13,7 @@ import { MobileBottomSheet } from "./mobile-bottom-sheet"
 import { ErrorBoundary } from "@/components/shared/error-boundary"
 import { LoadingSpinner } from "@/components/shared/loading-spinner"
 import { useProject } from "@/hooks/use-project"
+import { useChatStore } from "@/stores/chat-store"
 
 interface EditorWorkspaceProps {
   projectId: string
@@ -20,10 +21,13 @@ interface EditorWorkspaceProps {
 
 export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
   const { load } = useProject(projectId)
+  const setProjectId = useChatStore((s) => s.setProjectId)
 
   useEffect(() => {
+    setProjectId(projectId)
     load()
-  }, [load])
+    return () => setProjectId(null)
+  }, [load, projectId, setProjectId])
 
   return (
     <div className="relative h-full w-full">

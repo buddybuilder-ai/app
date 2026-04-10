@@ -23,6 +23,9 @@ interface ChatState {
   isLoading: boolean
   mode: ChatMode
 
+  // Active project ID for persistence
+  projectId: string | null
+
   // Chat history
   sessions: ChatSession[]
   activeSessionId: string | null
@@ -34,6 +37,7 @@ interface ChatState {
   toggleOpen: () => void
   setOpen: (open: boolean) => void
   setMode: (mode: ChatMode) => void
+  setProjectId: (id: string | null) => void
   addMessage: (message: ChatMessage) => void
   updateMessage: (id: string, updates: Partial<ChatMessage>) => void
   setLoading: (loading: boolean) => void
@@ -62,6 +66,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
   isLoading: false,
   mode: "buddy",
 
+  projectId: null,
+
   sessions: [],
   activeSessionId: null,
   showHistory: false,
@@ -71,6 +77,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
   toggleOpen: () => set((state) => ({ isOpen: !state.isOpen })),
   setOpen: (open) => set({ isOpen: open }),
   setMode: (mode) => set({ mode }),
+  setProjectId: (id) => set({ projectId: id }),
   addMessage: (message) =>
     set((state) => {
       const newMessages = [...state.messages, message]
