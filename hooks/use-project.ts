@@ -14,6 +14,7 @@ interface ApiProject {
 export function useProject(projectId: string) {
   const setRoom = useEditorStore((s) => s.setRoom)
   const setFurnitureItems = useEditorStore((s) => s.setFurnitureItems)
+  const furnitureItems = useEditorStore((s) => s.furnitureItems)
 
   const load = useCallback(async () => {
     try {
@@ -31,5 +32,15 @@ export function useProject(projectId: string) {
     }
   }, [projectId, setRoom, setFurnitureItems])
 
-  return { load }
+  /** Manual save — PATCHes latest_layout to backend. */
+  const save = useCallback(() => {
+    fetch(`/api/projects/${projectId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ latest_layout: furnitureItems }),
+    }).catch(() => {/* silent */})
+    return true
+  }, [projectId, furnitureItems])
+
+  return { load, save }
 }

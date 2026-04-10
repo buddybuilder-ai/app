@@ -50,8 +50,19 @@ export function useProjectManager() {
   }, [])
 
   useEffect(() => {
-    fetchProjects()
-  }, [fetchProjects])
+    let cancelled = false
+    fetch("/api/projects")
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data: ApiProject[]) => {
+        if (!cancelled) setProjects(data.map(toMeta))
+      })
+      .catch(() => {
+        /* network error */
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const createProject = useCallback(
     async (name: string, roomConfig: RoomConfig): Promise<string> => {

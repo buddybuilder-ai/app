@@ -1,7 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 
 const PROTECTED_PREFIXES = ["/dashboard", "/projects", "/editor"]
-const PUBLIC_PATHS = ["/login", "/register", "/"]
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
