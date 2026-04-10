@@ -50,7 +50,7 @@ export function ChatFullPage() {
     const trimmed = (content ?? text).trim()
     if (!trimmed || isLoading) return
     addMessage({
-      id: `user-${Date.now()}`,
+      id: `user-${crypto.randomUUID()}`,
       role: "user",
       content: trimmed,
       mode,
