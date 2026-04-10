@@ -4,6 +4,7 @@ import { History, Plus, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { useChatStore } from "@/stores/chat-store"
+import { useConversations } from "@/hooks/use-conversations"
 import { ChatMessageList } from "./chat-message-list"
 import { ChatInput } from "./chat-input"
 import { ChatHistory } from "./chat-history"
@@ -12,8 +13,7 @@ export function ChatPanel() {
   const setOpen = useChatStore((s) => s.setOpen)
   const showHistory = useChatStore((s) => s.showHistory)
   const setShowHistory = useChatStore((s) => s.setShowHistory)
-  const newSession = useChatStore((s) => s.newSession)
-  const sessions = useChatStore((s) => s.sessions)
+  const { conversations, newConversation } = useConversations()
 
   return (
     <Card className="flex h-[560px] w-[460px] flex-col overflow-hidden shadow-xl">
@@ -29,12 +29,12 @@ export function ChatPanel() {
           >
             <History className="h-4 w-4" />
           </Button>
-          {sessions.length > 0 && (
+          {conversations.length > 0 && (
             <Button
               variant="ghost"
               size="icon"
               className="h-7 w-7 text-muted-foreground hover:text-foreground"
-              onClick={newSession}
+              onClick={newConversation}
               title="แชทใหม่"
             >
               <Plus className="h-4 w-4" />
