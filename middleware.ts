@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 
-const PROTECTED_PREFIXES = ["/dashboard", "/projects", "/editor"]
+const PROTECTED_PREFIXES = ["/projects", "/editor", "/settings", "/chat"]
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -16,7 +16,7 @@ export function middleware(request: NextRequest) {
 
   // If already logged in and visiting auth pages, redirect to dashboard
   if (token && (pathname === "/login" || pathname === "/register")) {
-    return NextResponse.redirect(new URL("/dashboard", request.url))
+    return NextResponse.redirect(new URL("/projects", request.url))
   }
 
   return NextResponse.next()

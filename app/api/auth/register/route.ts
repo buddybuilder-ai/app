@@ -5,11 +5,16 @@ const FASTAPI_URL = process.env.FASTAPI_URL || "http://localhost:8000"
 export async function POST(request: NextRequest) {
   const body = await request.json()
 
-  const upstream = await fetch(`${FASTAPI_URL}/api/v1/auth/register`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  })
+  let upstream: Response
+  try {
+    upstream = await fetch(`${FASTAPI_URL}/api/v1/auth/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    })
+  } catch {
+    return NextResponse.json({ detail: "Backend unavailable" }, { status: 503 })
+  }
 
   if (!upstream.ok) {
     const error = await upstream.json().catch(() => ({ detail: "Registration failed" }))

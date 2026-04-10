@@ -1,8 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { DashboardSidebar } from "@/components/layout/dashboard-sidebar"
 import { DashboardHeader } from "@/components/layout/dashboard-header"
+import { useAuthStore } from "@/stores/auth-store"
 
 export default function DashboardLayout({
   children,
@@ -10,6 +11,11 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const fetchMe = useAuthStore((s) => s.fetchMe)
+
+  useEffect(() => {
+    fetchMe()
+  }, [fetchMe])
 
   return (
     <div className="flex h-screen">

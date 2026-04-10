@@ -5,21 +5,29 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Settings, LogOut, Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { useAuthStore } from "@/stores/auth-store"
 
 interface DashboardHeaderProps {
   onMenuClick?: () => void
 }
 
 export function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
+  const user = useAuthStore((s) => s.user)
+  const logout = useAuthStore((s) => s.logout)
+
+  const initials = user?.display_name
+    ? user.display_name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
+    : "U"
+
   return (
     <header className="flex h-16 items-center justify-between border-b px-4 sm:px-6">
-      {/* Hamburger — mobile only */}
       <Button
         variant="ghost"
         size="icon"
@@ -35,12 +43,18 @@ export function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
           <button className="flex items-center gap-2 rounded-full outline-none ring-ring focus-visible:ring-2">
             <Avatar className="h-8 w-8">
               <AvatarFallback className="bg-primary text-primary-foreground text-xs">
-                U
+                {initials}
               </AvatarFallback>
             </Avatar>
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
+          {user && (
+            <DropdownMenuLabel className="font-normal text-xs text-muted-foreground truncate">
+              {user.email}
+            </DropdownMenuLabel>
+          )}
+          <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
             <Link href="/settings" className="flex items-center gap-2">
               <Settings className="h-4 w-4" />
@@ -48,7 +62,10 @@ export function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
             </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem className="flex items-center gap-2 text-destructive">
+          <DropdownMenuItem
+            className="flex items-center gap-2 text-destructive focus:text-destructive"
+            onClick={logout}
+          >
             <LogOut className="h-4 w-4" />
             Sign Out
           </DropdownMenuItem>

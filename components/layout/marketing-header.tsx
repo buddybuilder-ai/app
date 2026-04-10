@@ -1,10 +1,11 @@
 "use client"
 
 import Link from "next/link"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Logo } from "@/components/shared/logo"
+import { useAuthStore } from "@/stores/auth-store"
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -14,6 +15,13 @@ const navLinks = [
 
 export function MarketingHeader() {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const user = useAuthStore((s) => s.user)
+  const fetchMe = useAuthStore((s) => s.fetchMe)
+  const logout = useAuthStore((s) => s.logout)
+
+  useEffect(() => {
+    fetchMe()
+  }, [fetchMe])
 
   return (
     <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -33,12 +41,25 @@ export function MarketingHeader() {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          <Button variant="ghost" asChild>
-            <Link href="/login">Login</Link>
-          </Button>
-          <Button asChild>
-            <Link href="/register">Get Started</Link>
-          </Button>
+          {user ? (
+            <>
+              <Button variant="ghost" asChild>
+                <Link href="/projects">My Projects</Link>
+              </Button>
+              <Button variant="outline" onClick={logout}>
+                Sign Out
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="ghost" asChild>
+                <Link href="/login">Login</Link>
+              </Button>
+              <Button asChild>
+                <Link href="/register">Get Started</Link>
+              </Button>
+            </>
+          )}
         </div>
 
         <Button
@@ -65,12 +86,25 @@ export function MarketingHeader() {
               </Link>
             ))}
             <div className="flex gap-2 pt-3">
-              <Button variant="ghost" asChild className="flex-1">
-                <Link href="/login">Login</Link>
-              </Button>
-              <Button asChild className="flex-1">
-                <Link href="/register">Get Started</Link>
-              </Button>
+              {user ? (
+                <>
+                  <Button variant="ghost" asChild className="flex-1">
+                    <Link href="/projects">My Projects</Link>
+                  </Button>
+                  <Button variant="outline" className="flex-1" onClick={logout}>
+                    Sign Out
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button variant="ghost" asChild className="flex-1">
+                    <Link href="/login">Login</Link>
+                  </Button>
+                  <Button asChild className="flex-1">
+                    <Link href="/register">Get Started</Link>
+                  </Button>
+                </>
+              )}
             </div>
           </nav>
         </div>

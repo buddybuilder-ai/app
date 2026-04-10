@@ -9,9 +9,9 @@ const footerLinks = {
     { href: "/projects", label: "My Projects" },
   ],
   resources: [
-    { href: "#", label: "Documentation" },
-    { href: "#", label: "Feng Shui Guide" },
-    { href: "#", label: "Design Tips" },
+    { href: "#documentation", label: "Documentation" },
+    { href: "#feng-shui-guide", label: "Feng Shui Guide" },
+    { href: "#design-tips", label: "Design Tips" },
   ],
 }
 

@@ -45,7 +45,7 @@ export function LoginForm() {
 
       const data = await resp.json()
       setUser(data.user)
-      router.push("/dashboard")
+      router.push("/projects")
     } catch {
       setError("Network error. Please try again.")
     } finally {
