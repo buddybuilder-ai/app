@@ -273,6 +273,16 @@ export function useLayoutPipeline() {
           }
         })
         setFurnitureItems(furnitureItems)
+
+        // Auto-save layout to backend
+        const projectId = useChatStore.getState().projectId
+        if (projectId) {
+          fetch(`/api/projects/${projectId}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ latest_layout: furnitureItems }),
+          }).catch(() => {/* silent */})
+        }
         break
       }
 

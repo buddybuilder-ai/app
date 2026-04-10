@@ -1,16 +1,16 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect } from "react"
 import { useChatStore } from "@/stores/chat-store"
+import type { ConversationMeta } from "@/stores/chat-store"
 
-export interface ConversationMeta {
-  id: string
-  title: string
-  created_at: string
-}
+export type { ConversationMeta }
 
 export function useConversations() {
-  const [conversations, setConversations] = useState<ConversationMeta[]>([])
+  const conversations = useChatStore((s) => s.conversations)
+  const setConversations = useChatStore((s) => s.setConversations)
+  const addConversation = useChatStore((s) => s.addConversation)
+  const removeConversation = useChatStore((s) => s.removeConversation)
   const setConversationId = useChatStore((s) => s.setConversationId)
   const conversationId = useChatStore((s) => s.conversationId)
   const setMessages = useChatStore((s) => s.setMessages)
@@ -19,17 +19,26 @@ export function useConversations() {
   const fetchList = useCallback(async () => {
     try {
       const resp = await fetch("/api/conversations")
-      if (!resp.ok) return
+      if (!resp.ok) {
+        console.warn("[useConversations] fetchList failed:", resp.status, resp.statusText)
+        return
+      }
       const data: ConversationMeta[] = await resp.json()
+      console.log("[useConversations] fetched conversations:", data.length)
       setConversations(data)
-    } catch {
-      // silent
+    } catch (err) {
+      console.error("[useConversations] fetchList error:", err)
     }
-  }, [])
+  }, [setConversations])
 
   useEffect(() => {
-    fetchList()
-  }, [fetchList])
+    // Read directly from store (not closure) to avoid stale value
+    const current = useChatStore.getState().conversations
+    if (current.length === 0) {
+      fetchList()
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const loadMessages = useCallback(
     async (convId: string) => {
@@ -71,19 +80,19 @@ export function useConversations() {
       })
       if (!resp.ok) return
       const conv: ConversationMeta = await resp.json()
-      setConversations((prev) => [conv, ...prev])
+      addConversation(conv)
       setConversationId(conv.id)
       clearMessages()
     } catch {
       // silent
     }
-  }, [setConversationId, clearMessages])
+  }, [addConversation, setConversationId, clearMessages])
 
   const deleteConversation = useCallback(
     async (convId: string) => {
       try {
         await fetch(`/api/conversations/${convId}`, { method: "DELETE" })
-        setConversations((prev) => prev.filter((c) => c.id !== convId))
+        removeConversation(convId)
         if (conversationId === convId) {
           clearMessages()
           setConversationId(null)
@@ -92,7 +101,7 @@ export function useConversations() {
         // silent
       }
     },
-    [conversationId, setConversationId, clearMessages]
+    [conversationId, setConversationId, clearMessages, removeConversation]
   )
 
   return {

@@ -43,26 +43,24 @@ export function ChatFullPage() {
   const mode = useChatStore((s) => s.mode)
   const setMode = useChatStore((s) => s.setMode)
   const addMessage = useChatStore((s) => s.addMessage)
-  const setConversationId = useChatStore((s) => s.setConversationId)
-  const { conversations, fetchList, switchConversation, newConversation } = useConversations()
+  const { fetchList, switchConversation, newConversation } = useConversations()
 
   useEffect(() => {
     let cancelled = false
 
     async function initConversation() {
+      // fetchList populates conversations in the store
       await fetchList()
       if (cancelled) return
 
-      // Re-read from store after fetch
-      const list = await fetch("/api/conversations")
-        .then((r) => r.ok ? r.json() : [])
-        .catch(() => []) as { id: string; title: string }[]
+      // Read conversations from store
+      const list = useChatStore.getState().conversations
 
       if (cancelled) return
 
-      const existing = list.find((c) => c.title === "General Chat")
-      if (existing) {
-        await switchConversation(existing.id)
+      if (list.length > 0) {
+        // Switch to the most recent conversation
+        await switchConversation(list[0].id)
       } else {
         await newConversation()
       }
@@ -71,7 +69,6 @@ export function ChatFullPage() {
     initConversation()
     return () => {
       cancelled = true
-      setConversationId(null)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])

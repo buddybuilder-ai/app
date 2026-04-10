@@ -10,6 +10,7 @@ import { Logo } from "@/components/shared/logo"
 import { Separator } from "@/components/ui/separator"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useChatStore } from "@/stores/chat-store"
+import { useConversations } from "@/hooks/use-conversations"
 
 const navItems = [
   { href: "/projects", label: "โปรเจค", icon: FolderOpen },
@@ -25,11 +26,8 @@ export function DashboardSidebar({ onClose }: DashboardSidebarProps) {
   const pathname = usePathname()
   const [collapsed, setCollapsed] = useState(false)
 
-  const sessions = useChatStore((s) => s.sessions)
-  const activeSessionId = useChatStore((s) => s.activeSessionId)
-  const newSession = useChatStore((s) => s.newSession)
-  const switchSession = useChatStore((s) => s.switchSession)
-  const deleteSession = useChatStore((s) => s.deleteSession)
+  const conversationId = useChatStore((s) => s.conversationId)
+  const { conversations, newConversation, switchConversation, deleteConversation } = useConversations()
 
   const isOnChat = pathname.startsWith("/chat")
 
@@ -95,34 +93,34 @@ export function DashboardSidebar({ onClose }: DashboardSidebarProps) {
               variant="ghost"
               size="icon"
               className="h-6 w-6 text-muted-foreground hover:text-foreground"
-              onClick={newSession}
+              onClick={newConversation}
               title="แชทใหม่"
             >
               <Plus className="h-3.5 w-3.5" />
             </Button>
           </div>
           <ScrollArea className="flex-1">
-            {sessions.length === 0 ? (
+            {conversations.length === 0 ? (
               <p className="px-4 py-3 text-xs text-muted-foreground/60">ยังไม่มีการสนทนา</p>
             ) : (
               <div className="space-y-0.5 px-2 pb-2">
-                {sessions.map((session) => (
+                {conversations.map((conv) => (
                   <div
-                    key={session.id}
+                    key={conv.id}
                     className={cn(
                       "group flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 transition-colors hover:bg-muted",
-                      session.id === activeSessionId && "bg-muted"
+                      conv.id === conversationId && "bg-muted"
                     )}
-                    onClick={() => switchSession(session.id)}
+                    onClick={() => switchConversation(conv.id)}
                   >
                     <span className="min-w-0 flex-1 truncate text-xs font-medium text-foreground/80">
-                      {session.title}
+                      {conv.title}
                     </span>
                     <Button
                       variant="ghost"
                       size="icon"
                       className="h-5 w-5 shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
-                      onClick={(e) => { e.stopPropagation(); deleteSession(session.id) }}
+                      onClick={(e) => { e.stopPropagation(); deleteConversation(conv.id) }}
                     >
                       <Trash2 className="h-3 w-3 text-muted-foreground" />
                     </Button>

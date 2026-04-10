@@ -2,6 +2,12 @@ import { create } from "zustand"
 import type { ChatMessage, ChatMode } from "@/types/chat"
 import type { ClarificationQuestion } from "@/types/pipeline"
 
+export interface ConversationMeta {
+  id: string
+  title: string
+  created_at: string
+}
+
 export interface ChatSession {
   id: string
   title: string
@@ -29,6 +35,9 @@ interface ChatState {
   // Active project ID for layout save
   projectId: string | null
 
+  // Conversation list (shared across components)
+  conversations: ConversationMeta[]
+
   // Chat history
   sessions: ChatSession[]
   activeSessionId: string | null
@@ -42,6 +51,9 @@ interface ChatState {
   setMode: (mode: ChatMode) => void
   setConversationId: (id: string | null) => void
   setProjectId: (id: string | null) => void
+  setConversations: (conversations: ConversationMeta[]) => void
+  addConversation: (conversation: ConversationMeta) => void
+  removeConversation: (id: string) => void
   addMessage: (message: ChatMessage) => void
   updateMessage: (id: string, updates: Partial<ChatMessage>) => void
   setLoading: (loading: boolean) => void
@@ -73,6 +85,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
   conversationId: null,
   projectId: null,
+  conversations: [],
 
   sessions: [],
   activeSessionId: null,
@@ -85,6 +98,11 @@ export const useChatStore = create<ChatState>((set, get) => ({
   setMode: (mode) => set({ mode }),
   setConversationId: (id) => set({ conversationId: id }),
   setProjectId: (id) => set({ projectId: id }),
+  setConversations: (conversations) => set({ conversations }),
+  addConversation: (conversation) =>
+    set((state) => ({ conversations: [conversation, ...state.conversations] })),
+  removeConversation: (id) =>
+    set((state) => ({ conversations: state.conversations.filter((c) => c.id !== id) })),
   addMessage: (message) =>
     set((state) => {
       const newMessages = [...state.messages, message]

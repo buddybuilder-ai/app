@@ -3,6 +3,19 @@
 import { useCallback, useRef } from "react"
 import { useChatStore } from "@/stores/chat-store"
 
+function updateConversationTitle(cid: string, text: string) {
+  const title = text.length > 40 ? text.slice(0, 40) + "…" : text
+  fetch(`/api/conversations/${cid}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title }),
+  }).then(() => {
+    // Update title in store
+    const { conversations, setConversations } = useChatStore.getState()
+    setConversations(conversations.map((c) => c.id === cid ? { ...c, title } : c))
+  }).catch(() => {/* silent */})
+}
+
 /**
  * RAG-only chat hook — ใช้กับหน้า /chat โดยเฉพาะ
  * เรียก /api/chat/rag (ไม่มี layout pipeline)
@@ -33,6 +46,15 @@ export function useRagChat() {
 
       // Persist user message (fire-and-forget)
       persistMessage("user", text)
+
+      // Auto-title: update on the first user message (exactly 1 user msg in store = this one)
+      const cid = useChatStore.getState().conversationId
+      const { conversations, messages: currentMessages } = useChatStore.getState()
+      const conv = conversations.find((c) => c.id === cid)
+      const userMsgCount = currentMessages.filter((m) => m.role === "user").length
+      if (cid && conv && userMsgCount === 1) {
+        updateConversationTitle(cid, text)
+      }
 
       const messageId = `assistant-${Date.now()}`
       addMessage({

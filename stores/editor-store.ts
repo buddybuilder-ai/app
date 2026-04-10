@@ -1,4 +1,20 @@
 import { create } from "zustand"
+import { useChatStore } from "@/stores/chat-store"
+
+let saveTimer: ReturnType<typeof setTimeout> | null = null
+
+function autoSaveLayout(items: import("@/types/editor").FurnitureInstance[]) {
+  if (saveTimer) clearTimeout(saveTimer)
+  saveTimer = setTimeout(() => {
+    const projectId = useChatStore.getState().projectId
+    if (!projectId) return
+    fetch(`/api/projects/${projectId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ latest_layout: items }),
+    }).catch(() => {/* silent */})
+  }, 1000) // debounce 1s
+}
 import type {
   RoomConfig,
   FurnitureInstance,
@@ -62,16 +78,19 @@ export const useEditorStore = create<EditorState>((set) => ({
   addFurniture: (item) =>
     set((state) => ({ furnitureItems: [...state.furnitureItems, item] })),
   removeFurniture: (id) =>
-    set((state) => ({
-      furnitureItems: state.furnitureItems.filter((f) => f.instanceId !== id),
-      selectedId: state.selectedId === id ? null : state.selectedId,
-    })),
+    set((state) => {
+      const furnitureItems = state.furnitureItems.filter((f) => f.instanceId !== id)
+      autoSaveLayout(furnitureItems)
+      return { furnitureItems, selectedId: state.selectedId === id ? null : state.selectedId }
+    }),
   updateFurniture: (id, updates) =>
-    set((state) => ({
-      furnitureItems: state.furnitureItems.map((f) =>
+    set((state) => {
+      const furnitureItems = state.furnitureItems.map((f) =>
         f.instanceId === id ? { ...f, ...updates } : f
-      ),
-    })),
+      )
+      autoSaveLayout(furnitureItems)
+      return { furnitureItems }
+    }),
   setFurnitureItems: (items) => set({ furnitureItems: items }),
 
   selectedId: null,
