@@ -52,6 +52,7 @@ export function useChat() {
   const setMode = useChatStore((s) => s.setMode)
   const mode = useChatStore((s) => s.mode)
   const messages = useChatStore((s) => s.messages)
+  const projectId = useChatStore((s) => s.projectId)
   const setPendingClarification = useChatStore((s) => s.setPendingClarification)
 
   const setFurnitureItems = useEditorStore((s) => s.setFurnitureItems)
@@ -72,9 +73,22 @@ export function useChat() {
 
   const abortRef = useRef<AbortController | null>(null)
 
+  const persistMessage = (role: "user" | "assistant", content: string, intent?: string) => {
+    const pid = useChatStore.getState().projectId
+    if (!pid || !content) return
+    fetch(`/api/projects/${pid}/messages`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ role, content, intent: intent ?? null }),
+    }).catch(() => {/* silent */})
+  }
+
   const send = useCallback(
     async (text: string, clarificationAnswers: Record<string, string> = {}) => {
       setLoading(true)
+
+      // Persist user message (fire-and-forget)
+      persistMessage("user", text)
 
       const messageId = `assistant-${Date.now()}`
       addMessage({
@@ -161,8 +175,10 @@ export function useChat() {
           }
         }
 
-        // Ensure thinking state is cleared
+        // Ensure thinking state is cleared and persist assistant reply
         updateMessage(messageId, { isThinking: false })
+        const assistantContent = useChatStore.getState().messages.find((m) => m.id === messageId)?.content
+        if (assistantContent) persistMessage("assistant", assistantContent)
       } catch (err) {
         if ((err as Error).name === "AbortError") return
         const errMsg = err instanceof Error ? err.message : "Something went wrong"
@@ -182,6 +198,7 @@ export function useChat() {
       setMode,
       mode,
       messages,
+      projectId,
       furnitureItems,
       room,
       setFurnitureItems,
@@ -303,6 +320,15 @@ export function useChat() {
           content: data.explanation || "",
           isThinking: false,
         })
+        // Auto-save latest layout to backend (fire-and-forget)
+        const pid = useChatStore.getState().projectId
+        if (pid && data.layout_items?.length) {
+          fetch(`/api/projects/${pid}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ latest_layout: data.layout_items }),
+          }).catch(() => {/* silent */})
+        }
         break
       }
 

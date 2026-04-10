@@ -4,49 +4,26 @@ import { useCallback } from "react"
 import { useEditorStore } from "@/stores/editor-store"
 import type { FurnitureInstance, RoomConfig } from "@/types/editor"
 
-interface ProjectData {
-  version: string
-  room: RoomConfig
-  furnitureItems: FurnitureInstance[]
-  savedAt: string
+interface ApiProject {
+  id: string
+  name: string
+  room_spec: RoomConfig
+  latest_layout: FurnitureInstance[] | null
 }
 
-const STORAGE_KEY_PREFIX = "buddybuilder-project-"
-
 export function useProject(projectId: string) {
-  const room = useEditorStore((s) => s.room)
-  const furnitureItems = useEditorStore((s) => s.furnitureItems)
   const setRoom = useEditorStore((s) => s.setRoom)
   const setFurnitureItems = useEditorStore((s) => s.setFurnitureItems)
 
-  const save = useCallback(() => {
-    const data: ProjectData = {
-      version: "1.0",
-      room,
-      furnitureItems,
-      savedAt: new Date().toISOString(),
-    }
-
+  const load = useCallback(async () => {
     try {
-      localStorage.setItem(
-        `${STORAGE_KEY_PREFIX}${projectId}`,
-        JSON.stringify(data)
-      )
-      return true
-    } catch {
-      return false
-    }
-  }, [projectId, room, furnitureItems])
+      const resp = await fetch(`/api/projects/${projectId}`)
+      if (!resp.ok) return false
 
-  const load = useCallback(() => {
-    try {
-      const raw = localStorage.getItem(`${STORAGE_KEY_PREFIX}${projectId}`)
-      if (!raw) return false
+      const data: ApiProject = await resp.json()
 
-      const data = JSON.parse(raw) as ProjectData
-
-      if (data.room) setRoom(data.room)
-      if (data.furnitureItems) setFurnitureItems(data.furnitureItems)
+      if (data.room_spec) setRoom(data.room_spec)
+      if (data.latest_layout?.length) setFurnitureItems(data.latest_layout)
 
       return true
     } catch {
@@ -54,14 +31,5 @@ export function useProject(projectId: string) {
     }
   }, [projectId, setRoom, setFurnitureItems])
 
-  const remove = useCallback(() => {
-    try {
-      localStorage.removeItem(`${STORAGE_KEY_PREFIX}${projectId}`)
-      return true
-    } catch {
-      return false
-    }
-  }, [projectId])
-
-  return { save, load, remove }
+  return { load }
 }
