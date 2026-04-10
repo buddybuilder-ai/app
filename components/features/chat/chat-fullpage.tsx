@@ -15,6 +15,7 @@ import {
   ChatContainerScrollAnchor,
 } from "@/components/ui/chat-container"
 import { useChatStore } from "@/stores/chat-store"
+import { useConversations } from "@/hooks/use-conversations"
 import { useRagChat } from "@/hooks/use-rag-chat"
 import { ChatMessage } from "./chat-message"
 import { cn } from "@/lib/utils"
@@ -43,54 +44,27 @@ export function ChatFullPage() {
   const setMode = useChatStore((s) => s.setMode)
   const addMessage = useChatStore((s) => s.addMessage)
   const setConversationId = useChatStore((s) => s.setConversationId)
-  const setMessages = useChatStore((s) => s.setMessages)
+  const { conversations, fetchList, switchConversation, newConversation } = useConversations()
 
   useEffect(() => {
     let cancelled = false
 
     async function initConversation() {
-      try {
-        // Find existing General Chat conversation
-        const listResp = await fetch("/api/conversations")
-        if (!listResp.ok) return
-        const list: { id: string; title: string }[] = await listResp.json()
-        const existing = list.find((c) => c.title === "General Chat")
+      await fetchList()
+      if (cancelled) return
 
-        let convId: string
-        if (existing) {
-          convId = existing.id
-        } else {
-          const createResp = await fetch("/api/conversations", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ title: "General Chat" }),
-          })
-          if (!createResp.ok) return
-          const created: { id: string } = await createResp.json()
-          convId = created.id
-        }
+      // Re-read from store after fetch
+      const list = await fetch("/api/conversations")
+        .then((r) => r.ok ? r.json() : [])
+        .catch(() => []) as { id: string; title: string }[]
 
-        if (cancelled) return
-        setConversationId(convId)
+      if (cancelled) return
 
-        // Load history
-        const msgResp = await fetch(`/api/conversations/${convId}/messages`)
-        if (!msgResp.ok || cancelled) return
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const msgs: any[] = await msgResp.json()
-        if (!cancelled) {
-          setMessages(
-            msgs.map((m) => ({
-              id: m.id,
-              role: m.role,
-              content: m.content,
-              mode: "buddy" as const,
-              timestamp: new Date(m.created_at),
-            }))
-          )
-        }
-      } catch {
-        // silent
+      const existing = list.find((c) => c.title === "General Chat")
+      if (existing) {
+        await switchConversation(existing.id)
+      } else {
+        await newConversation()
       }
     }
 
@@ -99,7 +73,8 @@ export function ChatFullPage() {
       cancelled = true
       setConversationId(null)
     }
-  }, [setConversationId, setMessages])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const { send } = useRagChat()
   const currentMode = MODES.find((m) => m.value === mode)!

@@ -4,15 +4,13 @@ import { ArrowLeft, MessageSquare, Plus, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useChatStore } from "@/stores/chat-store"
+import { useConversations } from "@/hooks/use-conversations"
 import { cn } from "@/lib/utils"
 
 export function ChatHistory() {
-  const sessions = useChatStore((s) => s.sessions)
-  const activeSessionId = useChatStore((s) => s.activeSessionId)
   const setShowHistory = useChatStore((s) => s.setShowHistory)
-  const switchSession = useChatStore((s) => s.switchSession)
-  const deleteSession = useChatStore((s) => s.deleteSession)
-  const newSession = useChatStore((s) => s.newSession)
+  const { conversations, conversationId, switchConversation, newConversation, deleteConversation } =
+    useConversations()
 
   return (
     <div className="flex h-full flex-col">
@@ -30,8 +28,8 @@ export function ChatHistory() {
           variant="ghost"
           size="icon"
           className="h-7 w-7"
-          onClick={() => {
-            newSession()
+          onClick={async () => {
+            await newConversation()
             setShowHistory(false)
           }}
         >
@@ -40,37 +38,33 @@ export function ChatHistory() {
       </div>
 
       <ScrollArea className="flex-1">
-        {sessions.length === 0 ? (
+        {conversations.length === 0 ? (
           <div className="px-4 py-8 text-center">
             <MessageSquare className="mx-auto h-8 w-8 text-muted-foreground/50" />
-            <p className="mt-2 text-xs text-muted-foreground">
-              ยังไม่มีประวัติการสนทนา
-            </p>
+            <p className="mt-2 text-xs text-muted-foreground">ยังไม่มีประวัติการสนทนา</p>
           </div>
         ) : (
           <div className="space-y-1 p-2">
-            {sessions.map((session) => {
-              const isActive = session.id === activeSessionId
-              const msgCount = session.messages.length
-              const timeStr = formatRelativeTime(session.updatedAt)
+            {conversations.map((conv) => {
+              const isActive = conv.id === conversationId
+              const timeStr = formatRelativeTime(new Date(conv.created_at))
 
               return (
                 <div
-                  key={session.id}
+                  key={conv.id}
                   className={cn(
                     "group flex cursor-pointer items-start gap-2 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-muted",
                     isActive && "bg-muted"
                   )}
-                  onClick={() => switchSession(session.id)}
+                  onClick={() => {
+                    switchConversation(conv.id)
+                    setShowHistory(false)
+                  }}
                 >
                   <MessageSquare className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-xs font-medium">
-                      {session.title}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground">
-                      {msgCount} ข้อความ · {timeStr}
-                    </p>
+                    <p className="truncate text-xs font-medium">{conv.title}</p>
+                    <p className="text-[10px] text-muted-foreground">{timeStr}</p>
                   </div>
                   <Button
                     variant="ghost"
@@ -78,7 +72,7 @@ export function ChatHistory() {
                     className="h-6 w-6 shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
                     onClick={(e) => {
                       e.stopPropagation()
-                      deleteSession(session.id)
+                      deleteConversation(conv.id)
                     }}
                   >
                     <Trash2 className="h-3 w-3 text-muted-foreground" />
