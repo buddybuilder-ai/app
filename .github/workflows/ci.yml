@@ -2,9 +2,9 @@ name: CI
 
 on:
   pull_request:
-    branches: [master,staging]
+    branches: [master, staging, Saperate-RAG-Only]
   push:
-    branches: [master,staging]
+    branches: [master, staging, Saperate-RAG-Only, feat/auth-and-projects]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
