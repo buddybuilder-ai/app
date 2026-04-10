@@ -1,82 +1,100 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useCallback, useEffect, useState } from "react"
 import type { RoomConfig } from "@/types/editor"
 
 export interface ProjectMeta {
   id: string
   name: string
   roomType: string
+  room_spec: Record<string, unknown>
+  latest_layout: Record<string, unknown>[] | null
   createdAt: string
   updatedAt: string
 }
 
-const INDEX_KEY = "buddybuilder-projects-index"
-const PROJECT_PREFIX = "buddybuilder-project-"
+interface ApiProject {
+  id: string
+  name: string
+  room_spec: Record<string, unknown>
+  latest_layout: Record<string, unknown>[] | null
+  created_at: string
+  updated_at: string
+}
 
-function loadProjects(): ProjectMeta[] {
-  try {
-    const raw = localStorage.getItem(INDEX_KEY)
-    if (raw) return JSON.parse(raw)
-  } catch {
-    // ignore parse errors
+function toMeta(p: ApiProject): ProjectMeta {
+  return {
+    id: p.id,
+    name: p.name,
+    roomType: (p.room_spec?.room_type as string) ?? "studio_apartment",
+    room_spec: p.room_spec,
+    latest_layout: p.latest_layout,
+    createdAt: p.created_at,
+    updatedAt: p.updated_at,
   }
-  return []
 }
 
 export function useProjectManager() {
-  const [projects, setProjects] = useState<ProjectMeta[]>(loadProjects)
+  const [projects, setProjects] = useState<ProjectMeta[]>([])
 
-  const saveIndex = useCallback((list: ProjectMeta[]) => {
-    localStorage.setItem(INDEX_KEY, JSON.stringify(list))
-    setProjects(list)
+  const fetchProjects = useCallback(async () => {
+    try {
+      const resp = await fetch("/api/projects")
+      if (resp.ok) {
+        const data: ApiProject[] = await resp.json()
+        setProjects(data.map(toMeta))
+      }
+    } catch {
+      // network error — keep empty list
+    }
   }, [])
 
+  useEffect(() => {
+    fetchProjects()
+  }, [fetchProjects])
+
   const createProject = useCallback(
-    (name: string, roomConfig: RoomConfig): string => {
-      const id = `proj-${Date.now()}`
-      const now = new Date().toISOString()
-      const meta: ProjectMeta = {
-        id,
-        name,
-        roomType: roomConfig.room_type,
-        createdAt: now,
-        updatedAt: now,
-      }
-      const data = {
-        version: "1.0",
-        room: roomConfig,
-        furnitureItems: [],
-        savedAt: now,
-      }
-      localStorage.setItem(`${PROJECT_PREFIX}${id}`, JSON.stringify(data))
-      const updated = [...projects, meta]
-      saveIndex(updated)
-      return id
+    async (name: string, roomConfig: RoomConfig): Promise<string> => {
+      const resp = await fetch("/api/projects", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, room_spec: roomConfig }),
+      })
+      if (!resp.ok) throw new Error("Failed to create project")
+      const project: ApiProject = await resp.json()
+      setProjects((prev) => [...prev, toMeta(project)])
+      return project.id
     },
-    [projects, saveIndex]
+    []
   )
 
-  const deleteProject = useCallback(
-    (id: string) => {
-      localStorage.removeItem(`${PROJECT_PREFIX}${id}`)
-      const updated = projects.filter((p) => p.id !== id)
-      saveIndex(updated)
+  const deleteProject = useCallback(async (id: string) => {
+    await fetch(`/api/projects/${id}`, { method: "DELETE" })
+    setProjects((prev) => prev.filter((p) => p.id !== id))
+  }, [])
+
+  const renameProject = useCallback(async (id: string, newName: string) => {
+    const resp = await fetch(`/api/projects/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: newName }),
+    })
+    if (resp.ok) {
+      const updated: ApiProject = await resp.json()
+      setProjects((prev) => prev.map((p) => (p.id === id ? toMeta(updated) : p)))
+    }
+  }, [])
+
+  const saveLayout = useCallback(
+    async (id: string, layout: Record<string, unknown>[]) => {
+      await fetch(`/api/projects/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ latest_layout: layout }),
+      })
     },
-    [projects, saveIndex]
+    []
   )
 
-  const renameProject = useCallback(
-    (id: string, newName: string) => {
-      const updated = projects.map((p) =>
-        p.id === id
-          ? { ...p, name: newName, updatedAt: new Date().toISOString() }
-          : p
-      )
-      saveIndex(updated)
-    },
-    [projects, saveIndex]
-  )
-
-  return { projects, createProject, deleteProject, renameProject }
+  return { projects, createProject, deleteProject, renameProject, saveLayout, fetchProjects }
 }
