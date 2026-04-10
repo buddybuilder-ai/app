@@ -9,10 +9,10 @@ import { useEditorStore } from "@/stores/editor-store"
 import { useUIStore } from "@/stores/ui-store"
 
 const SCORE_CATEGORIES = [
-  { key: "command_position" as const, label: "Command Position", max: 30 },
-  { key: "five_elements_balance" as const, label: "Five Elements", max: 20 },
-  { key: "chi_flow" as const, label: "Chi Flow", max: 25 },
-  { key: "sha_chi_avoidance" as const, label: "Sha Chi Avoidance", max: 25 },
+  { key: "command_position" as const, label: "ตำแหน่งบัญชาการ", max: 30 },
+  { key: "five_elements_balance" as const, label: "ธาตุทั้ง 5", max: 20 },
+  { key: "chi_flow" as const, label: "การไหลของชี่", max: 25 },
+  { key: "sha_chi_avoidance" as const, label: "การหลีกเลี่ยงซาชี่", max: 25 },
 ]
 
 function ScoreBar({
@@ -74,7 +74,7 @@ export function FengShuiPanel() {
       <div className="flex items-center justify-between border-b px-4 py-2">
         <div className="flex items-center gap-2">
           <Compass className="h-4 w-4 text-primary" />
-          <h2 className="text-sm font-semibold">Feng Shui Score</h2>
+          <h2 className="text-sm font-semibold">คะแนนฮวงจุ้ย</h2>
         </div>
         <Button
           variant="ghost"
@@ -92,7 +92,7 @@ export function FengShuiPanel() {
             <div className="py-12 text-center">
               <Compass className="mx-auto h-10 w-10 text-muted-foreground/30" />
               <p className="mt-3 text-sm text-muted-foreground">
-                Generate a layout to see Feng Shui analysis
+                สร้างผังห้องเพื่อดูการวิเคราะห์ฮวงจุ้ย
               </p>
             </div>
           ) : (
@@ -137,12 +137,12 @@ export function FengShuiPanel() {
                   className="text-xs"
                 >
                   {totalPct >= 80
-                    ? "Excellent"
+                    ? "ดีเยี่ยม"
                     : totalPct >= 60
-                      ? "Good"
+                      ? "ดี"
                       : totalPct >= 40
-                        ? "Needs Work"
-                        : "Poor"}
+                        ? "ต้องปรับปรุง"
+                        : "ไม่ดี"}
                 </Badge>
               </div>
 
@@ -151,7 +151,7 @@ export function FengShuiPanel() {
               {/* Breakdown */}
               <div>
                 <h3 className="mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  Score Breakdown
+                  รายละเอียดคะแนน
                 </h3>
                 <div className="space-y-3">
                   {SCORE_CATEGORIES.map((cat) => (
@@ -171,10 +171,10 @@ export function FengShuiPanel() {
               <div>
                 <h3 className="mb-3 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
                   <Lightbulb className="h-3.5 w-3.5" />
-                  Tips
+                  เคล็ดลับ
                 </h3>
                 <p className="text-xs text-muted-foreground">
-                  Detailed recommendations will appear here after analysis.
+                  คำแนะนำโดยละเอียดจะปรากฏที่นี่หลังการวิเคราะห์
                 </p>
               </div>
             </div>

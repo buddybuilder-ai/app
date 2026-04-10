@@ -47,7 +47,7 @@ export function LoginForm() {
       setUser(data.user)
       router.push("/projects")
     } catch {
-      setError("Network error. Please try again.")
+      setError("เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองอีกครั้ง")
     } finally {
       setIsLoading(false)
     }
@@ -59,8 +59,8 @@ export function LoginForm() {
 
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Welcome Back</CardTitle>
-          <CardDescription>Sign in to your BuddyBuilder AI account</CardDescription>
+          <CardTitle className="text-2xl">ยินดีต้อนรับกลับ</CardTitle>
+          <CardDescription>เข้าสู่ระบบบัญชี BuddyBuilder AI ของคุณ</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
@@ -70,7 +70,7 @@ export function LoginForm() {
               </p>
             )}
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">อีเมล</Label>
               <Input
                 id="email"
                 type="email"
@@ -81,11 +81,11 @@ export function LoginForm() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">รหัสผ่าน</Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="Enter your password"
+                placeholder="ใส่รหัสผ่านของคุณ"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -94,12 +94,12 @@ export function LoginForm() {
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
             <Button className="w-full" type="submit" disabled={isLoading}>
-              {isLoading ? "Signing in..." : "Sign In"}
+              {isLoading ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
             </Button>
             <p className="text-center text-sm text-muted-foreground">
-              Don&apos;t have an account?{" "}
+              ยังไม่มีบัญชี?{" "}
               <Link href="/register" className="font-medium text-primary hover:underline">
-                Sign up
+                สมัครสมาชิก
               </Link>
             </p>
           </CardFooter>

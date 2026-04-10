@@ -85,16 +85,16 @@ export function PipelinePanel() {
         {fengShuiScore && !isRunning && (
           <div className="mt-2 rounded bg-muted/50 p-2">
             <div className="text-xs font-medium mb-1">
-              Feng Shui Score:{" "}
+              คะแนนฮวงจุ้ย:{" "}
               <span className="font-bold">
                 {Object.values(fengShuiScore).reduce((a, b) => a + b, 0)}/100
               </span>
             </div>
             <div className="grid grid-cols-2 gap-1 text-xs text-muted-foreground">
-              <span>Command: {fengShuiScore.command_position}/30</span>
-              <span>Elements: {fengShuiScore.five_elements_balance}/20</span>
-              <span>Chi Flow: {fengShuiScore.chi_flow}/25</span>
-              <span>Sha Chi: {fengShuiScore.sha_chi_avoidance}/25</span>
+              <span>บัญชาการ: {fengShuiScore.command_position}/30</span>
+              <span>ธาตุ: {fengShuiScore.five_elements_balance}/20</span>
+              <span>ชี่: {fengShuiScore.chi_flow}/25</span>
+              <span>ซาชี่: {fengShuiScore.sha_chi_avoidance}/25</span>
             </div>
           </div>
         )}

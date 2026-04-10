@@ -12,9 +12,9 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { useChatStore } from "@/stores/chat-store"
 
 const navItems = [
-  { href: "/projects", label: "Projects", icon: FolderOpen },
-  { href: "/chat", label: "Chat", icon: MessageCircle },
-  { href: "/settings", label: "Settings", icon: Settings },
+  { href: "/projects", label: "โปรเจค", icon: FolderOpen },
+  { href: "/chat", label: "แชท", icon: MessageCircle },
+  { href: "/settings", label: "ตั้งค่า", icon: Settings },
 ]
 
 interface DashboardSidebarProps {

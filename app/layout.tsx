@@ -7,9 +7,9 @@ import { Toaster } from "@/components/ui/sonner"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "BuddyBuilder AI - AI-Powered 3D Interior Design",
+  title: "BuddyBuilder AI - ออกแบบห้องด้วย AI และฮวงจุ้ย",
   description:
-    "AI-Powered 3D Interior Design Platform with Feng Shui analysis and smart furniture placement",
+    "แพลตฟอร์มออกแบบห้อง 3 มิติด้วย AI พร้อมการวิเคราะห์ฮวงจุ้ยและการจัดวางเฟอร์นิเจอร์อัจฉริยะ",
 }
 
 export default function RootLayout({

@@ -65,7 +65,7 @@ export function PropertiesPanel() {
         {/* Position */}
         <div>
           <h3 className="mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            Position
+            ตำแหน่ง
           </h3>
           <div className="grid grid-cols-3 gap-2">
             <div className="space-y-1">
@@ -106,7 +106,7 @@ export function PropertiesPanel() {
         {/* Rotation */}
         <div>
           <h3 className="mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            Rotation
+            การหมุน
           </h3>
           <div className="flex items-center gap-3">
             <RotateCw className="h-4 w-4 shrink-0 text-muted-foreground" />
@@ -141,19 +141,19 @@ export function PropertiesPanel() {
         {/* Dimensions (read-only) */}
         <div>
           <h3 className="mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            Dimensions
+            ขนาด
           </h3>
           <div className="grid grid-cols-3 gap-2">
             <div className="space-y-1">
-              <Label className="text-xs text-muted-foreground">Width</Label>
+              <Label className="text-xs text-muted-foreground">กว้าง</Label>
               <p className="text-sm">{item.dimensions.width}m</p>
             </div>
             <div className="space-y-1">
-              <Label className="text-xs text-muted-foreground">Depth</Label>
+              <Label className="text-xs text-muted-foreground">ลึก</Label>
               <p className="text-sm">{item.dimensions.depth}m</p>
             </div>
             <div className="space-y-1">
-              <Label className="text-xs text-muted-foreground">Height</Label>
+              <Label className="text-xs text-muted-foreground">สูง</Label>
               <p className="text-sm">{item.dimensions.height}m</p>
             </div>
           </div>
@@ -164,18 +164,18 @@ export function PropertiesPanel() {
         {/* Info */}
         <div>
           <h3 className="mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            Info
+            ข้อมูล
           </h3>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Category</span>
+              <span className="text-muted-foreground">หมวดหมู่</span>
               <span className="capitalize">
                 {item.category.replace("_", " ")}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Essential</span>
-              <span>{item.is_essential ? "Yes" : "No"}</span>
+              <span className="text-muted-foreground">จำเป็น</span>
+              <span>{item.is_essential ? "ใช่" : "ไม่"}</span>
             </div>
           </div>
         </div>
@@ -185,12 +185,12 @@ export function PropertiesPanel() {
         <div>
           <h3 className="mb-3 flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
             <AlertTriangle className="h-3.5 w-3.5" />
-            Feng Shui Issues
+            ปัญหาฮวงจุ้ย
           </h3>
           {violations.length === 0 ? (
             <div className="flex items-center gap-2 rounded-md bg-green-50 p-2 text-xs text-green-700 dark:bg-green-950 dark:text-green-300">
               <span>✓</span>
-              <span>No Feng Shui Issues</span>
+              <span>ไม่มีปัญหาฮวงจุ้ย</span>
             </div>
           ) : (
             <div className="space-y-2">
@@ -219,7 +219,7 @@ export function PropertiesPanel() {
             <Separator />
             <div>
               <h3 className="mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                Feng Shui Notes
+                บันทึกฮวงจุ้ย
               </h3>
               <ul className="space-y-1">
                 {item.feng_shui_notes.map((note, i) => (
@@ -242,7 +242,7 @@ export function PropertiesPanel() {
           onClick={handleDelete}
         >
           <Trash2 className="mr-2 h-4 w-4" />
-          Delete
+          ลบ
         </Button>
       </div>
     </div>

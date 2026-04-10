@@ -7,21 +7,21 @@ import { Separator } from "@/components/ui/separator"
 export default function SettingsPage() {
   return (
     <div className="mx-auto max-w-2xl">
-      <h1 className="text-2xl font-bold">Settings</h1>
-      <p className="mt-1 text-muted-foreground">Manage your account settings</p>
+      <h1 className="text-2xl font-bold">ตั้งค่า</h1>
+      <p className="mt-1 text-muted-foreground">จัดการการตั้งค่าบัญชีของคุณ</p>
 
       <div className="mt-8 space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>Profile</CardTitle>
+            <CardTitle>โปรไฟล์</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="displayName">Display Name</Label>
-              <Input id="displayName" placeholder="Your name" />
+              <Label htmlFor="displayName">ชื่อที่แสดง</Label>
+              <Input id="displayName" placeholder="ชื่อของคุณ" />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="settingsEmail">Email</Label>
+              <Label htmlFor="settingsEmail">อีเมล</Label>
               <Input
                 id="settingsEmail"
                 type="email"
@@ -29,26 +29,26 @@ export default function SettingsPage() {
                 disabled
               />
             </div>
-            <Button>Save Changes</Button>
+            <Button>บันทึกการเปลี่ยนแปลง</Button>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Preferences</CardTitle>
+            <CardTitle>การตั้งค่า</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label>Language</Label>
+              <Label>ภาษา</Label>
               <p className="text-sm text-muted-foreground">
-                Language settings will be available in a future update.
+                การตั้งค่าภาษาจะพร้อมใช้งานในอัปเดตถัดไป
               </p>
             </div>
             <Separator />
             <div className="space-y-2">
-              <Label>Theme</Label>
+              <Label>ธีม</Label>
               <p className="text-sm text-muted-foreground">
-                Theme settings will be available in a future update.
+                การตั้งค่าธีมจะพร้อมใช้งานในอัปเดตถัดไป
               </p>
             </div>
           </CardContent>

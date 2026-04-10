@@ -37,10 +37,10 @@ const tools: {
   icon: typeof MousePointer2
   label: string
 }[] = [
-  { id: "select", icon: MousePointer2, label: "Select" },
-  { id: "move", icon: Move, label: "Move" },
-  { id: "rotate", icon: RotateCcw, label: "Rotate" },
-  { id: "delete", icon: Trash2, label: "Delete" },
+  { id: "select", icon: MousePointer2, label: "เลือก" },
+  { id: "move", icon: Move, label: "ย้าย" },
+  { id: "rotate", icon: RotateCcw, label: "หมุน" },
+  { id: "delete", icon: Trash2, label: "ลบ" },
 ]
 
 interface EditorToolbarProps {
@@ -93,7 +93,7 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
             <Undo2 className="h-4 w-4" />
           </Button>
         </TooltipTrigger>
-        <TooltipContent>Undo</TooltipContent>
+        <TooltipContent>เลิกทำ</TooltipContent>
       </Tooltip>
 
       <Tooltip>
@@ -108,7 +108,7 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
             <Redo2 className="h-4 w-4" />
           </Button>
         </TooltipTrigger>
-        <TooltipContent>Redo</TooltipContent>
+        <TooltipContent>ทำซ้ำ</TooltipContent>
       </Tooltip>
 
       <Separator orientation="vertical" className="mx-1 h-6" />
@@ -149,7 +149,7 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
             <span className="hidden text-xs lg:inline">{viewMode.toUpperCase()}</span>
           </Toggle>
         </TooltipTrigger>
-        <TooltipContent>Toggle View Mode</TooltipContent>
+        <TooltipContent>สลับโหมดมุมมอง</TooltipContent>
       </Tooltip>
 
       <Tooltip>
@@ -212,10 +212,10 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
             onClick={handleSave}
           >
             <Save className="h-4 w-4" />
-            <span className="hidden text-xs lg:inline">Save</span>
+            <span className="hidden text-xs lg:inline">บันทึก</span>
           </Button>
         </TooltipTrigger>
-        <TooltipContent>Save Project</TooltipContent>
+        <TooltipContent>บันทึกโปรเจค</TooltipContent>
       </Tooltip>
     </div>
   )

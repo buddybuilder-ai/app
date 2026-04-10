@@ -8,15 +8,15 @@ export function CTASection() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Ready to Transform Your Space?
+            พร้อมเปลี่ยนพื้นที่ของคุณหรือยัง?
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            Start designing with AI-powered Feng Shui guidance today.
-            No design experience needed.
+            เริ่มออกแบบด้วยคำแนะนำฮวงจุ้ยจาก AI วันนี้
+            ไม่จำเป็นต้องมีประสบการณ์ออกแบบ
           </p>
           <Button size="lg" className="mt-8" asChild>
             <Link href="/register">
-              Get Started Free
+              เริ่มใช้งานฟรี
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>

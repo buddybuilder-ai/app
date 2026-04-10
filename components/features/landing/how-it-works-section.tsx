@@ -1,21 +1,21 @@
 const steps = [
   {
     step: "01",
-    title: "Create Your Room",
+    title: "สร้างห้องของคุณ",
     description:
-      "Set up your room dimensions, doors, and windows. Choose the room type and direction.",
+      "กำหนดขนาดห้อง ประตู และหน้าต่าง เลือกประเภทห้องและทิศทาง",
   },
   {
     step: "02",
-    title: "Design with AI",
+    title: "ออกแบบด้วย AI",
     description:
-      "Chat with our AI companion or let it auto-generate a layout based on Feng Shui principles.",
+      "สนทนากับผู้ช่วย AI หรือให้มันสร้างผังห้องอัตโนมัติตามหลักฮวงจุ้ย",
   },
   {
     step: "03",
-    title: "Customize in 3D",
+    title: "ปรับแต่งใน 3 มิติ",
     description:
-      "Fine-tune your design in the 3D editor. Drag, rotate, and adjust furniture to your liking.",
+      "ปรับแต่งแบบห้องในโปรแกรมแก้ไข 3 มิติ ลาก หมุน และจัดวางเฟอร์นิเจอร์ตามต้องการ",
   },
 ]
 
@@ -25,10 +25,10 @@ export function HowItWorksSection() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            How It Works
+            ขั้นตอนการใช้งาน
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            Three simple steps to your perfect interior.
+            สามขั้นตอนง่ายๆ สู่ห้องในฝันของคุณ
           </p>
         </div>
 

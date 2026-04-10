@@ -9,18 +9,18 @@ export function HeroSection() {
         <div className="mx-auto max-w-2xl text-center">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border bg-muted px-4 py-1.5 text-sm">
             <Sparkles className="h-4 w-4 text-primary" />
-            <span>AI-Powered Interior Design</span>
+            <span>ออกแบบห้องด้วย AI</span>
           </div>
 
           <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
-            Design Your Space with{" "}
-            <span className="text-primary">AI & Feng Shui</span>
+            ออกแบบห้องของคุณด้วย{" "}
+            <span className="text-primary">AI และฮวงจุ้ย</span>
           </h1>
 
           <p className="mt-6 text-lg leading-8 text-muted-foreground">
-            Create beautiful, harmonious interiors with our AI companion.
-            Drag & drop furniture in 3D, get real-time Feng Shui analysis,
-            and let AI generate optimal layouts for your space.
+            สร้างพื้นที่อาศัยที่สวยงามและกลมกลืนด้วยผู้ช่วย AI อัจฉริยะ
+            ลาก วาง เฟอร์นิเจอร์ใน 3 มิติ รับการวิเคราะห์ฮวงจุ้ยแบบเรียลไทม์
+            และให้ AI สร้างผังห้องที่เหมาะสมที่สุดสำหรับคุณ
           </p>
 
           <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
@@ -32,7 +32,7 @@ export function HeroSection() {
             </Button>
             <Button size="lg" variant="outline" asChild>
               <Link href="/register">
-                Start Designing
+                เริ่มออกแบบ
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
@@ -44,7 +44,7 @@ export function HeroSection() {
 
         <div className="mt-16 rounded-xl border bg-muted/50 p-4">
           <div className="aspect-video rounded-lg bg-linear-to-br from-primary/10 via-background to-primary/5 flex items-center justify-center">
-            <p className="text-muted-foreground">3D Editor Preview</p>
+            <p className="text-muted-foreground">ตัวอย่างโปรแกรมแก้ไข 3 มิติ</p>
           </div>
         </div>
       </div>

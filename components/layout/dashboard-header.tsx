@@ -58,7 +58,7 @@ export function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
           <DropdownMenuItem asChild>
             <Link href="/settings" className="flex items-center gap-2">
               <Settings className="h-4 w-4" />
-              Settings
+              ตั้งค่า
             </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
@@ -67,7 +67,7 @@ export function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
             onClick={logout}
           >
             <LogOut className="h-4 w-4" />
-            Sign Out
+            ออกจากระบบ
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

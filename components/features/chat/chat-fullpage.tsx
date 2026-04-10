@@ -21,9 +21,9 @@ import { cn } from "@/lib/utils"
 import type { ChatMode } from "@/types/chat"
 
 const MODES: { value: ChatMode; label: string; description: string }[] = [
-  { value: "mentor", label: "Mentor", description: "คำแนะนำเชิงลึก" },
-  { value: "buddy", label: "Buddy", description: "เป็นกันเอง" },
-  { value: "fun", label: "Fun", description: "สนุกสนาน" },
+  { value: "mentor", label: "ที่ปรึกษา", description: "คำแนะนำเชิงลึก" },
+  { value: "buddy", label: "เพื่อน", description: "เป็นกันเอง" },
+  { value: "fun", label: "สนุก", description: "สนุกสนาน" },
 ]
 
 const RAG_SUGGESTIONS = [

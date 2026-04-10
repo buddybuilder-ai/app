@@ -11,39 +11,39 @@ import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/ca
 const features = [
   {
     icon: Box,
-    title: "3D Interior Editor",
+    title: "โปรแกรมแก้ไข 3 มิติ",
     description:
-      "Drag & drop furniture in a real-time 3D environment with lighting and shadows.",
+      "ลาก วาง เฟอร์นิเจอร์ในสภาพแวดล้อม 3 มิติแบบเรียลไทม์พร้อมแสงและเงา",
   },
   {
     icon: MessageSquare,
-    title: "AI Chat Companion",
+    title: "ผู้ช่วย AI แชท",
     description:
-      "Get personalized design advice powered by RAG with verified references.",
+      "รับคำแนะนำการออกแบบเฉพาะตัวที่ขับเคลื่อนด้วย RAG พร้อมการอ้างอิงที่ตรวจสอบแล้ว",
   },
   {
     icon: Compass,
-    title: "Feng Shui Analysis",
+    title: "วิเคราะห์ฮวงจุ้ย",
     description:
-      "Automatic scoring and recommendations based on traditional Feng Shui principles.",
+      "การให้คะแนนและคำแนะนำอัตโนมัติตามหลักฮวงจุ้ยดั้งเดิม",
   },
   {
     icon: Wand2,
-    title: "Auto Layout Generation",
+    title: "สร้างผังห้องอัตโนมัติ",
     description:
-      "Let AI create optimal furniture arrangements with one click.",
+      "ให้ AI สร้างการจัดวางเฟอร์นิเจอร์ที่เหมาะสมที่สุดด้วยคลิกเดียว",
   },
   {
     icon: Languages,
-    title: "Thai & English",
+    title: "รองรับภาษาไทย",
     description:
-      "Full bilingual support for both the UI and AI conversations.",
+      "รองรับภาษาไทยเต็มรูปแบบทั้ง UI และการสนทนากับ AI",
   },
   {
     icon: BarChart3,
-    title: "Data-Driven Insights",
+    title: "ข้อมูลเชิงลึก",
     description:
-      "Design recommendations backed by real data and trend analysis.",
+      "คำแนะนำการออกแบบที่สนับสนุนด้วยข้อมูลจริงและการวิเคราะห์แนวโน้ม",
   },
 ]
 
@@ -53,10 +53,10 @@ export function FeaturesSection() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Everything You Need to Design
+            ทุกสิ่งที่คุณต้องการสำหรับการออกแบบ
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            Powerful tools combined with AI intelligence for effortless interior design.
+            เครื่องมือทรงพลังผสานกับ AI อัจฉริยะเพื่อการออกแบบภายในที่ง่ายดาย
           </p>
         </div>
 

@@ -43,7 +43,7 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
                 <div className="text-center">
                   <LoadingSpinner size="lg" className="mx-auto" />
                   <p className="mt-4 text-sm text-muted-foreground">
-                    Loading 3D Editor...
+                    กำลังโหลดโปรแกรมแก้ไข 3 มิติ...
                   </p>
                 </div>
               </div>

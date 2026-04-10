@@ -32,12 +32,12 @@ export function RegisterForm() {
     setError(null)
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match")
+      setError("รหัสผ่านไม่ตรงกัน")
       return
     }
 
     if (password.length < 8) {
-      setError("Password must be at least 8 characters")
+      setError("รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร")
       return
     }
 
@@ -60,7 +60,7 @@ export function RegisterForm() {
       setUser(data.user)
       router.push("/projects")
     } catch {
-      setError("Network error. Please try again.")
+      setError("เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองอีกครั้ง")
     } finally {
       setIsLoading(false)
     }
@@ -72,8 +72,8 @@ export function RegisterForm() {
 
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Create Account</CardTitle>
-          <CardDescription>Start designing your space with AI</CardDescription>
+          <CardTitle className="text-2xl">สร้างบัญชี</CardTitle>
+          <CardDescription>เริ่มต้นออกแบบพื้นที่ของคุณด้วย AI</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
@@ -83,17 +83,17 @@ export function RegisterForm() {
               </p>
             )}
             <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
+              <Label htmlFor="name">ชื่อ-นามสกุล</Label>
               <Input
                 id="name"
-                placeholder="Enter your name"
+                placeholder="ใส่ชื่อของคุณ"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">อีเมล</Label>
               <Input
                 id="email"
                 type="email"
@@ -104,22 +104,22 @@ export function RegisterForm() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">รหัสผ่าน</Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="Create a password (min 8 chars)"
+                placeholder="สร้างรหัสผ่าน (ขั้นต่ำ 8 ตัวอักษร)"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Label htmlFor="confirmPassword">ยืนยันรหัสผ่าน</Label>
               <Input
                 id="confirmPassword"
                 type="password"
-                placeholder="Confirm your password"
+                placeholder="ยืนยันรหัสผ่านของคุณ"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
@@ -128,12 +128,12 @@ export function RegisterForm() {
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
             <Button className="w-full" type="submit" disabled={isLoading}>
-              {isLoading ? "Creating account..." : "Create Account"}
+              {isLoading ? "กำลังสร้างบัญชี..." : "สร้างบัญชี"}
             </Button>
             <p className="text-center text-sm text-muted-foreground">
-              Already have an account?{" "}
+              มีบัญชีอยู่แล้ว?{" "}
               <Link href="/login" className="font-medium text-primary hover:underline">
-                Sign in
+                เข้าสู่ระบบ
               </Link>
             </p>
           </CardFooter>

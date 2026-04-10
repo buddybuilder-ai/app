@@ -8,9 +8,9 @@ import { Logo } from "@/components/shared/logo"
 import { useAuthStore } from "@/stores/auth-store"
 
 const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "#features", label: "Features" },
-  { href: "#how-it-works", label: "How It Works" },
+  { href: "/", label: "หน้าแรก" },
+  { href: "#features", label: "ฟีเจอร์" },
+  { href: "#how-it-works", label: "ขั้นตอนการใช้งาน" },
 ]
 
 export function MarketingHeader() {
@@ -44,19 +44,19 @@ export function MarketingHeader() {
           {user ? (
             <>
               <Button variant="ghost" asChild>
-                <Link href="/projects">My Projects</Link>
+                <Link href="/projects">โปรเจคของฉัน</Link>
               </Button>
               <Button variant="outline" onClick={logout}>
-                Sign Out
+                ออกจากระบบ
               </Button>
             </>
           ) : (
             <>
               <Button variant="ghost" asChild>
-                <Link href="/login">Login</Link>
+                <Link href="/login">เข้าสู่ระบบ</Link>
               </Button>
               <Button asChild>
-                <Link href="/register">Get Started</Link>
+                <Link href="/register">เริ่มใช้งาน</Link>
               </Button>
             </>
           )}
@@ -89,19 +89,19 @@ export function MarketingHeader() {
               {user ? (
                 <>
                   <Button variant="ghost" asChild className="flex-1">
-                    <Link href="/projects">My Projects</Link>
+                    <Link href="/projects">โปรเจคของฉัน</Link>
                   </Button>
                   <Button variant="outline" className="flex-1" onClick={logout}>
-                    Sign Out
+                    ออกจากระบบ
                   </Button>
                 </>
               ) : (
                 <>
                   <Button variant="ghost" asChild className="flex-1">
-                    <Link href="/login">Login</Link>
+                    <Link href="/login">เข้าสู่ระบบ</Link>
                   </Button>
                   <Button asChild className="flex-1">
-                    <Link href="/register">Get Started</Link>
+                    <Link href="/register">เริ่มใช้งาน</Link>
                   </Button>
                 </>
               )}

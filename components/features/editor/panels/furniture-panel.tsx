@@ -102,7 +102,7 @@ export function FurniturePanel() {
               <Sofa className="h-4 w-4" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent side="right">Furniture Panel</TooltipContent>
+          <TooltipContent side="right">แผงเฟอร์นิเจอร์</TooltipContent>
         </Tooltip>
       </div>
     )
@@ -116,7 +116,7 @@ export function FurniturePanel() {
     >
       {/* Header */}
       <div className="flex items-center justify-between border-b px-3 py-2">
-        <h2 className="text-sm font-semibold">Furniture</h2>
+        <h2 className="text-sm font-semibold">เฟอร์นิเจอร์</h2>
         <Button
           variant="ghost"
           size="icon"
@@ -132,7 +132,7 @@ export function FurniturePanel() {
         <div className="relative">
           <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
           <Input
-            placeholder="Search furniture..."
+            placeholder="ค้นหาเฟอร์นิเจอร์..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="h-8 pl-8 text-sm"
@@ -146,7 +146,7 @@ export function FurniturePanel() {
           <div className="mb-2 flex items-center gap-1.5">
             <Lightbulb className="h-3.5 w-3.5 text-amber-500" />
             <span className="text-xs font-medium text-muted-foreground">
-              Filter by zone
+              กรองตามโซน
             </span>
           </div>
           <div className="flex flex-wrap gap-1.5">
@@ -156,7 +156,7 @@ export function FurniturePanel() {
               className="h-6 px-2 text-xs"
               onClick={() => setSelectedZone(null)}
             >
-              All
+              ทั้งหมด
             </Button>
             {Object.entries(zoneRecommendations).map(([key, zone]) => (
               <Button
@@ -217,7 +217,7 @@ export function FurniturePanel() {
 
           {filtered.length === 0 && (
             <p className="py-8 text-center text-sm text-muted-foreground">
-              No furniture found
+              ไม่พบเฟอร์นิเจอร์
             </p>
           )}
         </div>

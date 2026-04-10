@@ -68,7 +68,7 @@ export function FurnitureCard({ item, onAdd }: FurnitureCardProps) {
           <p className="truncate text-sm font-medium">{item.name}</p>
           {item.is_essential && (
             <Badge variant="secondary" className="h-4 px-1 text-[10px]">
-              Essential
+              จำเป็น
             </Badge>
           )}
         </div>

@@ -86,7 +86,7 @@ export function NewProjectDialog() {
       zones: [],
     }
     try {
-      const id = await createProject(name || "Studio Design", roomConfig)
+      const id = await createProject(name || "ออกแบบสตูดิโอ", roomConfig)
       setOpen(false)
       router.push(`/editor/${id}`)
     } catch {
@@ -101,7 +101,7 @@ export function NewProjectDialog() {
       <DialogTrigger asChild>
         <Button>
           <Plus className="mr-2 h-4 w-4" />
-          New Project
+          โปรเจคใหม่
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-lg">
@@ -118,7 +118,7 @@ export function NewProjectDialog() {
             <Label htmlFor="projectName">ชื่อโปรเจกต์</Label>
             <Input
               id="projectName"
-              placeholder="Studio Design"
+              placeholder="ออกแบบสตูดิโอ"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />

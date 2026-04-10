@@ -33,16 +33,16 @@ export class ErrorBoundary extends Component<
       return (
         <div className="flex h-full min-h-[200px] items-center justify-center p-8">
           <div className="text-center">
-            <h2 className="text-lg font-semibold">Something went wrong</h2>
+            <h2 className="text-lg font-semibold">เกิดข้อผิดพลาด</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              {this.state.error?.message || "An unexpected error occurred"}
+              {this.state.error?.message || "เกิดข้อผิดพลาดที่ไม่คาดคิด"}
             </p>
             <Button
               className="mt-4"
               variant="outline"
               onClick={() => this.setState({ hasError: false, error: null })}
             >
-              Try again
+              ลองอีกครั้ง
             </Button>
           </div>
         </div>
