@@ -3,7 +3,7 @@
 import { useCallback } from "react"
 
 interface SaveMessageParams {
-  projectId: string
+  conversationId: string
   role: "user" | "assistant"
   content: string
   intent?: string
@@ -15,9 +15,9 @@ interface SaveMessageParams {
  */
 export function useChatPersistence() {
   const saveMessage = useCallback(async (params: SaveMessageParams) => {
-    if (!params.projectId || !params.content) return
+    if (!params.conversationId || !params.content) return
     try {
-      await fetch(`/api/projects/${params.projectId}/messages`, {
+      await fetch(`/api/conversations/${params.conversationId}/messages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -31,10 +31,10 @@ export function useChatPersistence() {
     }
   }, [])
 
-  const loadMessages = useCallback(async (projectId: string) => {
-    if (!projectId) return []
+  const loadMessages = useCallback(async (conversationId: string) => {
+    if (!conversationId) return []
     try {
-      const resp = await fetch(`/api/projects/${projectId}/messages`)
+      const resp = await fetch(`/api/conversations/${conversationId}/messages`)
       if (resp.ok) return await resp.json()
     } catch {
       // silent

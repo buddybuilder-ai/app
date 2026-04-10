@@ -22,12 +22,16 @@ interface EditorWorkspaceProps {
 export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
   const { load } = useProject(projectId)
   const setProjectId = useChatStore((s) => s.setProjectId)
+  const setConversationId = useChatStore((s) => s.setConversationId)
 
   useEffect(() => {
     setProjectId(projectId)
     load()
-    return () => setProjectId(null)
-  }, [load, projectId, setProjectId])
+    return () => {
+      setProjectId(null)
+      setConversationId(null)
+    }
+  }, [load, projectId, setProjectId, setConversationId])
 
   return (
     <div className="relative h-full w-full">

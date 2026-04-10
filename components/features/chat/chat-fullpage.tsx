@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Bot, ArrowUp, ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -42,6 +42,19 @@ export function ChatFullPage() {
   const mode = useChatStore((s) => s.mode)
   const setMode = useChatStore((s) => s.setMode)
   const addMessage = useChatStore((s) => s.addMessage)
+  const setConversationId = useChatStore((s) => s.setConversationId)
+
+  useEffect(() => {
+    fetch("/api/conversations", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: "General Chat" }),
+    })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => { if (data?.id) setConversationId(data.id) })
+      .catch(() => {})
+    return () => setConversationId(null)
+  }, [setConversationId])
 
   const { send } = useRagChat()
   const currentMode = MODES.find((m) => m.value === mode)!

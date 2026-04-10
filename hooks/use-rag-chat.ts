@@ -13,12 +13,26 @@ export function useRagChat() {
   const setLoading = useChatStore((s) => s.setLoading)
   const mode = useChatStore((s) => s.mode)
   const messages = useChatStore((s) => s.messages)
+  const conversationId = useChatStore((s) => s.conversationId)
+
+  const persistMessage = (role: "user" | "assistant", content: string) => {
+    const cid = useChatStore.getState().conversationId
+    if (!cid || !content) return
+    fetch(`/api/conversations/${cid}/messages`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ role, content, intent: null }),
+    }).catch(() => {/* silent */})
+  }
 
   const abortRef = useRef<AbortController | null>(null)
 
   const send = useCallback(
     async (text: string) => {
       setLoading(true)
+
+      // Persist user message (fire-and-forget)
+      persistMessage("user", text)
 
       const messageId = `assistant-${Date.now()}`
       addMessage({
@@ -87,6 +101,8 @@ export function useRagChat() {
         }
 
         updateMessage(messageId, { isThinking: false })
+        const assistantContent = useChatStore.getState().messages.find((m) => m.id === messageId)?.content
+        if (assistantContent) persistMessage("assistant", assistantContent)
       } catch (err) {
         if ((err as Error).name === "AbortError") return
         const errMsg = err instanceof Error ? err.message : "Something went wrong"
@@ -95,7 +111,7 @@ export function useRagChat() {
         setLoading(false)
       }
     },
-    [addMessage, updateMessage, setLoading, mode, messages]
+    [addMessage, updateMessage, setLoading, mode, messages, conversationId]
   )
 
   const cancel = useCallback(() => {

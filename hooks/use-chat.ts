@@ -52,6 +52,7 @@ export function useChat() {
   const setMode = useChatStore((s) => s.setMode)
   const mode = useChatStore((s) => s.mode)
   const messages = useChatStore((s) => s.messages)
+  const conversationId = useChatStore((s) => s.conversationId)
   const projectId = useChatStore((s) => s.projectId)
   const setPendingClarification = useChatStore((s) => s.setPendingClarification)
 
@@ -74,9 +75,9 @@ export function useChat() {
   const abortRef = useRef<AbortController | null>(null)
 
   const persistMessage = (role: "user" | "assistant", content: string, intent?: string) => {
-    const pid = useChatStore.getState().projectId
-    if (!pid || !content) return
-    fetch(`/api/projects/${pid}/messages`, {
+    const cid = useChatStore.getState().conversationId
+    if (!cid || !content) return
+    fetch(`/api/conversations/${cid}/messages`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ role, content, intent: intent ?? null }),
@@ -198,6 +199,7 @@ export function useChat() {
       setMode,
       mode,
       messages,
+      conversationId,
       projectId,
       furnitureItems,
       room,
