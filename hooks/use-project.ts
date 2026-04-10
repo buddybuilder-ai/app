@@ -18,6 +18,7 @@ export function useProject(projectId: string) {
   const setFurnitureItems = useEditorStore((s) => s.setFurnitureItems)
   const furnitureItems = useEditorStore((s) => s.furnitureItems)
   const setConversationId = useChatStore((s) => s.setConversationId)
+  const setMessages = useChatStore((s) => s.setMessages)
 
   const load = useCallback(async () => {
     try {
@@ -28,13 +29,30 @@ export function useProject(projectId: string) {
 
       if (data.room_spec) setRoom(data.room_spec)
       if (data.latest_layout?.length) setFurnitureItems(data.latest_layout)
-      if (data.conversation_id) setConversationId(data.conversation_id)
+      if (data.conversation_id) {
+        setConversationId(data.conversation_id)
+        // Load chat history
+        const msgResp = await fetch(`/api/conversations/${data.conversation_id}/messages`)
+        if (msgResp.ok) {
+          const msgs = await msgResp.json()
+          setMessages(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            msgs.map((m: any) => ({
+              id: m.id,
+              role: m.role,
+              content: m.content,
+              mode: "buddy" as const,
+              timestamp: new Date(m.created_at),
+            }))
+          )
+        }
+      }
 
       return true
     } catch {
       return false
     }
-  }, [projectId, setRoom, setFurnitureItems, setConversationId])
+  }, [projectId, setRoom, setFurnitureItems, setConversationId, setMessages])
 
   /** Manual save — PATCHes latest_layout to backend. */
   const save = useCallback(() => {

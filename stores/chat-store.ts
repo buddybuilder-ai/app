@@ -46,6 +46,7 @@ interface ChatState {
   updateMessage: (id: string, updates: Partial<ChatMessage>) => void
   setLoading: (loading: boolean) => void
   clearMessages: () => void
+  setMessages: (messages: ChatMessage[]) => void
 
   // History actions
   setShowHistory: (show: boolean) => void
@@ -137,6 +138,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
     }),
   setLoading: (loading) => set({ isLoading: loading }),
   clearMessages: () => set({ messages: [] }),
+  setMessages: (messages) => set({ messages }),
 
   setShowHistory: (show) => set({ showHistory: show }),
 
