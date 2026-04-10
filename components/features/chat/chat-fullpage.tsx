@@ -43,18 +43,63 @@ export function ChatFullPage() {
   const setMode = useChatStore((s) => s.setMode)
   const addMessage = useChatStore((s) => s.addMessage)
   const setConversationId = useChatStore((s) => s.setConversationId)
+  const setMessages = useChatStore((s) => s.setMessages)
 
   useEffect(() => {
-    fetch("/api/conversations", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title: "General Chat" }),
-    })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => { if (data?.id) setConversationId(data.id) })
-      .catch(() => {})
-    return () => setConversationId(null)
-  }, [setConversationId])
+    let cancelled = false
+
+    async function initConversation() {
+      try {
+        // Find existing General Chat conversation
+        const listResp = await fetch("/api/conversations")
+        if (!listResp.ok) return
+        const list: { id: string; title: string }[] = await listResp.json()
+        const existing = list.find((c) => c.title === "General Chat")
+
+        let convId: string
+        if (existing) {
+          convId = existing.id
+        } else {
+          const createResp = await fetch("/api/conversations", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ title: "General Chat" }),
+          })
+          if (!createResp.ok) return
+          const created: { id: string } = await createResp.json()
+          convId = created.id
+        }
+
+        if (cancelled) return
+        setConversationId(convId)
+
+        // Load history
+        const msgResp = await fetch(`/api/conversations/${convId}/messages`)
+        if (!msgResp.ok || cancelled) return
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const msgs: any[] = await msgResp.json()
+        if (!cancelled) {
+          setMessages(
+            msgs.map((m) => ({
+              id: m.id,
+              role: m.role,
+              content: m.content,
+              mode: "buddy" as const,
+              timestamp: new Date(m.created_at),
+            }))
+          )
+        }
+      } catch {
+        // silent
+      }
+    }
+
+    initConversation()
+    return () => {
+      cancelled = true
+      setConversationId(null)
+    }
+  }, [setConversationId, setMessages])
 
   const { send } = useRagChat()
   const currentMode = MODES.find((m) => m.value === mode)!
