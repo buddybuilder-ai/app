@@ -5,8 +5,7 @@ import { BoxGeometry, Box3, Vector3, ArrowHelper, type Mesh, type Object3D, type
 import { useGLTF } from "@react-three/drei"
 import { useEditorStore } from "@/stores/editor-store"
 import type { FurnitureInstance } from "@/types/editor"
-import { TransformGizmo } from "./transform-gizmo"
-import { RotationGizmo } from "./rotation-gizmo"
+import { FurnitureGizmo } from "./furniture-gizmo"
 import { FengShuiAlert } from "./feng-shui-alert"
 
 // Debug: show front-facing arrow on furniture (red = front direction)
@@ -268,19 +267,17 @@ export function FurnitureMesh({ item }: FurnitureMeshProps) {
   )
 }
 
-// Component that renders furniture with gizmo when selected in move/rotate mode
+// Selecting any furniture shows the consumer-friendly disc+ring gizmo:
+// drag the disc to move (floor plane, snap 10 cm) or drag the outer ring
+// to rotate (yaw only, snap 15°). Hold Shift for free / non-snapped drag.
 export function FurnitureMeshWithGizmo({ item }: FurnitureMeshProps) {
   const selectedId = useEditorStore((s) => s.selectedId)
-  const activeTool = useEditorStore((s) => s.activeTool)
   const isSelected = selectedId === item.instanceId
-  const isMoveMode = activeTool === "move"
-  const isRotateMode = activeTool === "rotate"
 
   return (
     <>
       <FurnitureMesh item={item} />
-      {isSelected && isMoveMode && <TransformGizmo item={item} />}
-      {isSelected && isRotateMode && <RotationGizmo item={item} />}
+      {isSelected && <FurnitureGizmo item={item} />}
     </>
   )
 }
