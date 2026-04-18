@@ -10,7 +10,8 @@ function forwardHeaders(request: NextRequest): HeadersInit {
 }
 
 export async function GET(request: NextRequest) {
-  const resp = await fetch(`${FASTAPI_URL}/api/v1/conversations`, {
+  const search = request.nextUrl.search
+  const resp = await fetch(`${FASTAPI_URL}/api/v1/conversations${search}`, {
     headers: forwardHeaders(request),
   }).catch(() => null)
   if (!resp) return NextResponse.json({ detail: "Backend unavailable" }, { status: 503 })

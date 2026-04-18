@@ -13,6 +13,7 @@ import { MobileBottomSheet } from "./mobile-bottom-sheet"
 import { ErrorBoundary } from "@/components/shared/error-boundary"
 import { LoadingSpinner } from "@/components/shared/loading-spinner"
 import { useProject } from "@/hooks/use-project"
+import { useConversations } from "@/hooks/use-conversations"
 import { useChatStore } from "@/stores/chat-store"
 
 interface EditorWorkspaceProps {
@@ -23,15 +24,21 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
   const { load } = useProject(projectId)
   const setProjectId = useChatStore((s) => s.setProjectId)
   const setConversationId = useChatStore((s) => s.setConversationId)
+  const conversationId = useChatStore((s) => s.conversationId)
+  const { loadMessages } = useConversations()
 
   useEffect(() => {
     setProjectId(projectId)
+    setConversationId(null)
     load()
     return () => {
       setProjectId(null)
-      setConversationId(null)
     }
   }, [load, projectId, setProjectId, setConversationId])
+
+  useEffect(() => {
+    if (conversationId) loadMessages(conversationId)
+  }, [conversationId, loadMessages])
 
   return (
     <div className="relative h-full w-full">

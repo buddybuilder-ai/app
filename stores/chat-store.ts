@@ -5,6 +5,7 @@ import type { ClarificationQuestion } from "@/types/pipeline"
 export interface ConversationMeta {
   id: string
   title: string
+  kind: string
   created_at: string
 }
 

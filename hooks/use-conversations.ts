@@ -6,7 +6,7 @@ import type { ConversationMeta } from "@/stores/chat-store"
 
 export type { ConversationMeta }
 
-export function useConversations() {
+export function useConversations(kind: "general" | "project" | null = "general") {
   const conversations = useChatStore((s) => s.conversations)
   const setConversations = useChatStore((s) => s.setConversations)
   const addConversation = useChatStore((s) => s.addConversation)
@@ -18,7 +18,8 @@ export function useConversations() {
 
   const fetchList = useCallback(async () => {
     try {
-      const resp = await fetch("/api/conversations")
+      const url = kind ? `/api/conversations?kind=${kind}` : "/api/conversations"
+      const resp = await fetch(url)
       if (!resp.ok) {
         console.warn("[useConversations] fetchList failed:", resp.status, resp.statusText)
         return
@@ -29,7 +30,7 @@ export function useConversations() {
     } catch (err) {
       console.error("[useConversations] fetchList error:", err)
     }
-  }, [setConversations])
+  }, [setConversations, kind])
 
   useEffect(() => {
     // Read directly from store (not closure) to avoid stale value
