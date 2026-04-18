@@ -29,7 +29,12 @@ import type { RoomConfig } from "@/types/editor"
 type PresetKey = "small" | "medium" | "large" | "custom"
 type WallSide = "north" | "south" | "east" | "west"
 
-export function NewProjectDialog() {
+interface NewProjectDialogProps {
+  /** Optional custom trigger. Defaults to a button labelled "โปรเจคใหม่". */
+  trigger?: React.ReactNode
+}
+
+export function NewProjectDialog({ trigger }: NewProjectDialogProps = {}) {
   const [open, setOpen] = useState(false)
   const router = useRouter()
   const { createProject } = useProjectManager()
@@ -99,10 +104,12 @@ export function NewProjectDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          โปรเจคใหม่
-        </Button>
+        {trigger ?? (
+          <Button>
+            <Plus className="mr-2 h-4 w-4" />
+            โปรเจคใหม่
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="max-w-lg">
         <DialogHeader>

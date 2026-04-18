@@ -12,7 +12,7 @@ import {
   Trash2,
   X,
 } from "lucide-react"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { cn } from "@/lib/utils"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -30,6 +30,7 @@ import { useChatStore } from "@/stores/chat-store"
 import { useAuthStore } from "@/stores/auth-store"
 import { useConversations } from "@/hooks/use-conversations"
 import { useProjectManager } from "@/hooks/use-project-manager"
+import { NewProjectDialog } from "@/components/features/projects/new-project-dialog"
 
 interface DashboardSidebarProps {
   onClose?: () => void
@@ -50,6 +51,11 @@ export function DashboardSidebar({ onClose }: DashboardSidebarProps) {
 
   const [search, setSearch] = useState("")
   const [showAllProjects, setShowAllProjects] = useState(false)
+  // Dialog is mounted only after hydration to avoid Radix id mismatch when
+  // multiple NewProjectDialog instances exist on the same tree (sidebar +
+  // /projects page).
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
 
   const filteredConversations = useMemo(() => {
     const q = search.trim().toLowerCase()
@@ -117,13 +123,29 @@ export function DashboardSidebar({ onClose }: DashboardSidebarProps) {
             <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
               โปรเจกต์
             </span>
-            <Link
-              href="/projects"
-              className="text-xs text-muted-foreground hover:text-foreground"
-              onClick={onClose}
-            >
-              ดูทั้งหมด
-            </Link>
+            <div className="flex items-center gap-1">
+              {mounted && (
+                <NewProjectDialog
+                  trigger={
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-5 w-5 text-muted-foreground hover:text-foreground"
+                      title="สร้างโปรเจกต์ใหม่"
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                    </Button>
+                  }
+                />
+              )}
+              <Link
+                href="/projects"
+                className="text-xs text-muted-foreground hover:text-foreground"
+                onClick={onClose}
+              >
+                ดูทั้งหมด
+              </Link>
+            </div>
           </div>
           {projects.length === 0 ? (
             <Link
