@@ -6,7 +6,7 @@ import { SceneCanvas } from "./canvas/scene-canvas"
 import { FurniturePanel } from "./panels/furniture-panel"
 import { PropertiesPanel } from "./panels/properties-panel"
 import { FengShuiPanel } from "./panels/feng-shui-panel"
-import { RoomSettingsPanel } from "./panels/room-settings-panel"
+import { RoomSettingsDialog } from "./dialogs/room-settings-dialog"
 import { ChatWidget } from "@/components/features/chat/chat-widget"
 import { MobileBottomNav } from "./mobile-bottom-nav"
 import { MobileBottomSheet } from "./mobile-bottom-sheet"
@@ -71,7 +71,7 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
 
       {/* Right panels */}
       <FengShuiPanel />
-      <RoomSettingsPanel />
+      <RoomSettingsDialog projectId={projectId} />
 
       {/* Chat — desktop floating widget */}
       <ChatWidget />
