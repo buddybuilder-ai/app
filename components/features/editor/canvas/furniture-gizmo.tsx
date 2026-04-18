@@ -41,6 +41,7 @@ function snap(value: number, step: number): number {
 export function FurnitureGizmo({ item }: FurnitureGizmoProps) {
   const { camera, raycaster, gl } = useThree()
   const updateFurniture = useEditorStore((s) => s.updateFurniture)
+  const beginTransaction = useEditorStore((s) => s.beginTransaction)
   const room = useEditorStore((s) => s.room)
   const setIsGizmoDragging = useEditorStore((s) => s.setIsGizmoDragging)
 
@@ -90,6 +91,7 @@ export function FurnitureGizmo({ item }: FurnitureGizmoProps) {
 
       setActiveZone(zone)
       setIsGizmoDragging(true)
+      beginTransaction()
 
       pivot.current.set(item.pos_x, 0, item.pos_z)
       initialPos.current = { x: item.pos_x, z: item.pos_z }
@@ -107,7 +109,7 @@ export function FurnitureGizmo({ item }: FurnitureGizmoProps) {
       }
       document.body.style.cursor = "grabbing"
     },
-    [item.pos_x, item.pos_z, item.rotation, screenToFloor, setIsGizmoDragging]
+    [item.pos_x, item.pos_z, item.rotation, screenToFloor, setIsGizmoDragging, beginTransaction]
   )
 
   const handlePointerMove = useCallback(
@@ -137,7 +139,7 @@ export function FurnitureGizmo({ item }: FurnitureGizmoProps) {
           newZ = snap(newZ, MOVE_SNAP)
         }
 
-        updateFurniture(item.instanceId, { pos_x: newX, pos_z: newZ })
+        updateFurniture(item.instanceId, { pos_x: newX, pos_z: newZ }, { skipHistory: true })
       } else {
         // Rotate: angle around pivot
         const angle = Math.atan2(hit.z - pivot.current.z, hit.x - pivot.current.x)
@@ -150,7 +152,7 @@ export function FurnitureGizmo({ item }: FurnitureGizmoProps) {
         while (newRot >= 360) newRot -= 360
 
         if (!e.shiftKey) newRot = snap(newRot, ROTATE_SNAP_DEG)
-        updateFurniture(item.instanceId, { rotation: newRot })
+        updateFurniture(item.instanceId, { rotation: newRot }, { skipHistory: true })
       }
     },
     [

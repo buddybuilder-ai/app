@@ -69,7 +69,7 @@ export function FengShuiPanel() {
         : "text-red-600"
 
   return (
-    <div className="fixed right-0 top-12 bottom-0 z-20 hidden w-80 flex-col border-l bg-background lg:flex">
+    <div className="absolute left-3 top-3 z-20 hidden max-h-[calc(100%-1.5rem)] w-80 flex-col overflow-hidden rounded-lg border bg-background shadow-lg lg:flex">
       {/* Header */}
       <div className="flex items-center justify-between border-b px-4 py-2">
         <div className="flex items-center gap-2">

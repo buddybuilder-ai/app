@@ -87,30 +87,12 @@ export function FurniturePanel() {
     if (item) handleAdd(item)
   }
 
-  // Collapsed state - icon strip
-  if (!isOpen) {
-    return (
-      <div className="fixed left-0 top-12 bottom-0 z-20 hidden w-12 flex-col items-center border-r bg-background pt-2 lg:flex">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-9 w-9"
-              onClick={toggle}
-            >
-              <Sofa className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="right">แผงเฟอร์นิเจอร์</TooltipContent>
-        </Tooltip>
-      </div>
-    )
-  }
+  // Mobile-only: this component now only renders inside mobile bottom sheet
+  if (!isOpen) return null
 
   return (
     <div
-      className="fixed left-0 top-12 bottom-0 z-20 hidden w-72 flex-col border-r bg-background lg:flex"
+      className="flex h-full w-full flex-col bg-background"
       onDragOver={(e) => e.preventDefault()}
       onDrop={handleDrop}
     >
@@ -203,7 +185,7 @@ export function FurniturePanel() {
               <h3 className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
                 {group.group}
               </h3>
-              <div className="space-y-1.5">
+              <div className="grid grid-cols-2 gap-2">
                 {group.items.map((item) => (
                   <FurnitureCard
                     key={item.id}

@@ -48,6 +48,8 @@ export function useProject(projectId: string) {
   const setRoom = useEditorStore((s) => s.setRoom)
   const setFurnitureItems = useEditorStore((s) => s.setFurnitureItems)
   const furnitureItems = useEditorStore((s) => s.furnitureItems)
+  const name = useEditorStore((s) => s.projectName)
+  const setProjectName = useEditorStore((s) => s.setProjectName)
   const setConversationId = useChatStore((s) => s.setConversationId)
 
   const load = useCallback(async () => {
@@ -57,15 +59,35 @@ export function useProject(projectId: string) {
 
       const data: ApiProject = await resp.json()
 
+      if (data.name) setProjectName(data.name)
       if (data.room_spec) setRoom(data.room_spec)
-      if (data.latest_layout?.length) setFurnitureItems(data.latest_layout)
+      if (data.latest_layout?.length) setFurnitureItems(data.latest_layout, { skipHistory: true })
       if (data.conversation_id) setConversationId(data.conversation_id)
 
       return true
     } catch {
       return false
     }
-  }, [projectId, setRoom, setFurnitureItems, setConversationId])
+  }, [projectId, setRoom, setFurnitureItems, setConversationId, setProjectName])
+
+  const rename = useCallback(
+    async (newName: string) => {
+      const trimmed = newName.trim()
+      if (!trimmed || trimmed === name) return false
+      setProjectName(trimmed)
+      try {
+        const resp = await fetch(`/api/projects/${projectId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: trimmed }),
+        })
+        return resp.ok
+      } catch {
+        return false
+      }
+    },
+    [projectId, name, setProjectName]
+  )
 
   /** Manual save — PATCHes latest_layout (and canvas preview) to backend. */
   const save = useCallback(() => {
@@ -80,5 +102,5 @@ export function useProject(projectId: string) {
     return true
   }, [projectId, furnitureItems])
 
-  return { load, save }
+  return { load, save, name, rename }
 }

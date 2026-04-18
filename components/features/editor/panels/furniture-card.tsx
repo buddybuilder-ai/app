@@ -1,5 +1,7 @@
 "use client"
 
+import { useState } from "react"
+import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
 import type { FurnitureCatalogItem } from "@/types/furniture"
 
@@ -20,7 +22,6 @@ const CATEGORY_COLORS: Record<string, string> = {
   plant: "#6B8E23",
   lamp: "#FFD700",
   rug: "#BC8F8F",
-  // Studio-specific categories
   sofa_bed: "#7B9EA8",
   compact_wardrobe: "#A0522D",
   room_divider: "#CD853F",
@@ -33,6 +34,13 @@ const CATEGORY_COLORS: Record<string, string> = {
   coat_rack: "#778899",
 }
 
+function thumbnailUrl(modelUrl?: string | null): string | null {
+  if (!modelUrl) return null
+  const match = modelUrl.match(/([^/]+)\.glb$/i)
+  if (!match) return null
+  return `/furniture_thumbnails/${match[1]}.png`
+}
+
 interface FurnitureCardProps {
   item: FurnitureCatalogItem
   onAdd: (item: FurnitureCatalogItem) => void
@@ -40,11 +48,14 @@ interface FurnitureCardProps {
 
 export function FurnitureCard({ item, onAdd }: FurnitureCardProps) {
   const color = CATEGORY_COLORS[item.category] || "#999999"
+  const thumb = thumbnailUrl(item.model_url)
+  const [thumbFailed, setThumbFailed] = useState(false)
+  const showThumb = thumb && !thumbFailed
 
   return (
     <button
       type="button"
-      className="group flex w-full items-center gap-3 rounded-lg border border-border p-2 text-left transition-colors hover:border-primary hover:bg-accent"
+      className="group flex w-full min-w-32 max-w-40 shrink-0 flex-col overflow-hidden rounded-lg border border-border bg-card text-left transition-colors hover:border-primary hover:bg-accent"
       onClick={() => onAdd(item)}
       draggable
       onDragStart={(e) => {
@@ -52,36 +63,43 @@ export function FurnitureCard({ item, onAdd }: FurnitureCardProps) {
         e.dataTransfer.effectAllowed = "copy"
       }}
     >
-      {/* Color preview box */}
       <div
-        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md"
-        style={{ backgroundColor: color }}
+        className="relative flex h-20 w-full shrink-0 items-center justify-center"
+        style={showThumb ? undefined : { backgroundColor: color }}
       >
-        <span className="text-xs font-bold text-white">
-          {item.dimensions.width.toFixed(1)}
-        </span>
+        {showThumb ? (
+          <Image
+            src={thumb}
+            alt={item.name}
+            width={128}
+            height={80}
+            className="h-full w-full object-contain"
+            onError={() => setThumbFailed(true)}
+            unoptimized
+          />
+        ) : (
+          <span className="text-sm font-bold text-white">
+            {item.dimensions.width.toFixed(1)}m
+          </span>
+        )}
+        {item.is_essential && (
+          <Badge
+            variant="secondary"
+            className="absolute right-1 top-1 h-4 px-1 text-[9px]"
+          >
+            จำเป็น
+          </Badge>
+        )}
       </div>
 
-      {/* Info */}
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
-          <p className="truncate text-sm font-medium">{item.name}</p>
-          {item.is_essential && (
-            <Badge variant="secondary" className="h-4 px-1 text-[10px]">
-              จำเป็น
-            </Badge>
-          )}
-        </div>
-        <p className="text-xs text-muted-foreground">
-          {item.dimensions.width}×{item.dimensions.depth}×
-          {item.dimensions.height}m
+      <div className="flex flex-1 flex-col justify-between gap-0.5 border-t px-2 py-1.5">
+        <p className="line-clamp-2 text-xs font-medium leading-tight">
+          {item.name}
+        </p>
+        <p className="text-[10px] text-muted-foreground">
+          {item.dimensions.width}×{item.dimensions.depth}m
         </p>
       </div>
-
-      {/* Add indicator */}
-      <span className="shrink-0 text-xs text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100">
-        +
-      </span>
     </button>
   )
 }
