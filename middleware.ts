@@ -14,9 +14,10 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl)
   }
 
-  // If already logged in and visiting auth pages, redirect to dashboard
-  if (token && (pathname === "/login" || pathname === "/register")) {
-    return NextResponse.redirect(new URL("/projects", request.url))
+  // If already logged in and visiting landing or auth pages, redirect away
+  if (token && (pathname === "/" || pathname === "/login" || pathname === "/register")) {
+    const dest = pathname === "/" ? "/chat" : "/projects"
+    return NextResponse.redirect(new URL(dest, request.url))
   }
 
   return NextResponse.next()
