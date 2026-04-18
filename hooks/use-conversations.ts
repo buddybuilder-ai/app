@@ -9,7 +9,6 @@ export type { ConversationMeta }
 export function useConversations(kind: "general" | "project" | null = "general") {
   const conversations = useChatStore((s) => s.conversations)
   const setConversations = useChatStore((s) => s.setConversations)
-  const addConversation = useChatStore((s) => s.addConversation)
   const removeConversation = useChatStore((s) => s.removeConversation)
   const setConversationId = useChatStore((s) => s.setConversationId)
   const conversationId = useChatStore((s) => s.conversationId)
@@ -72,22 +71,15 @@ export function useConversations(kind: "general" | "project" | null = "general")
     [setConversationId, loadMessages]
   )
 
+  /**
+   * "New chat" — reset client state only. The conversation row is created
+   * lazily by useRagChat.send() when the user actually sends the first
+   * message (matches ChatGPT / Claude.ai pattern: no empty rows in DB).
+   */
   const newConversation = useCallback(async () => {
-    try {
-      const resp = await fetch("/api/conversations", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: "การสนทนาใหม่" }),
-      })
-      if (!resp.ok) return
-      const conv: ConversationMeta = await resp.json()
-      addConversation(conv)
-      setConversationId(conv.id)
-      clearMessages()
-    } catch {
-      // silent
-    }
-  }, [addConversation, setConversationId, clearMessages])
+    setConversationId(null)
+    clearMessages()
+  }, [setConversationId, clearMessages])
 
   const deleteConversation = useCallback(
     async (convId: string) => {

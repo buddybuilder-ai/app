@@ -1,19 +1,31 @@
 "use client"
 
 import { useCallback, useRef } from "react"
-import { useChatStore } from "@/stores/chat-store"
+import { useChatStore, type ConversationMeta } from "@/stores/chat-store"
 
-function updateConversationTitle(cid: string, text: string) {
-  const title = text.length > 40 ? text.slice(0, 40) + "…" : text
-  fetch(`/api/conversations/${cid}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title }),
-  }).then(() => {
-    // Update title in store
-    const { conversations, setConversations } = useChatStore.getState()
-    setConversations(conversations.map((c) => c.id === cid ? { ...c, title } : c))
-  }).catch(() => {/* silent */})
+/**
+ * Lazily create a conversation row in the DB. Seeds the title with the
+ * user's first message so the sidebar never shows an empty "การสนทนาใหม่"
+ * (mirrors ChatGPT / Claude.ai behavior).
+ */
+async function createConversation(firstMessage: string): Promise<string | null> {
+  const title =
+    firstMessage.length > 40 ? firstMessage.slice(0, 40) + "…" : firstMessage
+  try {
+    const resp = await fetch("/api/conversations", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title }),
+    })
+    if (!resp.ok) return null
+    const conv: ConversationMeta = await resp.json()
+    const { addConversation, setConversationId } = useChatStore.getState()
+    addConversation({ ...conv, title })
+    setConversationId(conv.id)
+    return conv.id
+  } catch {
+    return null
+  }
 }
 
 /**
@@ -44,17 +56,16 @@ export function useRagChat() {
     async (text: string) => {
       setLoading(true)
 
+      // Lazy-create the conversation on the first send of a "new chat",
+      // so the sidebar never shows an empty row. Title is seeded from
+      // the first user message directly — no separate PATCH needed.
+      let cid = useChatStore.getState().conversationId
+      if (!cid) {
+        cid = await createConversation(text)
+      }
+
       // Persist user message (fire-and-forget)
       persistMessage("user", text)
-
-      // Auto-title: update on the first user message (exactly 1 user msg in store = this one)
-      const cid = useChatStore.getState().conversationId
-      const { conversations, messages: currentMessages } = useChatStore.getState()
-      const conv = conversations.find((c) => c.id === cid)
-      const userMsgCount = currentMessages.filter((m) => m.role === "user").length
-      if (cid && conv && userMsgCount === 1) {
-        updateConversationTitle(cid, text)
-      }
 
       const messageId = `assistant-${Date.now()}`
       addMessage({
