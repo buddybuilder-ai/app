@@ -1,11 +1,11 @@
 "use client"
 
-import Link from "next/link"
 import dynamic from "next/dynamic"
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import { motion, useScroll, useSpring, useTransform } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import TextType from "@/components/ui/text-type"
+import { AuthDialog } from "@/components/features/auth/auth-dialog"
 import { ArrowDown, ArrowRight, Compass, Home, Sparkles, Wand2 } from "lucide-react"
 
 const HeroScene3D = dynamic(
@@ -13,8 +13,17 @@ const HeroScene3D = dynamic(
   { ssr: false, loading: () => null }
 )
 
+type AuthMode = "login" | "register"
+
 export function HeroSection() {
   const containerRef = useRef<HTMLDivElement>(null)
+  const [authOpen, setAuthOpen] = useState(false)
+  const [authMode, setAuthMode] = useState<AuthMode>("register")
+
+  const openAuth = (mode: AuthMode) => {
+    setAuthMode(mode)
+    setAuthOpen(true)
+  }
   // Section is 220vh tall. Sticky child pins during scroll, so the last 100vh
   // of the section is "off-screen" space where sticky has already released.
   // We map animation progress to 0..0.55 (the scrubbing window) and keep
@@ -38,12 +47,15 @@ export function HeroSection() {
   // Heading starts vertically centred and slides up to ~10% from top as user scrolls.
   const headingTop = useTransform(smoothProgress, [0, 0.4], ["40%", "5%"])
   const headingTranslateY = useTransform(smoothProgress, [0, 0.4], ["-50%", "0%"])
+  // CTA sits directly under the heading at rest, then slides to bottom of hero as user scrolls.
+  const ctaTop = useTransform(smoothProgress, [0, 0.4], ["56%", "82%"])
   // Hide the opposite heading entirely (display:none) to stop TextType animation loops
   // from running underneath the visible one.
   const initialHeadingDisplay = useTransform(smoothProgress, (v) => (v >= 0.45 ? "none" : "block"))
   const finalHeadingDisplay = useTransform(smoothProgress, (v) => (v < 0.4 ? "none" : "block"))
 
   return (
+    <>
     <section ref={containerRef} className="relative h-[220vh] w-full">
       <div className="sticky top-0 h-screen w-full overflow-hidden">
         <div
@@ -167,7 +179,10 @@ export function HeroSection() {
           ↓ Scroll
         </motion.div>
 
-        <div className="absolute inset-x-0 bottom-[14%] z-10 flex flex-col items-center px-6">
+        <motion.div
+          style={{ top: ctaTop }}
+          className="absolute inset-x-0 z-10 flex flex-col items-center px-6"
+        >
           <motion.div
             style={{ opacity: arrowOpacity }}
             animate={{ y: [0, 10, 0] }}
@@ -187,22 +202,29 @@ export function HeroSection() {
                 className="absolute inset-0 -z-10 rounded-full bg-primary/50 blur-2xl"
                 aria-hidden
               />
-              <Button size="lg" asChild className="shadow-lg shadow-primary/30">
-                <Link href="/register">
-                  <Sparkles className="mr-2 h-4 w-4" />
-                  เริ่มจัดห้อง
-                </Link>
+              <Button
+                size="lg"
+                className="shadow-lg shadow-primary/30"
+                onClick={() => openAuth("register")}
+              >
+                <Sparkles className="mr-2 h-4 w-4" />
+                เริ่มจัดห้อง
               </Button>
             </div>
-            <Button size="lg" variant="outline" asChild className="bg-background/70 backdrop-blur-sm">
-              <Link href="/chat">
-                ปรึกษาฮวงจุ้ย
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
+            <Button
+              size="lg"
+              variant="outline"
+              className="bg-background/70 backdrop-blur-sm"
+              onClick={() => openAuth("login")}
+            >
+              ปรึกษาฮวงจุ้ย
+              <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
+    <AuthDialog open={authOpen} onOpenChange={setAuthOpen} initialMode={authMode} redirectTo="/chat" />
+    </>
   )
 }

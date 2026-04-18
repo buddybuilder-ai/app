@@ -8,16 +8,14 @@ export function middleware(request: NextRequest) {
 
   const isProtected = PROTECTED_PREFIXES.some((prefix) => pathname.startsWith(prefix))
 
+  // Unauthenticated access to protected routes → send back to landing (which hosts the auth modal)
   if (isProtected && !token) {
-    const loginUrl = new URL("/login", request.url)
-    loginUrl.searchParams.set("from", pathname)
-    return NextResponse.redirect(loginUrl)
+    return NextResponse.redirect(new URL("/", request.url))
   }
 
-  // If already logged in and visiting landing or auth pages, redirect away
-  if (token && (pathname === "/" || pathname === "/login" || pathname === "/register")) {
-    const dest = pathname === "/" ? "/chat" : "/projects"
-    return NextResponse.redirect(new URL(dest, request.url))
+  // Already logged in → landing page redirects to the app
+  if (token && pathname === "/") {
+    return NextResponse.redirect(new URL("/chat", request.url))
   }
 
   return NextResponse.next()
