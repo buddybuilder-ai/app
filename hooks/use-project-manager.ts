@@ -9,6 +9,7 @@ export interface ProjectMeta {
   roomType: string
   room_spec: Record<string, unknown>
   latest_layout: Record<string, unknown>[] | null
+  preview_image: string | null
   createdAt: string
   updatedAt: string
 }
@@ -18,6 +19,7 @@ interface ApiProject {
   name: string
   room_spec: Record<string, unknown>
   latest_layout: Record<string, unknown>[] | null
+  preview_image: string | null
   created_at: string
   updated_at: string
 }
@@ -29,6 +31,7 @@ function toMeta(p: ApiProject): ProjectMeta {
     roomType: (p.room_spec?.room_type as string) ?? "studio_apartment",
     room_spec: p.room_spec,
     latest_layout: p.latest_layout,
+    preview_image: p.preview_image ?? null,
     createdAt: p.created_at,
     updatedAt: p.updated_at,
   }

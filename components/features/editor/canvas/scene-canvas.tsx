@@ -92,6 +92,7 @@ export function SceneCanvas() {
 
   return (
     <div
+      data-editor-canvas
       className="absolute inset-0"
       onDrop={handleCanvasDrop}
       onDragOver={handleCanvasDragOver}
@@ -100,7 +101,7 @@ export function SceneCanvas() {
       <Canvas
         shadows
         camera={{ position: [6, 6, 6], fov: 50 }}
-        gl={{ antialias: true }}
+        gl={{ antialias: true, preserveDrawingBuffer: true }}
       >
         <color attach="background" args={["#fafafa"]} />
         <LightingRig />

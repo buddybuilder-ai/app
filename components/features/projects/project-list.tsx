@@ -30,7 +30,7 @@ export function ProjectList() {
           </p>
         </div>
       ) : (
-        <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {projects.map((project) => (
             <ProjectCard
               key={project.id}
@@ -40,6 +40,9 @@ export function ProjectList() {
                 ROOM_TYPES[project.roomType as keyof typeof ROOM_TYPES]
                   ?.labelTh ?? project.roomType
               }
+              roomSpec={project.room_spec}
+              layout={project.latest_layout}
+              previewImage={project.preview_image}
               updatedAt={formatRelativeTime(project.updatedAt)}
               onDelete={deleteProject}
               onRename={renameProject}
