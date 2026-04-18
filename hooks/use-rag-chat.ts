@@ -106,18 +106,23 @@ export function useRagChat() {
           buffer = lines.pop() || ""
 
           for (const line of lines) {
-            if (line.startsWith("data: ")) {
-              try {
-                const event = JSON.parse(line.slice(6))
-                if (event.type === "answer") {
-                  updateMessage(messageId, {
-                    content: event.answer as string,
-                    isThinking: false,
-                  })
-                }
-              } catch {
-                // skip malformed
+            if (!line.startsWith("data: ")) continue
+            try {
+              const event = JSON.parse(line.slice(6))
+              if (event.type === "answer_delta" && typeof event.delta === "string") {
+                // Append each token as it arrives — the visible "typing" effect.
+                const current = useChatStore.getState().messages.find((m) => m.id === messageId)
+                const next = (current?.content ?? "") + event.delta
+                updateMessage(messageId, { content: next, isThinking: false })
+              } else if (event.type === "answer" && typeof event.answer === "string") {
+                // Terminal event — reconcile to the authoritative full answer.
+                updateMessage(messageId, {
+                  content: event.answer as string,
+                  isThinking: false,
+                })
               }
+            } catch {
+              // skip malformed
             }
           }
         }
