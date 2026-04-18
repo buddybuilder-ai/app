@@ -1,8 +1,9 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { Menu } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import { DashboardSidebar } from "@/components/layout/dashboard-sidebar"
-import { DashboardHeader } from "@/components/layout/dashboard-header"
 import { useAuthStore } from "@/stores/auth-store"
 
 export default function DashboardLayout({
@@ -19,14 +20,23 @@ export default function DashboardLayout({
 
   return (
     <div className="flex h-screen">
-      {/* Desktop sidebar — hidden on mobile */}
-      <aside className="hidden lg:flex">
+      {/* Desktop sidebar */}
+      <div className="hidden lg:flex">
         <DashboardSidebar />
-      </aside>
+      </div>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <DashboardHeader onMenuClick={() => setMobileOpen(true)} />
-        <main className="flex-1 overflow-auto p-4 sm:p-6">{children}</main>
+        {/* Floating mobile menu button */}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setMobileOpen(true)}
+          className="absolute left-3 top-3 z-30 lg:hidden"
+          aria-label="เปิดเมนู"
+        >
+          <Menu className="h-5 w-5" />
+        </Button>
+        <main className="flex-1 overflow-auto">{children}</main>
       </div>
 
       {/* Mobile sidebar drawer */}
@@ -36,9 +46,9 @@ export default function DashboardLayout({
             className="fixed inset-0 z-40 bg-black/50 lg:hidden"
             onClick={() => setMobileOpen(false)}
           />
-          <aside className="fixed inset-y-0 left-0 z-50 lg:hidden">
+          <div className="fixed inset-y-0 left-0 z-50 lg:hidden">
             <DashboardSidebar onClose={() => setMobileOpen(false)} />
-          </aside>
+          </div>
         </>
       )}
     </div>

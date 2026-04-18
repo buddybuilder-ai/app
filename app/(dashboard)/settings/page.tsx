@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator"
 
 export default function SettingsPage() {
   return (
-    <div className="mx-auto max-w-2xl">
+    <div className="mx-auto max-w-2xl p-4 sm:p-6 lg:p-8">
       <h1 className="text-2xl font-bold">ตั้งค่า</h1>
       <p className="mt-1 text-muted-foreground">จัดการการตั้งค่าบัญชีของคุณ</p>
 
