@@ -1,12 +1,29 @@
 "use client"
 
 import { useRef, useMemo, useEffect, Suspense } from "react"
-import { BoxGeometry, Box3, Vector3, ArrowHelper, type Mesh, type Object3D, type Material } from "three"
+import { BoxGeometry, Box3, Vector3, ArrowHelper, type Group, type Mesh, type Object3D, type Material } from "three"
 import { useGLTF } from "@react-three/drei"
+import { useFrame } from "@react-three/fiber"
 import { useEditorStore } from "@/stores/editor-store"
 import type { FurnitureInstance } from "@/types/editor"
 import { FurnitureGizmo } from "./furniture-gizmo"
 import { FengShuiAlert } from "./feng-shui-alert"
+
+// Short tween for AI/chat-triggered moves — slow enough to read, fast
+// enough not to feel sluggish. Tuned to finish in ~0.6s at 60fps.
+const ANIM_LERP_FACTOR = 0.12
+const ANIM_SNAP_EPSILON = 0.001
+// When the gap between current and target is bigger than this the item was
+// *teleported* (e.g. initial mount), so we snap immediately instead of
+// dragging a long streak across the room.
+const ANIM_MAX_DISTANCE = 50
+
+function shortestAngleDelta(from: number, to: number): number {
+  let d = (to - from) % (Math.PI * 2)
+  if (d > Math.PI) d -= Math.PI * 2
+  if (d < -Math.PI) d += Math.PI * 2
+  return d
+}
 
 // Debug: show front-facing arrow on furniture (red = front direction)
 function FrontArrow({ height }: { height: number }) {
@@ -180,9 +197,11 @@ function FallbackBox({
 }
 
 export function FurnitureMesh({ item }: FurnitureMeshProps) {
+  const groupRef = useRef<Group>(null)
   const meshRef = useRef<Mesh>(null)
   const selectedId = useEditorStore((s) => s.selectedId)
   const setSelectedId = useEditorStore((s) => s.setSelectedId)
+  const isGizmoDragging = useEditorStore((s) => s.isGizmoDragging)
 
   const isSelected = selectedId === item.instanceId
   const color = CATEGORY_COLORS[item.category] || "#999999"
@@ -198,23 +217,59 @@ export function FurnitureMesh({ item }: FurnitureMeshProps) {
 
   const rawRot = item.rotation ?? 0
   const offset = item.model_rotation_offset ?? 0
-  const effectiveDeg = rawRot + offset
-  const radY = (effectiveDeg * Math.PI) / 180
-  console.log(
-    `[FurnitureMesh] ${item.instanceId} (${item.category})` +
-    ` pos=(${item.pos_x.toFixed(3)}, ${item.pos_z.toFixed(3)})` +
-    ` rotation=${rawRot}° offset=${offset}° effective=${effectiveDeg}° radY=${radY.toFixed(4)}`
-  )
+  const targetRadY = ((rawRot + offset) * Math.PI) / 180
+  const targetY = item.dimensions.height / 2 + item.pos_y
+
+  // Snap to the target on first mount so new furniture doesn't slide in
+  // from (0,0,0). Subsequent changes animate via useFrame below.
+  useEffect(() => {
+    const g = groupRef.current
+    if (!g) return
+    g.position.set(item.pos_x, targetY, item.pos_z)
+    g.rotation.y = targetRadY
+    // Intentionally only on first mount — target is kept in `item` props
+    // and read live inside useFrame.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useFrame(() => {
+    const g = groupRef.current
+    if (!g) return
+    // While the user is dragging via gizmo, snap — the gizmo's own handler
+    // updates item.pos_x/pos_z every pointer move, and interpolating would
+    // feel laggy.
+    if (isGizmoDragging && isSelected) {
+      g.position.set(item.pos_x, targetY, item.pos_z)
+      g.rotation.y = targetRadY
+      return
+    }
+    const dx = item.pos_x - g.position.x
+    const dy = targetY - g.position.y
+    const dz = item.pos_z - g.position.z
+    const far = Math.abs(dx) + Math.abs(dy) + Math.abs(dz) > ANIM_MAX_DISTANCE
+    if (far) {
+      g.position.set(item.pos_x, targetY, item.pos_z)
+    } else if (
+      Math.abs(dx) > ANIM_SNAP_EPSILON ||
+      Math.abs(dy) > ANIM_SNAP_EPSILON ||
+      Math.abs(dz) > ANIM_SNAP_EPSILON
+    ) {
+      g.position.x += dx * ANIM_LERP_FACTOR
+      g.position.y += dy * ANIM_LERP_FACTOR
+      g.position.z += dz * ANIM_LERP_FACTOR
+    } else {
+      g.position.set(item.pos_x, targetY, item.pos_z)
+    }
+    const dr = shortestAngleDelta(g.rotation.y, targetRadY)
+    if (Math.abs(dr) > ANIM_SNAP_EPSILON) {
+      g.rotation.y += dr * ANIM_LERP_FACTOR
+    } else {
+      g.rotation.y = targetRadY
+    }
+  })
 
   return (
-    <group
-      position={[
-        item.pos_x,
-        item.dimensions.height / 2 + item.pos_y,
-        item.pos_z,
-      ]}
-      rotation={[0, radY, 0]}
-    >
+    <group ref={groupRef}>
       {item.model_url ? (
         // Render 3D Model if model_url exists
         <Suspense fallback={
