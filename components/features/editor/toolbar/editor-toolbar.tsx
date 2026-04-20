@@ -181,21 +181,9 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
     setEditingName(false)
   }
 
-  function exportPng() {
-    const canvas = document.querySelector<HTMLCanvasElement>(
-      "[data-editor-canvas] canvas, canvas"
-    )
-    if (!canvas) {
-      toast.error("ยังไม่มี canvas ให้ส่งออก")
-      return
-    }
-    const url = canvas.toDataURL("image/png")
-    const a = document.createElement("a")
-    a.href = url
-    a.download = `${name ?? "layout"}.png`
-    a.click()
-    toast.success("ส่งออกรูปภาพแล้ว")
-  }
+  // The "export image" menu item now opens the render workspace so users can
+  // pick a camera angle and generate a photoreal preview. The raw PNG export
+  // is still available through the canvas itself if needed.
 
   function exportJson() {
     const data = { name, room, furnitureItems }
@@ -381,9 +369,11 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
             <FileJson className="mr-2 h-4 w-4" />
             ส่งออกเป็น JSON
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={exportPng}>
-            <FileImage className="mr-2 h-4 w-4" />
-            ส่งออกเป็นรูปภาพ
+          <DropdownMenuItem asChild>
+            <Link href={`/editor/${projectId}/render`} className="flex items-center gap-2">
+              <FileImage className="mr-2 h-4 w-4" />
+              ส่งออกเป็นรูปภาพ
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
