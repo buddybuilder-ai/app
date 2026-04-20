@@ -8,20 +8,18 @@ interface ChatSuggestionsProps {
 }
 
 const SUGGESTIONS = [
-  "จัดห้อง Studio ขนาด 6x4 เมตร",
-  "วิเคราะห์ฮวงจุ้ยห้องนอน",
-  "แนะนำเฟอร์นิเจอร์สำหรับห้องเล็ก",
-  "ปรับปรุงผัง Chi Flow",
+  "จัดห้องใหม่ให้ถูกหลักฮวงจุ้ย",
+  "ย้ายเตียงไปตำแหน่งผู้บัญชาการ",
+  "จัดวางโซฟาให้หันหน้าเข้าประตู",
 ]
 
 export function ChatSuggestions({ onSelect }: ChatSuggestionsProps) {
   const messages = useChatStore((s) => s.messages)
 
-  // Only show when no messages yet
   if (messages.length > 0) return null
 
   return (
-    <div className="flex flex-wrap gap-2 px-4 pb-2">
+    <div className="flex flex-col gap-1.5 px-3 pb-2">
       {SUGGESTIONS.map((suggestion) => (
         <button
           key={suggestion}
@@ -29,7 +27,7 @@ export function ChatSuggestions({ onSelect }: ChatSuggestionsProps) {
           onClick={() => onSelect(suggestion)}
           className={cn(
             "rounded-full border border-border bg-background px-3 py-1.5",
-            "text-xs text-muted-foreground transition-colors",
+            "text-left text-xs text-muted-foreground transition-colors",
             "hover:border-primary/50 hover:text-foreground"
           )}
         >
