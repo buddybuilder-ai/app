@@ -60,12 +60,12 @@ export function ChatInput() {
   }
 
   return (
-    <div className="border-t">
+    <div>
       {/* Suggestions */}
       <ChatSuggestions onSelect={handleSuggestion} />
 
       {/* Input area — Colab style */}
-      <div className="p-3 pt-1">
+      <div className="border-t p-3">
         <div className="rounded-xl border border-border bg-muted/50 transition-colors focus-within:border-primary/50">
           {/* Textarea */}
           <Textarea
