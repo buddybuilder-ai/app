@@ -121,9 +121,9 @@
 @layer base {
   :root {
     /* Bumps every Tailwind text-* size (they are rem-based) so the whole
-       app reads one notch larger without touching individual components.
-       Browser default is 16px; 17px ≈ +6%. */
-    font-size: 20px;
+       app reads larger without touching individual components.
+       Browser default is 16px; 18px ≈ +12%. */
+    font-size: 18px;
   }
   * {
     @apply border-border outline-ring/50;
