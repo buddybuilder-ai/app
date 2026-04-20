@@ -47,7 +47,7 @@ export function PropertiesPanel() {
   }
 
   return (
-    <div className="absolute right-3 top-3 z-20 hidden max-h-[calc(100%-1.5rem)] w-80 flex-col overflow-hidden rounded-lg border bg-background shadow-lg lg:flex">
+    <div className="absolute left-3 top-3 z-20 hidden max-h-[calc(55%-1.5rem)] w-80 flex-col overflow-hidden rounded-lg border bg-background shadow-lg lg:flex">
       {/* Header */}
       <div className="flex items-center justify-between border-b px-4 py-2">
         <h2 className="text-sm font-semibold">{item.name}</h2>
