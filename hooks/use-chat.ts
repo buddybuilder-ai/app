@@ -223,8 +223,9 @@ export function useChat() {
     (answers: Record<string, string>) => {
       const pending = useChatStore.getState().pendingClarification
       if (!pending) return
+      const merged = { ...pending.answers, ...answers }
       setPendingClarification(null)
-      send(pending.originalMessage, answers)
+      send(pending.originalMessage, merged)
     },
     [send, setPendingClarification]
   )
