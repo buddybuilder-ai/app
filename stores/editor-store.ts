@@ -1,5 +1,13 @@
 import { create } from "zustand"
+import { toast } from "sonner"
 import { useChatStore } from "@/stores/chat-store"
+
+// The AI layout pipeline requires at least one anchor piece in the scene.
+// Allowing an empty room would force the LLM to guess a full layout from
+// nothing, which produces random placements. See CLAUDE.md for context.
+const MIN_FURNITURE_ITEMS = 1
+const EMPTY_ROOM_WARNING =
+  "ต้องมีเฟอร์นิเจอร์อย่างน้อย 1 ชิ้นในห้อง ลองเพิ่มชิ้นใหม่ก่อนแล้วค่อยลบชิ้นนี้"
 
 let saveTimer: ReturnType<typeof setTimeout> | null = null
 
@@ -127,17 +135,23 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       future: [],
       furnitureItems: [...state.furnitureItems, item],
     })),
-  removeFurniture: (id) =>
-    set((state) => {
-      const furnitureItems = state.furnitureItems.filter((f) => f.instanceId !== id)
-      autoSaveLayout(furnitureItems)
-      return {
-        past: [...state.past.slice(-MAX_HISTORY + 1), cloneItems(state.furnitureItems)],
-        future: [],
-        furnitureItems,
-        selectedId: state.selectedId === id ? null : state.selectedId,
-      }
-    }),
+  removeFurniture: (id) => {
+    const current = get().furnitureItems
+    const exists = current.some((f) => f.instanceId === id)
+    if (!exists) return
+    if (current.length <= MIN_FURNITURE_ITEMS) {
+      toast.warning(EMPTY_ROOM_WARNING)
+      return
+    }
+    const furnitureItems = current.filter((f) => f.instanceId !== id)
+    autoSaveLayout(furnitureItems)
+    set((state) => ({
+      past: [...state.past.slice(-MAX_HISTORY + 1), cloneItems(state.furnitureItems)],
+      future: [],
+      furnitureItems,
+      selectedId: state.selectedId === id ? null : state.selectedId,
+    }))
+  },
   updateFurniture: (id, updates, options) =>
     set((state) => {
       const furnitureItems = state.furnitureItems.map((f) =>
@@ -160,6 +174,13 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     })),
   setFurnitureItems: (items, options) =>
     set((state) => {
+      // Block user-initiated clears (e.g. "clear all" toolbar action) but
+      // allow the project loader to hydrate an initially-empty project —
+      // skipHistory is the signal that this is a system write, not a user edit.
+      if (items.length < MIN_FURNITURE_ITEMS && !options?.skipHistory && state.furnitureItems.length > 0) {
+        toast.warning(EMPTY_ROOM_WARNING)
+        return {}
+      }
       if (options?.skipHistory) return { furnitureItems: items }
       return {
         past: [...state.past.slice(-MAX_HISTORY + 1), cloneItems(state.furnitureItems)],
