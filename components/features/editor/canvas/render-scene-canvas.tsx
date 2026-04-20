@@ -10,6 +10,30 @@ import { useEditorStore } from "@/stores/editor-store"
 
 export type CameraPreset = "front" | "back" | "left" | "right" | "top" | "isometric"
 
+type WallSide = "north" | "south" | "east" | "west"
+
+// Hide the walls that would otherwise block the camera's view of the room
+// interior. "front" means the camera is on the +Z side, so the south wall
+// is what's between the camera and the room → hide it.
+function hideWallsFor(preset: CameraPreset): WallSide[] {
+  switch (preset) {
+    case "front":
+      return ["south"]
+    case "back":
+      return ["north"]
+    case "left":
+      return ["west"]
+    case "right":
+      return ["east"]
+    case "top":
+      return ["north", "south", "east", "west"]
+    case "isometric":
+      // Camera sits in the +x/+z/+y octant, so the south + east walls are
+      // closest and block the view.
+      return ["south", "east"]
+  }
+}
+
 export interface CameraPose {
   position: [number, number, number]
   target: [number, number, number]
@@ -74,6 +98,7 @@ interface RenderSceneCanvasProps {
 export function RenderSceneCanvas({ preset }: RenderSceneCanvasProps) {
   const room = useEditorStore((s) => s.room)
   const pose = poseFor(preset, room.width / 2, room.depth / 2, room.height)
+  const hiddenWalls = hideWallsFor(preset)
   return (
     <div data-render-canvas className="absolute inset-0">
       <Canvas
@@ -83,7 +108,7 @@ export function RenderSceneCanvas({ preset }: RenderSceneCanvasProps) {
       >
         <color attach="background" args={["#f4f1ec"]} />
         <LightingRig />
-        <RoomMesh />
+        <RoomMesh hideWallSides={hiddenWalls} />
         <FurnitureLayer />
         <CameraDriver pose={pose} />
       </Canvas>

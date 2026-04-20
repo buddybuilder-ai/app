@@ -440,7 +440,14 @@ function ZoneOverlay({ zone }: { zone: ZoneDefinition }) {
   )
 }
 
-export function RoomMesh() {
+interface RoomMeshProps {
+  // Walls in this list are omitted entirely (cutaway view). Useful for the
+  // render workspace where a full 4-wall room hides the interior from any
+  // front/back/side camera.
+  hideWallSides?: WallSide[]
+}
+
+export function RoomMesh({ hideWallSides }: RoomMeshProps = {}) {
   const room = useEditorStore((s) => s.room)
   const wallThickness = 0.05
 
@@ -457,7 +464,10 @@ export function RoomMesh() {
     [room.zones]
   )
 
-  const walls: WallSide[] = ["north", "south", "east", "west"]
+  const hidden = new Set(hideWallSides ?? [])
+  const walls: WallSide[] = (["north", "south", "east", "west"] as WallSide[]).filter(
+    (w) => !hidden.has(w)
+  )
 
   return (
     <group>
