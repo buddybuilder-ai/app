@@ -13,7 +13,6 @@ import {
   Home,
   MoreHorizontal,
   Trash2,
-  Link2,
   Check,
   Loader2,
   AlertCircle,
@@ -22,8 +21,17 @@ import {
   LogOut,
   Settings,
 } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { useAuthStore } from "@/stores/auth-store"
+import { buildDefaultBed } from "@/hooks/use-project"
 import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -149,6 +157,7 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
 
   const [editingName, setEditingName] = useState(false)
   const [draftName, setDraftName] = useState("")
+  const [clearDialogOpen, setClearDialogOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   function startEditing() {
@@ -235,27 +244,21 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
     fileInputRef.current?.click()
   }
 
-  function clearLayout() {
+  function requestClearLayout() {
     if (furnitureItems.length === 0) {
       toast.info("ห้องว่างอยู่แล้ว")
       return
     }
-    const ok = window.confirm(
-      `ต้องการลบเฟอร์นิเจอร์ทั้งหมด ${furnitureItems.length} ชิ้นใช่ไหม?\n(สามารถกดย้อนกลับ ⌘Z เพื่อนำกลับมาได้)`
-    )
-    if (!ok) return
-    setFurnitureItems([])
-    toast.success("ล้างห้องแล้ว")
+    setClearDialogOpen(true)
   }
 
-  async function copyShareLink() {
-    const url = `${window.location.origin}/editor/${projectId}`
-    try {
-      await navigator.clipboard.writeText(url)
-      toast.success("คัดลอกลิงก์แล้ว")
-    } catch {
-      toast.error("คัดลอกลิงก์ไม่สำเร็จ")
-    }
+  function confirmClearLayout() {
+    // Reset to just the seed bed so the AI pipeline always has an anchor;
+    // a fully empty scene is blocked by the editor store.
+    const seed = buildDefaultBed(room)
+    setFurnitureItems(seed ? [seed] : furnitureItems.slice(0, 1))
+    setClearDialogOpen(false)
+    toast.success("ล้างห้องแล้ว (เหลือเตียงเริ่มต้น)")
   }
 
   return (
@@ -383,13 +386,8 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
             ส่งออกเป็นรูปภาพ
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={copyShareLink}>
-            <Link2 className="mr-2 h-4 w-4" />
-            คัดลอกลิงก์โปรเจค
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
           <DropdownMenuItem
-            onClick={clearLayout}
+            onClick={requestClearLayout}
             className="text-destructive focus:text-destructive"
           >
             <Trash2 className="mr-2 h-4 w-4" />
@@ -468,6 +466,26 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <Dialog open={clearDialogOpen} onOpenChange={setClearDialogOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>ล้างเฟอร์นิเจอร์ทั้งหมด?</DialogTitle>
+            <DialogDescription>
+              จะลบเฟอร์นิเจอร์ {furnitureItems.length} ชิ้นในห้องนี้ และเหลือเตียงเริ่มต้นไว้ 1 ชิ้น
+              คุณสามารถกดย้อนกลับ (⌘Z) เพื่อนำกลับมาได้
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setClearDialogOpen(false)}>
+              ยกเลิก
+            </Button>
+            <Button variant="destructive" onClick={confirmClearLayout}>
+              ล้างทั้งหมด
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

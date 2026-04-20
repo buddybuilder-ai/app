@@ -28,7 +28,7 @@ const OPPOSITE_WALL: Record<"north" | "south" | "east" | "west", "north" | "sout
  * position (wall opposite the door). The AI layout pipeline cannot work from
  * a truly empty scene — see the empty-room guard in the backend router.
  */
-function buildDefaultBed(room: RoomConfig): FurnitureInstance | null {
+export function buildDefaultBed(room: RoomConfig): FurnitureInstance | null {
   const bed = FURNITURE_CATALOG.find((f) => f.id === "bed-queen")
   if (!bed) return null
   const doorWall = (room.doors?.[0]?.wall ?? "south") as "north" | "south" | "east" | "west"
