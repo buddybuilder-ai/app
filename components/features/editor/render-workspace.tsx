@@ -1,14 +1,15 @@
 "use client"
 
 import Link from "next/link"
-import { useCallback, useEffect, useState } from "react"
-import { ArrowLeft, Download, Loader2, Sparkles } from "lucide-react"
+import { useCallback, useEffect, useMemo, useState } from "react"
+import { ArrowLeft, Download, ExternalLink, Loader2, ShoppingBag, Sparkles } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { LoadingSpinner } from "@/components/shared/loading-spinner"
 import { useProject } from "@/hooks/use-project"
 import { useEditorStore } from "@/stores/editor-store"
+import { getShopeeSuggestion, type ShopeeSuggestion } from "@/lib/shopee-mapping"
 import {
   RenderSceneCanvas,
   type CameraPreset,
@@ -101,6 +102,28 @@ export function RenderWorkspace({ projectId }: RenderWorkspaceProps) {
 
   const hasFurniture = furnitureItems.length > 0
 
+  // Group duplicates so "3× dining chairs" show as one shopping row.
+  const shoppingList = useMemo(() => {
+    const buckets = new Map<
+      string,
+      { suggestion: ShopeeSuggestion; itemName: string; count: number }
+    >()
+    for (const f of furnitureItems) {
+      const suggestion = getShopeeSuggestion(f.id, f.category)
+      if (!suggestion) continue
+      const key = suggestion.url
+      const prev = buckets.get(key)
+      if (prev) prev.count += 1
+      else buckets.set(key, { suggestion, itemName: f.name, count: 1 })
+    }
+    return Array.from(buckets.values())
+  }, [furnitureItems])
+
+  const totalFromPrice = shoppingList.reduce(
+    (sum, row) => sum + (row.suggestion.priceFromTHB ?? 0) * row.count,
+    0
+  )
+
   return (
     <div className="relative flex h-full w-full flex-col">
       <header className="flex h-12 items-center gap-2 border-b bg-background px-4">
@@ -180,26 +203,78 @@ export function RenderWorkspace({ projectId }: RenderWorkspaceProps) {
                 <RenderSceneCanvas preset={preset} />
               </div>
 
-              {/* Generated photoreal result */}
-              <div className="relative flex items-center justify-center bg-muted/40 p-4">
-                {generating ? (
-                  <div className="flex flex-col items-center gap-3 text-sm text-muted-foreground">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                    กำลังสร้างภาพเสมือนจริง (30–60 วินาที)
-                  </div>
-                ) : result ? (
-                  // Using a plain img tag keeps the base64 payload simple and
-                  // avoids Next/Image optimisation overhead for one-off renders.
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={result}
-                    alt="Photoreal render"
-                    className="max-h-full max-w-full rounded-md shadow-lg"
-                  />
-                ) : (
-                  <div className="flex flex-col items-center gap-2 text-center text-sm text-muted-foreground">
-                    <Sparkles className="h-6 w-6" />
-                    เลือกมุมที่ต้องการแล้วกด “สร้างภาพ” เพื่อสร้างภาพเสมือนจริง
+              {/* Generated photoreal result + shopping list */}
+              <div className="relative flex flex-col gap-4 overflow-y-auto bg-muted/40 p-4">
+                <div className="flex min-h-[40%] items-center justify-center">
+                  {generating ? (
+                    <div className="flex flex-col items-center gap-3 text-sm text-muted-foreground">
+                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                      กำลังสร้างภาพเสมือนจริง (30–60 วินาที)
+                    </div>
+                  ) : result ? (
+                    // Plain img keeps the base64 payload simple and avoids
+                    // Next/Image optimisation overhead for one-off renders.
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={result}
+                      alt="Photoreal render"
+                      className="max-h-full max-w-full rounded-md shadow-lg"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center gap-2 text-center text-sm text-muted-foreground">
+                      <Sparkles className="h-6 w-6" />
+                      เลือกมุมที่ต้องการแล้วกด “สร้างภาพ” เพื่อสร้างภาพเสมือนจริง
+                    </div>
+                  )}
+                </div>
+
+                {result && shoppingList.length > 0 && (
+                  <div className="rounded-lg border bg-background p-4 shadow-sm">
+                    <div className="flex items-center justify-between pb-3">
+                      <div className="flex items-center gap-2">
+                        <ShoppingBag className="h-4 w-4 text-primary" />
+                        <h2 className="text-sm font-semibold">ช้อปของจริงบน Shopee</h2>
+                      </div>
+                      {totalFromPrice > 0 && (
+                        <span className="text-xs text-muted-foreground">
+                          เริ่มต้นประมาณ {totalFromPrice.toLocaleString("th-TH")} บาท
+                        </span>
+                      )}
+                    </div>
+                    <ul className="divide-y">
+                      {shoppingList.map((row) => (
+                        <li
+                          key={row.suggestion.url}
+                          className="flex items-center gap-3 py-2"
+                        >
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-sm font-medium">
+                              {row.suggestion.name}
+                              {row.count > 1 && (
+                                <span className="ml-2 text-xs text-muted-foreground">
+                                  ×{row.count}
+                                </span>
+                              )}
+                            </p>
+                            {row.suggestion.priceFromTHB !== undefined && (
+                              <p className="text-xs text-muted-foreground">
+                                เริ่มต้น {row.suggestion.priceFromTHB.toLocaleString("th-TH")} บาท
+                              </p>
+                            )}
+                          </div>
+                          <a
+                            href={row.suggestion.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <Button variant="outline" size="sm" className="h-8 gap-1.5">
+                              <ExternalLink className="h-3.5 w-3.5" />
+                              ดูบน Shopee
+                            </Button>
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 )}
               </div>
