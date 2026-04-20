@@ -17,7 +17,13 @@ import {
   Check,
   Loader2,
   AlertCircle,
+  MessageSquare,
+  FolderKanban,
+  LogOut,
+  Settings,
 } from "lucide-react"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { useAuthStore } from "@/stores/auth-store"
 import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -112,6 +118,20 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
   const roomSettingsOpen = useUIStore((s) => s.roomSettingsPanelOpen)
 
   const { save, name, rename } = useProject(projectId)
+  const user = useAuthStore((s) => s.user)
+  const fetchMe = useAuthStore((s) => s.fetchMe)
+  const logout = useAuthStore((s) => s.logout)
+  useEffect(() => {
+    if (!user) fetchMe()
+  }, [user, fetchMe])
+  const initials = user?.display_name
+    ? user.display_name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
+    : "U"
   const undo = useEditorStore((s) => s.undo)
   const redo = useEditorStore((s) => s.redo)
   const pastLen = useEditorStore((s) => s.past.length)
@@ -240,14 +260,20 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
 
   return (
     <div className="fixed left-0 right-0 top-0 z-30 flex h-10 items-center gap-1 border-b bg-background px-2 lg:h-12 lg:gap-2 lg:px-4">
-      <Link
-        href="/projects"
-        className="flex items-center gap-2 text-sm font-bold"
-      >
-        <div className="flex h-7 w-7 items-center justify-center rounded bg-primary">
-          <span className="text-xs font-bold text-primary-foreground">B</span>
-        </div>
-      </Link>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Link
+            href="/projects"
+            className="flex items-center gap-2 text-sm font-bold"
+            aria-label="กลับหน้าโปรเจกต์"
+          >
+            <div className="flex h-7 w-7 items-center justify-center rounded bg-primary transition-opacity hover:opacity-80">
+              <span className="text-xs font-bold text-primary-foreground">B</span>
+            </div>
+          </Link>
+        </TooltipTrigger>
+        <TooltipContent>กลับหน้าโปรเจกต์</TooltipContent>
+      </Tooltip>
 
       <Separator orientation="vertical" className="mx-1 h-6" />
 
@@ -383,6 +409,65 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
         <Save className="h-4 w-4" />
         <span className="hidden text-xs lg:inline">บันทึก</span>
       </Button>
+
+      <Separator orientation="vertical" className="mx-1 h-6" />
+
+      <DropdownMenu>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DropdownMenuTrigger asChild>
+              <button
+                className="flex h-8 w-8 items-center justify-center rounded-full transition-opacity hover:opacity-80"
+                aria-label="เมนูผู้ใช้"
+              >
+                <Avatar className="h-7 w-7">
+                  <AvatarFallback className="bg-primary text-[10px] text-primary-foreground">
+                    {initials}
+                  </AvatarFallback>
+                </Avatar>
+              </button>
+            </DropdownMenuTrigger>
+          </TooltipTrigger>
+          <TooltipContent>{user?.display_name ?? "ผู้ใช้"}</TooltipContent>
+        </Tooltip>
+        <DropdownMenuContent align="end" className="w-52">
+          {user?.email && (
+            <div className="px-2 py-1.5 text-xs text-muted-foreground">
+              <p className="truncate font-medium text-foreground">
+                {user.display_name}
+              </p>
+              <p className="truncate">{user.email}</p>
+            </div>
+          )}
+          <DropdownMenuSeparator />
+          <DropdownMenuItem asChild>
+            <Link href="/projects" className="flex items-center gap-2">
+              <FolderKanban className="h-4 w-4" />
+              โปรเจกต์ทั้งหมด
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/chat" className="flex items-center gap-2">
+              <MessageSquare className="h-4 w-4" />
+              ไปที่แชท
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/settings" className="flex items-center gap-2">
+              <Settings className="h-4 w-4" />
+              ตั้งค่า
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onClick={logout}
+            className="flex items-center gap-2 text-destructive focus:text-destructive"
+          >
+            <LogOut className="h-4 w-4" />
+            ออกจากระบบ
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   )
 }
