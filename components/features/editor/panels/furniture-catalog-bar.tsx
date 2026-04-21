@@ -1,48 +1,54 @@
-"use client"
+"use client";
 
-import { useState, useMemo } from "react"
-import { Search, ChevronUp, ChevronDown } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+import { useState, useMemo } from "react";
+import { Search, ChevronUp, ChevronDown, Camera } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   getCategorizedFurniture,
   getFurnitureById,
   getZoneRecommendations,
-} from "@/lib/furniture-catalog"
-import { useEditorStore } from "@/stores/editor-store"
-import { FurnitureCard } from "./furniture-card"
-import type { FurnitureCatalogItem } from "@/types/furniture"
+} from "@/lib/furniture-catalog";
+import { useEditorStore } from "@/stores/editor-store";
+import { FurnitureCard } from "./furniture-card";
+import type { FurnitureCatalogItem } from "@/types/furniture";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { ScanImagePage } from "@/components/features/scanImage/page";
 
-export function FurnitureCatalogBar() {
-  const [search, setSearch] = useState("")
-  const [activeGroup, setActiveGroup] = useState<string | null>(null)
-  const [collapsed, setCollapsed] = useState(false)
-  const addFurniture = useEditorStore((s) => s.addFurniture)
-  const room = useEditorStore((s) => s.room)
+export function FurnitureCatalogBar({ projectId }: { projectId: string }) {
+  const [search, setSearch] = useState("");
+  const [activeGroup, setActiveGroup] = useState<string | null>(null);
+  const [collapsed, setCollapsed] = useState(false);
+  const addFurniture = useEditorStore((s) => s.addFurniture);
+  const room = useEditorStore((s) => s.room);
 
   const categorized = useMemo(
     () => getCategorizedFurniture(room.room_type),
-    [room.room_type]
-  )
+    [room.room_type],
+  );
 
   const zoneRecommendations = useMemo(() => {
-    if (room.room_type === "studio_apartment") return getZoneRecommendations()
-    return null
-  }, [room.room_type])
+    if (room.room_type === "studio_apartment") return getZoneRecommendations();
+    return null;
+  }, [room.room_type]);
 
   const activeItems = useMemo(() => {
-    let items: FurnitureCatalogItem[] = []
+    let items: FurnitureCatalogItem[] = [];
     if (activeGroup) {
-      items = categorized.find((g) => g.group === activeGroup)?.items ?? []
+      items = categorized.find((g) => g.group === activeGroup)?.items ?? [];
     } else {
-      items = categorized.flatMap((g) => g.items)
+      items = categorized.flatMap((g) => g.items);
     }
     if (search.trim()) {
-      const q = search.toLowerCase()
-      items = items.filter((i) => i.name.toLowerCase().includes(q))
+      const q = search.toLowerCase();
+      items = items.filter((i) => i.name.toLowerCase().includes(q));
     }
-    return items
-  }, [categorized, activeGroup, search])
+    return items;
+  }, [categorized, activeGroup, search]);
 
   function handleAdd(item: FurnitureCatalogItem) {
     addFurniture({
@@ -59,14 +65,14 @@ export function FurnitureCatalogBar() {
       feng_shui_notes: [],
       model_url: item.model_url ?? undefined,
       model_rotation_offset: 0,
-    })
+    });
   }
 
   function handleDrop(e: React.DragEvent) {
-    e.preventDefault()
-    const id = e.dataTransfer.getData("application/furniture-id")
-    const item = getFurnitureById(id)
-    if (item) handleAdd(item)
+    e.preventDefault();
+    const id = e.dataTransfer.getData("application/furniture-id");
+    const item = getFurnitureById(id);
+    if (item) handleAdd(item);
   }
 
   if (collapsed) {
@@ -85,7 +91,7 @@ export function FurnitureCatalogBar() {
           แสดง
         </Button>
       </div>
-    )
+    );
   }
 
   return (
@@ -95,8 +101,8 @@ export function FurnitureCatalogBar() {
       onDrop={handleDrop}
     >
       {/* Tabs + search row */}
-      <div className="flex items-center gap-2 border-b px-3 py-2">
-        <div className="flex flex-1 flex-wrap gap-1">
+      <div className="flex items-center justify-between gap-2 border-b px-3 py-2">
+        <div className="flex flex-wrap gap-1">
           <Button
             variant={activeGroup === null ? "default" : "ghost"}
             size="sm"
@@ -121,7 +127,14 @@ export function FurnitureCatalogBar() {
           ))}
         </div>
 
-        <div className="relative">
+          <div className="ml-4">
+
+        <ScanImagePage projectId={projectId} />
+          </div>
+
+        <div className="relative ml-auto">
+          {" "}
+          {/* เพิ่ม ml-auto ตรงนี้ */}
           <Search className="absolute left-2.5 top-2 h-3.5 w-3.5 text-muted-foreground" />
           <Input
             placeholder="ค้นหา..."
@@ -161,5 +174,5 @@ export function FurnitureCatalogBar() {
         </div>
       </div>
     </div>
-  )
+  );
 }

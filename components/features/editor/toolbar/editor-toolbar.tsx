@@ -59,7 +59,6 @@ import { toast } from "sonner";
 
 interface EditorToolbarProps {
   projectId: string
-  onStartScan: () => void // รับฟังก์ชันสำหรับเปิด modal ถ่ายรูป
 }
 
 const ImportedItemSchema = PlacedFurnitureItemSchema.extend({
@@ -123,7 +122,7 @@ function SaveStatusIndicator() {
   return null;
 }
 
-export function EditorToolbar({ projectId , onStartScan }: EditorToolbarProps) {
+export function EditorToolbar({ projectId }: EditorToolbarProps) {
   const toggleRoomSettings = useUIStore((s) => s.toggleRoomSettingsPanel);
   const roomSettingsOpen = useUIStore((s) => s.roomSettingsPanelOpen);
 
@@ -339,23 +338,6 @@ export function EditorToolbar({ projectId , onStartScan }: EditorToolbarProps) {
         <SaveStatusIndicator />
       </div>
       <div className="flex-1 lg:hidden" />
-
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 gap-1.5 border-dashed border-primary/50 text-primary hover:bg-primary/5 hover:border-primary"
-            onClick={onStartScan}
-          >
-            <Camera className="h-4 w-4" />
-            <span className="hidden text-xs lg:inline font-medium">
-              ถ่ายรูปห้อง
-            </span>
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>ถ่ายรูปห้องด้วยกล้อง (AI วิเคราะห์ภาพ)</TooltipContent>
-      </Tooltip>
 
       <Button
         variant={roomSettingsOpen ? "secondary" : "ghost"}
