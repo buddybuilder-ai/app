@@ -79,7 +79,7 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
     // Fetch the server's IP address when the component mounts
     const fetchIp = async () => {
       try {
-        const response = await fetch("/api/get-ip");
+        const response = await fetch(`http://localhost:8002/api/v1/chat/get-ip`);
         const data = await response.json();
         if (data.ipAddress) {
           setServerIp(data.ipAddress);
@@ -89,6 +89,7 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
       }
     };
     fetchIp();
+
   }, [load]);
 
   useEffect(() => {
@@ -96,7 +97,7 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
       const interval = setInterval(async () => {
         try {
           const response = await fetch(
-            `/api/check-upload-status?sessionId=${sessionId}`,
+            `http://localhost:8002/api/v1/chat/check-upload-status?sessionId=${sessionId}`,
           );
           if (response.ok) {
             const data = await response.json();
@@ -169,7 +170,7 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
 
     try {
       console.log("📤 กำลังส่งรูปภาพ...");
-      const response = await fetch("/api/chat/process-single-image", {
+      const response = await fetch(`http://localhost:8002/api/v1/chat/process-single-image`, {
         method: "POST",
         body: formData,
       });
