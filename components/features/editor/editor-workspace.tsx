@@ -280,7 +280,10 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
   };
 
   const handleQrScan = () => {
-    const newSessionId = Math.random().toString(36).substr(2, 9);
+    // เปลี่ยน .substr(2, 9) เป็น .slice(2, 11)
+    // 2 คือจุดเริ่มต้น, 11 คือจุดสิ้นสุด (2 + 9 ตัวอักษร = 11)
+    const newSessionId = Math.random().toString(36).slice(2, 11);
+
     setSessionId(newSessionId);
     setShowScannerOptions(false);
     setShowQrModal(true);

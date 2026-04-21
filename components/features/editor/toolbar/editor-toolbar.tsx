@@ -123,7 +123,7 @@ function SaveStatusIndicator() {
   return null;
 }
 
-export function EditorToolbar({ projectId }: EditorToolbarProps) {
+export function EditorToolbar({ projectId , onStartScan }: EditorToolbarProps) {
   const toggleRoomSettings = useUIStore((s) => s.toggleRoomSettingsPanel);
   const roomSettingsOpen = useUIStore((s) => s.roomSettingsPanelOpen);
 
