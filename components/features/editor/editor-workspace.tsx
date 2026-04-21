@@ -80,7 +80,9 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
     const fetchIp = async () => {
       try {
         const response = await fetch(`http://localhost:8002/api/v1/chat/get-ip`);
+        console.log("Fetch IP response:", response);
         const data = await response.json();
+        console.log("📡 API Get-IP Result:", data);
         if (data.ipAddress) {
           setServerIp(data.ipAddress);
         }
@@ -284,6 +286,9 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
     // เปลี่ยน .substr(2, 9) เป็น .slice(2, 11)
     // 2 คือจุดเริ่มต้น, 11 คือจุดสิ้นสุด (2 + 9 ตัวอักษร = 11)
     const newSessionId = Math.random().toString(36).slice(2, 11);
+
+    const qrUrl = `${window.location.protocol}//${serverIp}:${window.location.port}/upload-mobile?sessionId=${newSessionId}`;
+    console.log("🔗 QR Code URL:", qrUrl); // <--- เช็คตรงนี้ใน F12
 
     setSessionId(newSessionId);
     setShowScannerOptions(false);
