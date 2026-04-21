@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import path from "path";
 import fs from "fs/promises";
-
-// This temporary directory path is provided by the execution environment.
-const TMP_DIR = "C:\\Users\\user\\.gemini\\tmp\\8412df0f53907a0c4a702bc81a0f5d8739e3bac9323cfeda350b12155409a505";
+import os from "os";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -25,7 +23,7 @@ export async function GET(request: NextRequest) {
 
   // Sanitize sessionId to prevent directory traversal
   const safeSessionId = path.basename(sessionId);
-  const sessionFilePath = path.join(TMP_DIR, `${safeSessionId}.json`);
+  const sessionFilePath = path.join(os.tmpdir(), `${safeSessionId}.json`);
 
   try {
     // Check if the session file exists
@@ -34,8 +32,18 @@ export async function GET(request: NextRequest) {
     // If it exists, read it
     const data = await fs.readFile(sessionFilePath, "utf-8");
     
-    // Delete the file
-    await fs.unlink(sessionFilePath);
+    // Parse the data to check status
+    let parsedData = { status: "unknown" };
+    try {
+      parsedData = JSON.parse(data);
+    } catch {
+      // Ignore parse error
+    }
+
+    // Only delete the file if it is NOT currently processing
+    if (parsedData.status !== "processing") {
+      await fs.unlink(sessionFilePath);
+    }
 
     // Return the content
     return new NextResponse(data, {

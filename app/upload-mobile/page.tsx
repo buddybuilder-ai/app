@@ -100,7 +100,7 @@ function MobileUploadContent() {
           อัปโหลดรูปภาพเฟอร์นิเจอร์
         </h1>
         <p className="text-gray-600 mt-2 mb-8">
-          ถ่ายรูปหรือเลือกรูปภาพจากคลังของคุณเพื่อส่งไปยังคอมพิวเตอร์
+          ถ่ายรูปภาพเพื่อส่งไปยังคอมพิวเตอร์
         </p>
 
         {isUploading ? (
@@ -120,9 +120,9 @@ function MobileUploadContent() {
             />
             <button
               onClick={triggerFileSelect}
-              className="w-full bg-blue-600 text-white font-bold py-4 px-4 rounded-xl shadow-lg hover:bg-blue-700 transition-transform transform hover:scale-105"
+              className="w-full bg-primary text-primary-foreground font-bold py-4 px-4 rounded-xl shadow-lg hover:bg-primary/90 transition-transform transform hover:scale-105"
             >
-              📸 ถ่ายหรือเลือกรูปภาพ
+              📸 ถ่ายรูปภาพ
             </button>
             {uploadStatus === "error" && (
               <div className="mt-4 text-red-600 bg-red-100 p-3 rounded-lg">

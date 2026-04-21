@@ -7,6 +7,18 @@ export async function GET() {
 
   // Find the local IPv4 address
   for (const interfaceName in networkInterfaces) {
+    // Skip virtual and WSL adapters
+    const lowerName = interfaceName.toLowerCase();
+    if (
+      lowerName.includes("wsl") ||
+      lowerName.includes("vethernet") ||
+      lowerName.includes("virtual") ||
+      lowerName.includes("vmware") ||
+      lowerName.includes("hyper-v")
+    ) {
+      continue;
+    }
+
     const interfaces = networkInterfaces[interfaceName];
     if (interfaces) {
       for (const iface of interfaces) {

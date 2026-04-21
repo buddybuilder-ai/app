@@ -74,57 +74,63 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
       }, [load]);
     
       useEffect(() => {
-        if (showQrModal && sessionId) {      const interval = setInterval(async () => {
-        try {
-          const response = await fetch(
-            `/api/check-upload-status?sessionId=${sessionId}`,
-          );
-          if (response.ok) {
-            const data = await response.json();
-            console.log("Polling response:", data);
-            if (data.status !== "pending") {
-              clearInterval(interval);
-              setShowQrModal(false);
+        if (sessionId) {
+          const interval = setInterval(async () => {
+            try {
+              const response = await fetch(
+                `/api/check-upload-status?sessionId=${sessionId}`,
+              );
+              if (response.ok) {
+                const data = await response.json();
+                console.log("Polling response:", data);
 
-              setIsProcessing(true);
-              if (data.status === "success" && data.objects) {
-                const objectsWithCatalogItems = data.objects
-                  .map((obj: ApiDetectedObject) => {
-                    const catalogItem = FURNITURE_CATALOG.find(
-                      (item) =>
-                        item.category.toLowerCase() ===
-                          obj.label.toLowerCase() ||
-                        item.name
-                          .toLowerCase()
-                          .includes(obj.label.toLowerCase()),
-                    );
-                    return { ...obj, catalogItem };
-                  })
-                  .filter((obj: { catalogItem: FurnitureCatalogItem | undefined; }): obj is DetectedObject => obj.catalogItem !== undefined);
+                if (data.status === "processing") {
+                  setShowQrModal(false);
+                  setIsProcessing(true);
+                } else if (data.status !== "pending") {
+                  clearInterval(interval);
+                  setShowQrModal(false);
+                  setSessionId(""); // stop polling
 
-                if (objectsWithCatalogItems.length > 0) {
-                  setDetectedObjects(objectsWithCatalogItems);
-                  setCurrentObjectIndex(0); // Start confirmation from the first object
-                } else {
-                  alert("ไม่พบเฟอร์นิเจอร์ที่รู้จักในรูปภาพ");
-                  setShowScannerOptions(true);
+                  setIsProcessing(true);
+                  if (data.status === "success" && data.objects) {
+                    const objectsWithCatalogItems = data.objects
+                      .map((obj: ApiDetectedObject) => {
+                        const catalogItem = FURNITURE_CATALOG.find(
+                          (item) =>
+                            item.category.toLowerCase() ===
+                              obj.label.toLowerCase() ||
+                            item.name
+                              .toLowerCase()
+                              .includes(obj.label.toLowerCase()),
+                        );
+                        return { ...obj, catalogItem };
+                      })
+                      .filter((obj: { catalogItem: FurnitureCatalogItem | undefined; }): obj is DetectedObject => obj.catalogItem !== undefined);
+
+                    if (objectsWithCatalogItems.length > 0) {
+                      setDetectedObjects(objectsWithCatalogItems);
+                      setCurrentObjectIndex(0); // Start confirmation from the first object
+                    } else {
+                      alert("ไม่พบเฟอร์นิเจอร์ที่รู้จักในรูปภาพ");
+                      setShowScannerOptions(true);
+                    }
+                    setIsProcessing(false);
+                  } else {
+                    alert(data.message || "ไม่สามารถประมวลผลรูปภาพได้");
+                    setShowScannerOptions(true);
+                    setIsProcessing(false);
+                  }
                 }
-                setIsProcessing(false);
-              } else {
-                alert(data.message || "ไม่สามารถประมวลผลรูปภาพได้");
-                setShowScannerOptions(true);
-                setIsProcessing(false);
               }
+            } catch (error) {
+              console.error("Polling error:", error);
             }
-          }
-        } catch (error) {
-          console.error("Polling error:", error);
-        }
-      }, 3000); // Poll every 3 seconds
+          }, 3000); // Poll every 3 seconds
 
-      return () => clearInterval(interval);
-    }
-  }, [showQrModal, sessionId]);
+          return () => clearInterval(interval);
+        }
+      }, [sessionId]);
 
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -228,7 +234,7 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
       setDetectedObjects([]);
       setCurrentObjectIndex(0);
       alert(`เพิ่มเฟอร์นิเจอร์ที่ยืนยันทั้งหมดเรียบร้อยแล้ว`);
-      setShowScannerOptions(true); // Show upload options again
+      setShowScannerOptions(false); // Don't show upload options again
     }
   };
 
@@ -241,7 +247,7 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
       setDetectedObjects([]);
       setCurrentObjectIndex(0);
       alert("เสร็จสิ้นการตรวจสอบเฟอร์นิเจอร์");
-      setShowScannerOptions(true); // Show upload options again
+      setShowScannerOptions(false); // Don't show upload options again
     }
   };
     
@@ -298,7 +304,10 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
             </p>
             <button
               className="mt-2 text-sm text-muted-foreground hover:text-foreground underline transition"
-              onClick={() => setShowQrModal(false)}
+              onClick={() => {
+                setShowQrModal(false);
+                setSessionId("");
+              }}
             >
               ยกเลิก
             </button>
@@ -316,19 +325,6 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
             <p className="text-sm text-muted-foreground text-center mb-2">
               ถ่ายรูปห้องด้วยกล้องหรือเลือกรูปจากเครื่องของคุณ
             </p>
-            <label className="w-full py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:opacity-90 transition flex items-center justify-center gap-2 cursor-pointer">
-              📸 ถ่ายรูประบบกล้อง
-              <input
-                type="file"
-                accept="image/*"
-                capture="environment"
-                className="hidden"
-                onChange={(e) => {
-                  setShowScannerOptions(false);
-                  handleFileUpload(e);
-                }}
-              />
-            </label>
             <label className="w-full py-3 bg-secondary text-secondary-foreground font-semibold rounded-lg text-center cursor-pointer hover:bg-secondary/80 transition border border-border flex items-center justify-center gap-2">
               📁 เลือกรูปจากเครื่อง
               <input
@@ -352,7 +348,6 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
               onClick={() => setShowScannerOptions(false)}
             >
               ยกเลิก
-.
             </button>
           </div>
         </div>
