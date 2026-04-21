@@ -46,7 +46,7 @@ function WallDirectionLabels() {
   return (
     <>
       {labels.map(({ label, pos }) => (
-        <Html key={label} position={pos} center>
+        <Html key={label} position={pos} center zIndexRange={[10, 0]}>
           <span
             style={{ pointerEvents: "none", userSelect: "none" }}
             className="rounded bg-black/50 px-1.5 py-0.5 text-[11px] font-bold leading-none text-white"
