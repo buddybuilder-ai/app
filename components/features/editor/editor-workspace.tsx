@@ -112,8 +112,8 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
               clearInterval(interval);
               setShowQrModal(false);
               setSessionId(""); // stop polling
-
               setIsProcessing(true);
+              
               if (data.status === "success" && data.objects) {
                 const objectsWithCatalogItems = data.objects
                   .map((obj: ApiDetectedObject) => {
