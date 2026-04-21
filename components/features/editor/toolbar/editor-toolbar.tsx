@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { useState, useRef, useEffect } from "react"
+import Link from "next/link";
+import { useState, useRef, useEffect } from "react";
 import {
   Save,
   Undo2,
@@ -20,7 +20,8 @@ import {
   FolderKanban,
   LogOut,
   Settings,
-} from "lucide-react"
+  Camera,
+} from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -28,68 +29,69 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { useAuthStore } from "@/stores/auth-store"
-import { buildDefaultBed } from "@/hooks/use-project"
-import { z } from "zod"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Separator } from "@/components/ui/separator"
+} from "@/components/ui/dialog";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useAuthStore } from "@/stores/auth-store";
+import { buildDefaultBed } from "@/hooks/use-project";
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
+} from "@/components/ui/tooltip";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { useUIStore } from "@/stores/ui-store"
-import { useProject } from "@/hooks/use-project"
-import { useEditorStore } from "@/stores/editor-store"
-import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts"
-import { RoomConfigSchema } from "@/types/schemas/room"
-import { PlacedFurnitureItemSchema } from "@/types/schemas/furniture"
-import { toast } from "sonner"
+} from "@/components/ui/dropdown-menu";
+import { useUIStore } from "@/stores/ui-store";
+import { useProject } from "@/hooks/use-project";
+import { useEditorStore } from "@/stores/editor-store";
+import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
+import { RoomConfigSchema } from "@/types/schemas/room";
+import { PlacedFurnitureItemSchema } from "@/types/schemas/furniture";
+import { toast } from "sonner";
 
 interface EditorToolbarProps {
   projectId: string
+  onStartScan: () => void // รับฟังก์ชันสำหรับเปิด modal ถ่ายรูป
 }
 
 const ImportedItemSchema = PlacedFurnitureItemSchema.extend({
   instanceId: z.string().optional(),
   model_url: z.string().optional(),
-})
+});
 
 const ImportFileSchema = z.object({
   name: z.string().optional(),
   room: RoomConfigSchema,
   furnitureItems: z.array(ImportedItemSchema).default([]),
-})
+});
 
 function formatRelativeTime(ts: number, now: number): string {
-  const diff = Math.max(0, Math.floor((now - ts) / 1000))
-  if (diff < 5) return "เมื่อสักครู่"
-  if (diff < 60) return `${diff} วิที่แล้ว`
-  const min = Math.floor(diff / 60)
-  if (min < 60) return `${min} นาทีที่แล้ว`
-  const hr = Math.floor(min / 60)
-  return `${hr} ชม.ที่แล้ว`
+  const diff = Math.max(0, Math.floor((now - ts) / 1000));
+  if (diff < 5) return "เมื่อสักครู่";
+  if (diff < 60) return `${diff} วิที่แล้ว`;
+  const min = Math.floor(diff / 60);
+  if (min < 60) return `${min} นาทีที่แล้ว`;
+  const hr = Math.floor(min / 60);
+  return `${hr} ชม.ที่แล้ว`;
 }
 
 function SaveStatusIndicator() {
-  const status = useEditorStore((s) => s.saveStatus)
-  const lastSavedAt = useEditorStore((s) => s.lastSavedAt)
-  const [now, setNow] = useState(() => Date.now())
+  const status = useEditorStore((s) => s.saveStatus);
+  const lastSavedAt = useEditorStore((s) => s.lastSavedAt);
+  const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
-    const t = setInterval(() => setNow(Date.now()), 15000)
-    return () => clearInterval(t)
-  }, [])
+    const t = setInterval(() => setNow(Date.now()), 15000);
+    return () => clearInterval(t);
+  }, []);
 
   if (status === "saving") {
     return (
@@ -97,7 +99,7 @@ function SaveStatusIndicator() {
         <Loader2 className="h-3 w-3 animate-spin" />
         กำลังบันทึก...
       </span>
-    )
+    );
   }
   if (status === "error") {
     return (
@@ -105,10 +107,10 @@ function SaveStatusIndicator() {
         <AlertCircle className="h-3 w-3" />
         บันทึกไม่สำเร็จ
       </span>
-    )
+    );
   }
   if (status === "dirty") {
-    return <span className="text-xs text-muted-foreground">แก้ไขแล้ว</span>
+    return <span className="text-xs text-muted-foreground">แก้ไขแล้ว</span>;
   }
   if (status === "saved" && lastSavedAt) {
     return (
@@ -116,22 +118,22 @@ function SaveStatusIndicator() {
         <Check className="h-3 w-3 text-green-500" />
         บันทึก{formatRelativeTime(lastSavedAt, now)}
       </span>
-    )
+    );
   }
-  return null
+  return null;
 }
 
 export function EditorToolbar({ projectId }: EditorToolbarProps) {
-  const toggleRoomSettings = useUIStore((s) => s.toggleRoomSettingsPanel)
-  const roomSettingsOpen = useUIStore((s) => s.roomSettingsPanelOpen)
+  const toggleRoomSettings = useUIStore((s) => s.toggleRoomSettingsPanel);
+  const roomSettingsOpen = useUIStore((s) => s.roomSettingsPanelOpen);
 
-  const { save, name, rename } = useProject(projectId)
-  const user = useAuthStore((s) => s.user)
-  const fetchMe = useAuthStore((s) => s.fetchMe)
-  const logout = useAuthStore((s) => s.logout)
+  const { save, name, rename } = useProject(projectId);
+  const user = useAuthStore((s) => s.user);
+  const fetchMe = useAuthStore((s) => s.fetchMe);
+  const logout = useAuthStore((s) => s.logout);
   useEffect(() => {
-    if (!user) fetchMe()
-  }, [user, fetchMe])
+    if (!user) fetchMe();
+  }, [user, fetchMe]);
   const initials = user?.display_name
     ? user.display_name
         .split(" ")
@@ -139,46 +141,46 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
         .join("")
         .toUpperCase()
         .slice(0, 2)
-    : "U"
-  const undo = useEditorStore((s) => s.undo)
-  const redo = useEditorStore((s) => s.redo)
-  const pastLen = useEditorStore((s) => s.past.length)
-  const futureLen = useEditorStore((s) => s.future.length)
-  const canUndo = pastLen > 0
-  const canRedo = futureLen > 0
-  const furnitureItems = useEditorStore((s) => s.furnitureItems)
-  const room = useEditorStore((s) => s.room)
-  const setRoom = useEditorStore((s) => s.setRoom)
-  const setFurnitureItems = useEditorStore((s) => s.setFurnitureItems)
-  const setProjectName = useEditorStore((s) => s.setProjectName)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+    : "U";
+  const undo = useEditorStore((s) => s.undo);
+  const redo = useEditorStore((s) => s.redo);
+  const pastLen = useEditorStore((s) => s.past.length);
+  const futureLen = useEditorStore((s) => s.future.length);
+  const canUndo = pastLen > 0;
+  const canRedo = futureLen > 0;
+  const furnitureItems = useEditorStore((s) => s.furnitureItems);
+  const room = useEditorStore((s) => s.room);
+  const setRoom = useEditorStore((s) => s.setRoom);
+  const setFurnitureItems = useEditorStore((s) => s.setFurnitureItems);
+  const setProjectName = useEditorStore((s) => s.setProjectName);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useKeyboardShortcuts({ onUndo: undo, onRedo: redo })
+  useKeyboardShortcuts({ onUndo: undo, onRedo: redo });
 
-  const [editingName, setEditingName] = useState(false)
-  const [draftName, setDraftName] = useState("")
-  const [clearDialogOpen, setClearDialogOpen] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const [editingName, setEditingName] = useState(false);
+  const [draftName, setDraftName] = useState("");
+  const [clearDialogOpen, setClearDialogOpen] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   function startEditing() {
-    setDraftName(name ?? "")
-    setEditingName(true)
-    requestAnimationFrame(() => inputRef.current?.select())
+    setDraftName(name ?? "");
+    setEditingName(true);
+    requestAnimationFrame(() => inputRef.current?.select());
   }
 
   function handleSave() {
-    const ok = save()
-    if (ok) toast.success("บันทึกแล้ว")
-    else toast.error("บันทึกไม่สำเร็จ")
+    const ok = save();
+    if (ok) toast.success("บันทึกแล้ว");
+    else toast.error("บันทึกไม่สำเร็จ");
   }
 
   function commitRename() {
     if (draftName.trim() && draftName.trim() !== name) {
       rename(draftName).then((ok) => {
-        if (ok) toast.success("เปลี่ยนชื่อแล้ว")
-      })
+        if (ok) toast.success("เปลี่ยนชื่อแล้ว");
+      });
     }
-    setEditingName(false)
+    setEditingName(false);
   }
 
   // The "export image" menu item now opens the render workspace so users can
@@ -186,67 +188,72 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
   // is still available through the canvas itself if needed.
 
   function exportJson() {
-    const data = { name, room, furnitureItems }
+    const data = { name, room, furnitureItems };
     const blob = new Blob([JSON.stringify(data, null, 2)], {
       type: "application/json",
-    })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = `${name ?? "layout"}.json`
-    a.click()
-    URL.revokeObjectURL(url)
-    toast.success("ส่งออก JSON แล้ว")
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${name ?? "layout"}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success("ส่งออก JSON แล้ว");
   }
 
   async function handleImportFile(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    e.target.value = ""
-    if (!file) return
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
     try {
-      const text = await file.text()
-      const parsed = ImportFileSchema.parse(JSON.parse(text))
+      const text = await file.text();
+      const parsed = ImportFileSchema.parse(JSON.parse(text));
       const withIds = parsed.furnitureItems.map((item, i) => ({
         ...item,
         instanceId: item.instanceId ?? `${item.id}-${Date.now()}-${i}`,
-      }))
-      setRoom(parsed.room)
-      setFurnitureItems(withIds)
+      }));
+      setRoom(parsed.room);
+      setFurnitureItems(withIds);
       if (parsed.name) {
-        setProjectName(parsed.name)
-        rename(parsed.name).catch(() => {/* best effort */})
+        setProjectName(parsed.name);
+        rename(parsed.name).catch(() => {
+          /* best effort */
+        });
       }
       toast.success(
         withIds.length > 0
           ? `นำเข้าสำเร็จ (${withIds.length} ชิ้น)`
-          : "นำเข้าสำเร็จ (ไฟล์ไม่มีเฟอร์นิเจอร์)"
-      )
+          : "นำเข้าสำเร็จ (ไฟล์ไม่มีเฟอร์นิเจอร์)",
+      );
     } catch (err) {
-      const msg = err instanceof z.ZodError ? "รูปแบบไฟล์ไม่ถูกต้อง" : "อ่านไฟล์ไม่สำเร็จ"
-      toast.error(msg)
-      console.error("import error:", err)
+      const msg =
+        err instanceof z.ZodError
+          ? "รูปแบบไฟล์ไม่ถูกต้อง"
+          : "อ่านไฟล์ไม่สำเร็จ";
+      toast.error(msg);
+      console.error("import error:", err);
     }
   }
 
   function triggerImport() {
-    fileInputRef.current?.click()
+    fileInputRef.current?.click();
   }
 
   function requestClearLayout() {
     if (furnitureItems.length === 0) {
-      toast.info("ห้องว่างอยู่แล้ว")
-      return
+      toast.info("ห้องว่างอยู่แล้ว");
+      return;
     }
-    setClearDialogOpen(true)
+    setClearDialogOpen(true);
   }
 
   function confirmClearLayout() {
     // Reset to just the seed bed so the AI pipeline always has an anchor;
     // a fully empty scene is blocked by the editor store.
-    const seed = buildDefaultBed(room)
-    setFurnitureItems(seed ? [seed] : furnitureItems.slice(0, 1))
-    setClearDialogOpen(false)
-    toast.success("ล้างห้องแล้ว (เหลือเตียงเริ่มต้น)")
+    const seed = buildDefaultBed(room);
+    setFurnitureItems(seed ? [seed] : furnitureItems.slice(0, 1));
+    setClearDialogOpen(false);
+    toast.success("ล้างห้องแล้ว (เหลือเตียงเริ่มต้น)");
   }
 
   return (
@@ -259,7 +266,9 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
             aria-label="กลับหน้าโปรเจกต์"
           >
             <div className="flex h-7 w-7 items-center justify-center rounded bg-primary transition-opacity hover:opacity-80">
-              <span className="text-xs font-bold text-primary-foreground">B</span>
+              <span className="text-xs font-bold text-primary-foreground">
+                B
+              </span>
             </div>
           </Link>
         </TooltipTrigger>
@@ -275,8 +284,8 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
           onChange={(e) => setDraftName(e.target.value)}
           onBlur={commitRename}
           onKeyDown={(e) => {
-            if (e.key === "Enter") commitRename()
-            if (e.key === "Escape") setEditingName(false)
+            if (e.key === "Enter") commitRename();
+            if (e.key === "Escape") setEditingName(false);
           }}
           className="h-7 w-48 text-sm"
         />
@@ -331,6 +340,23 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
       </div>
       <div className="flex-1 lg:hidden" />
 
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 gap-1.5 border-dashed border-primary/50 text-primary hover:bg-primary/5 hover:border-primary"
+            onClick={onStartScan}
+          >
+            <Camera className="h-4 w-4" />
+            <span className="hidden text-xs lg:inline font-medium">
+              ถ่ายรูปห้อง
+            </span>
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>ถ่ายรูปห้องด้วยกล้อง (AI วิเคราะห์ภาพ)</TooltipContent>
+      </Tooltip>
+
       <Button
         variant={roomSettingsOpen ? "secondary" : "ghost"}
         size="sm"
@@ -370,7 +396,10 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
             ส่งออกเป็น JSON
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link href={`/editor/${projectId}/render`} className="flex items-center gap-2">
+            <Link
+              href={`/editor/${projectId}/render`}
+              className="flex items-center gap-2"
+            >
               <FileImage className="mr-2 h-4 w-4" />
               ส่งออกเป็นรูปภาพ
             </Link>
@@ -462,8 +491,9 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
           <DialogHeader>
             <DialogTitle>ล้างเฟอร์นิเจอร์ทั้งหมด?</DialogTitle>
             <DialogDescription>
-              จะลบเฟอร์นิเจอร์ {furnitureItems.length} ชิ้นในห้องนี้ และเหลือเตียงเริ่มต้นไว้ 1 ชิ้น
-              คุณสามารถกดย้อนกลับ (⌘Z) เพื่อนำกลับมาได้
+              จะลบเฟอร์นิเจอร์ {furnitureItems.length} ชิ้นในห้องนี้
+              และเหลือเตียงเริ่มต้นไว้ 1 ชิ้น คุณสามารถกดย้อนกลับ (⌘Z)
+              เพื่อนำกลับมาได้
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -477,5 +507,5 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }
