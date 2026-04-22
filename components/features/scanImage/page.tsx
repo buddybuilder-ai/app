@@ -83,65 +83,96 @@ export function ScanImagePage({ projectId }: { projectId: string }) {
   }, [load]);
 
   useEffect(() => {
-    if (sessionId) {
-      const interval = setInterval(async () => {
-        try {
-          const response = await fetch(
-            `http://localhost:8002/api/v1/chat/check-upload-status?sessionId=${sessionId}`,
-          );
-          if (response.ok) {
-            const data = await response.json();
+    if (!sessionId) return;
 
-            if (data.status === "processing") {
-              setShowQrModal(false);
-              setIsProcessing(true);
-            } else if (data.status !== "pending") {
-              clearInterval(interval);
-              setShowQrModal(false);
-              setSessionId(""); // stop polling
-              setIsProcessing(true);
+    let isCancelled = false;
 
-              if (data.status === "success" && data.objects) {
-                const objectsWithCatalogItems = data.objects
-                  .map((obj: ApiDetectedObject) => {
-                    const catalogItem = FURNITURE_CATALOG.find(
-                      (item) =>
-                        item.category.toLowerCase() ===
-                          obj.label.toLowerCase() ||
-                        item.name
-                          .toLowerCase()
-                          .includes(obj.label.toLowerCase()),
-                    );
-                    return { ...obj, catalogItem };
-                  })
-                  .filter(
-                    (obj: {
-                      catalogItem: FurnitureCatalogItem | undefined;
-                    }): obj is DetectedObject => obj.catalogItem !== undefined,
-                  );
+    const poll = async () => {
+      if (isCancelled) return;
 
-                if (objectsWithCatalogItems.length > 0) {
-                  setDetectedObjects(objectsWithCatalogItems);
-                  setCurrentObjectIndex(0); // Start confirmation from the first object
-                } else {
-                  alert("ไม่พบเฟอร์นิเจอร์ที่รู้จักในรูปภาพ");
-                  setShowScannerOptions(true);
-                }
-                setIsProcessing(false);
-              } else {
-                alert(data.message || "ไม่สามารถประมวลผลรูปภาพได้");
-                setShowScannerOptions(true);
-                setIsProcessing(false);
-              }
-            }
+      try {
+        let isFetchComplete = false;
+
+        // ถ้าเซิร์ฟเวอร์ใช้เวลาตอบกลับนานกว่า 1.5 วิ ถือว่าเริ่มประมวลผล AI แล้ว
+        const timeoutId = setTimeout(() => {
+          if (!isFetchComplete && !isCancelled) {
+            setShowQrModal(false);
+            setIsProcessing(true);
           }
-        } catch (error) {
-          console.error("Polling error:", error);
-        }
-      }, 3000); // Poll every 3 seconds
+        }, 1500);
 
-      return () => clearInterval(interval);
-    }
+        const response = await fetch(
+          `http://localhost:8002/api/v1/chat/check-upload-status?sessionId=${sessionId}`,
+        );
+
+        isFetchComplete = true;
+        clearTimeout(timeoutId);
+        if (isCancelled) return;
+
+        if (response.ok) {
+          const data = await response.json();
+          if (isCancelled) return;
+
+          if (data.status === "processing") {
+            setShowQrModal(false);
+            setIsProcessing(true);
+            setTimeout(poll, 3000);
+          } else if (data.status !== "pending") {
+            setShowQrModal(false);
+            setSessionId(""); // stop polling
+            setIsProcessing(true);
+
+            if (data.status === "success" && data.objects) {
+              const objectsWithCatalogItems = data.objects
+                .map((obj: ApiDetectedObject) => {
+                  const catalogItem = FURNITURE_CATALOG.find(
+                    (item) =>
+                      item.category.toLowerCase() ===
+                        obj.label.toLowerCase() ||
+                      item.name
+                        .toLowerCase()
+                        .includes(obj.label.toLowerCase()),
+                  );
+                  return { ...obj, catalogItem };
+                })
+                .filter(
+                  (obj: {
+                    catalogItem: FurnitureCatalogItem | undefined;
+                  }): obj is DetectedObject => obj.catalogItem !== undefined,
+                );
+
+              if (objectsWithCatalogItems.length > 0) {
+                setDetectedObjects(objectsWithCatalogItems);
+                setCurrentObjectIndex(0); // Start confirmation from the first object
+              } else {
+                alert("ไม่พบเฟอร์นิเจอร์ที่รู้จักในรูปภาพ");
+                setShowScannerOptions(true);
+              }
+              setIsProcessing(false);
+            } else {
+              alert(data.message || "ไม่สามารถประมวลผลรูปภาพได้");
+              setShowScannerOptions(true);
+              setIsProcessing(false);
+            }
+          } else {
+            // status === "pending"
+            setTimeout(poll, 3000);
+          }
+        } else {
+          setTimeout(poll, 3000);
+        }
+      } catch (error) {
+        console.error("Polling error:", error);
+        if (!isCancelled) setTimeout(poll, 3000);
+      }
+    };
+
+    const initialTimeout = setTimeout(poll, 3000); // Poll every 3 seconds
+
+    return () => {
+      isCancelled = true;
+      clearTimeout(initialTimeout);
+    };
   }, [sessionId]);
 
   const handleFileUpload = async (
