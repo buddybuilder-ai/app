@@ -314,7 +314,7 @@ export function FurnitureMesh({ item }: FurnitureMeshProps) {
           <lineBasicMaterial color="#f89d2a" />
         </lineSegments>
       )}
-      <FrontArrow height={item.dimensions.height} />
+      {/* <FrontArrow height={item.dimensions.height} /> */}
 
       {/* Feng Shui Alert - only shown for selected item */}
       {isSelected && <FengShuiAlert item={item} />}
