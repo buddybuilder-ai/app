@@ -7,6 +7,7 @@ import { Camera, Upload, CheckCircle2, X } from "lucide-react";
 export default function MobileUploadPage() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("sessionId");
+  const roomHeight = searchParams.get("roomHeight");
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null); // State สำหรับเก็บ URL รูปตัวอย่าง
   const [status, setStatus] = useState<"idle" | "uploading" | "success">("idle");
@@ -47,6 +48,9 @@ export default function MobileUploadPage() {
 
     const formData = new FormData();
     formData.append("image", file);
+    if (roomHeight) {
+      formData.append("target_height", roomHeight);
+    }
 
     try {
       // ยิงไปที่ Backend FastAPI (พอร์ต 8002 ตามที่คุณใช้)
