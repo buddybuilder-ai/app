@@ -1,6 +1,6 @@
 import { type NextRequest } from "next/server"
 
-const FASTAPI_URL = process.env.FASTAPI_URL || "http://localhost:8000"
+import { FASTAPI_URL } from "@/lib/constants"
 
 /**
  * SSE proxy for RAG-only chat — forwards to FastAPI /api/v1/chat/rag
