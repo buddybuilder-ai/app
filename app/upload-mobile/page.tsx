@@ -8,6 +8,7 @@ export default function MobileUploadPage() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("sessionId");
   const roomHeight = searchParams.get("roomHeight");
+  const userId = searchParams.get("userId");
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null); // State สำหรับเก็บ URL รูปตัวอย่าง
   const [status, setStatus] = useState<"idle" | "uploading" | "success">("idle");
@@ -51,10 +52,14 @@ export default function MobileUploadPage() {
     if (roomHeight) {
       formData.append("target_height", roomHeight);
     }
+    if (userId) {
+      formData.append("userId", userId);
+    }
 
     try {
       // ยิงไปที่ Backend FastAPI (พอร์ต 8002 ตามที่คุณใช้)
-      const response = await fetch(`http://192.168.1.126:8002/api/v1/chat/mobile-upload/${sessionId}`, {
+      const hostname = window.location.hostname;
+      const response = await fetch(`http://${hostname}:8002/api/v1/chat/mobile-upload/${sessionId}`, {
         method: "POST",
         body: formData,
       });
@@ -83,7 +88,7 @@ export default function MobileUploadPage() {
     <div className="flex min-h-screen flex-col items-center justify-center p-6 bg-slate-50">
       <div className="w-full max-w-md bg-white p-8 rounded-3xl shadow-2xl border border-slate-100">
         <h1 className="text-2xl font-bold text-center mb-8 text-slate-900">
-          BuddyBuilder AI Camera
+          ถ่ายรูปห้องของคุณเพื่อเพิ่มเฟอร์นิเจอร์
         </h1>
         
         {/* ส่วนแสดงรูปตัวอย่าง / ช่องถ่ายรูป */}

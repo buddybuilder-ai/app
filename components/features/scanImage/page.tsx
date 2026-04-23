@@ -13,6 +13,7 @@ import { useProject } from "@/hooks/use-project";
 import { useConversations } from "@/hooks/use-conversations";
 import { useChatStore } from "@/stores/chat-store";
 import { useEditorStore } from "@/stores/editor-store";
+import { useAuthStore } from "@/stores/auth-store";
 import { FurnitureConfirmationCard } from "../editor/furniture-confirmation-card";
 
 type DetectedObject = {
@@ -36,6 +37,7 @@ export function ScanImagePage({ projectId }: { projectId: string }) {
   const roomHeight = useEditorStore((s) => s.room.height);
   const conversationId = useChatStore((s) => s.conversationId);
   const chatOpen = useChatStore((s) => s.isOpen);
+  const userId = useAuthStore((s) => s.user?.id);
   const { loadMessages } = useConversations();
 
   useEffect(() => {
@@ -70,7 +72,7 @@ export function ScanImagePage({ projectId }: { projectId: string }) {
     const fetchIp = async () => {
       try {
         const response = await fetch(
-          `${process.env.FASTAPI_URL}/api/v1/chat/get-ip`,
+          `http://${window.location.hostname}:8002/api/v1/chat/get-ip`,
         );
         const data = await response.json();
         if (data.ipAddress) {
@@ -103,7 +105,7 @@ export function ScanImagePage({ projectId }: { projectId: string }) {
         }, 1500);
 
         const response = await fetch(
-          `${process.env.FASTAPI_URL}/api/v1/chat/check-upload-status?sessionId=${sessionId}`,
+          `http://localhost:8002/api/v1/chat/check-upload-status?sessionId=${sessionId}`,
         );
 
         isFetchComplete = true;
@@ -188,10 +190,13 @@ export function ScanImagePage({ projectId }: { projectId: string }) {
     const formData = new FormData();
     formData.append("image", file);
     formData.append("target_height", String(roomHeight));
+    if (userId) {
+      formData.append("userId", userId);
+    }
 
     try {
       const response = await fetch(
-        `${process.env.FASTAPI_URL}/api/v1/chat/process-single-image`,
+        `http://localhost:8002/api/v1/chat/process-single-image`,
         {
           method: "POST",
           body: formData,
@@ -348,7 +353,7 @@ export function ScanImagePage({ projectId }: { projectId: string }) {
             </h3>
             <div className="flex justify-center">
               <QRCodeSVG
-                value={`${window.location.protocol}//${serverIp}:${window.location.port}/upload-mobile?sessionId=${sessionId}&roomHeight=${roomHeight}`}
+                value={`${window.location.protocol}//${serverIp}:${window.location.port}/upload-mobile?sessionId=${sessionId}&roomHeight=${roomHeight}${userId ? `&userId=${userId}` : ''}`}
               />
             </div>
             <p className="text-sm text-muted-foreground text-center">
