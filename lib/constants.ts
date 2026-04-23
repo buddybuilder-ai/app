@@ -3,7 +3,7 @@ export const APP_DESCRIPTION =
   "AI-Powered 3D Interior Design Platform with Feng Shui Analysis"
 
 export const FASTAPI_URL =
-  process.env.NEXT_PUBLIC_FASTAPI_URL || "http://localhost:8000"
+  process.env.NEXT_PUBLIC_FASTAPI_URL || "http://127.0.0.1:8000"
 
 export const CHAT_MODES = {
   mentor: { label: "Mentor", description: "Formal, educational guidance" },

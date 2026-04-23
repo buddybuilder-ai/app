@@ -123,7 +123,7 @@ export function ChatMessage({ message, onSubmitClarification }: ChatMessageProps
           {/* Answer content — only show when not thinking */}
           {!message.isThinking && message.content && (
             <MessageContent
-              className="text-foreground prose w-full flex-1 rounded-lg bg-transparent p-2 animate-in fade-in duration-500"
+              className="text-foreground prose dark:prose-invert w-full flex-1 rounded-lg bg-transparent p-2 animate-in fade-in duration-500"
               markdown
             >
               {message.content}
