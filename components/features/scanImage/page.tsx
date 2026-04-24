@@ -105,7 +105,7 @@ export function ScanImagePage({ projectId }: { projectId: string }) {
         }, 1500);
 
         const response = await fetch(
-          `http://localhost:8002/api/v1/chat/check-upload-status?sessionId=${sessionId}`,
+          `/api/chat/check-upload-status?sessionId=${sessionId}`,
         );
 
         isFetchComplete = true;
@@ -196,7 +196,7 @@ export function ScanImagePage({ projectId }: { projectId: string }) {
 
     try {
       const response = await fetch(
-        `http://localhost:8002/api/v1/chat/process-single-image`,
+        `/api/chat/process-single-image`,
         {
           method: "POST",
           body: formData,
