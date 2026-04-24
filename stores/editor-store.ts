@@ -123,7 +123,17 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     zones: [],
     user_preferences: {},
   },
-  setRoom: (room) => set({ room }),
+  setRoom: (room) => {
+    if (process.env.NODE_ENV !== "production") {
+      const prev = useEditorStore.getState().room.direction
+      if (prev !== room.direction) {
+        console.trace(`[EditorStore] room.direction changed: ${prev} → ${room.direction}`)
+      } else {
+        console.log(`[EditorStore] setRoom called (direction unchanged: ${room.direction})`)
+      }
+    }
+    set({ room })
+  },
 
   furnitureItems: [],
   past: [],

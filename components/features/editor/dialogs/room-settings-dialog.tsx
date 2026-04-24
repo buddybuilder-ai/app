@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Plus, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -44,6 +44,11 @@ export function RoomSettingsDialog({ projectId }: RoomSettingsDialogProps) {
   // changes commit on "Save". Cancel simply closes without touching state.
   const [draft, setDraft] = useState<RoomConfig>(room)
   const [isSaving, setIsSaving] = useState(false)
+
+  // Keep draft in sync with store when dialog is closed (e.g. after project load)
+  useEffect(() => {
+    if (!open) setDraft(room)
+  }, [room, open])
 
   function onOpenChange(next: boolean) {
     if (next) {
