@@ -71,9 +71,8 @@ export function ScanImagePage({ projectId }: { projectId: string }) {
     // Fetch the server's IP address when the component mounts
     const fetchIp = async () => {
       try {
-        const response = await fetch(
-          `http://${window.location.hostname}:8002/api/v1/chat/get-ip`,
-        );
+        const baseUrl = process.env.NEXT_PUBLIC_FASTAPI_URL ?? `http://${window.location.hostname}:8000`;
+        const response = await fetch(`${baseUrl}/api/v1/chat/get-ip`);
         const data = await response.json();
         if (data.ipAddress) {
           setServerIp(data.ipAddress);
@@ -104,8 +103,9 @@ export function ScanImagePage({ projectId }: { projectId: string }) {
           }
         }, 1500);
 
+        const apiBase = process.env.NEXT_PUBLIC_FASTAPI_URL ?? "http://localhost:8000";
         const response = await fetch(
-          `http://localhost:8002/api/v1/chat/check-upload-status?sessionId=${sessionId}`,
+          `${apiBase}/api/v1/chat/check-upload-status?sessionId=${sessionId}`,
         );
 
         isFetchComplete = true;
@@ -195,8 +195,9 @@ export function ScanImagePage({ projectId }: { projectId: string }) {
     }
 
     try {
+      const uploadBase = process.env.NEXT_PUBLIC_FASTAPI_URL ?? "http://localhost:8000";
       const response = await fetch(
-        `http://localhost:8002/api/v1/chat/process-single-image`,
+        `${uploadBase}/api/v1/chat/process-single-image`,
         {
           method: "POST",
           body: formData,
