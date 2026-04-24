@@ -24,6 +24,27 @@ function extractLanguage(className?: string): string {
 }
 
 const INITIAL_COMPONENTS: Partial<Components> = {
+  strong: function StrongComponent({ children }) {
+    return <strong className="font-bold">{children}</strong>
+  },
+  h1: function H1Component({ children }) {
+    return <h1 className="text-2xl font-bold mt-4 mb-2">{children}</h1>
+  },
+  h2: function H2Component({ children }) {
+    return <h2 className="text-xl font-bold mt-3 mb-2">{children}</h2>
+  },
+  h3: function H3Component({ children }) {
+    return <h3 className="text-lg font-semibold mt-3 mb-1">{children}</h3>
+  },
+  ul: function UlComponent({ children }) {
+    return <ul className="list-disc pl-5 my-2 space-y-1">{children}</ul>
+  },
+  ol: function OlComponent({ children }) {
+    return <ol className="list-decimal pl-5 my-2 space-y-1">{children}</ol>
+  },
+  p: function PComponent({ children }) {
+    return <p className="my-1">{children}</p>
+  },
   code: function CodeComponent({ className, children, ...props }) {
     const isInline =
       !props.node?.position?.start.line ||
