@@ -82,7 +82,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
   messages: [],
   isOpen: false,
   isLoading: false,
-  mode: "buddy",
+  mode: "mentor",
 
   conversationId: null,
   projectId: null,
